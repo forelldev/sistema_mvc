@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitudes de ayuda</title>
+    <title>Document</title>
 </head>
 <body>
-    <form action="<?=BASE_URL?>/buscar" method="POST">
-        <input type="text" name="ci" placeholder="Ingrese su CI">
-        <input type="submit" value="Buscar">
-    </form>
+    <h1>Enviado con éxito</h1>
     <a href="<?=BASE_URL?>/main">Volver</a>
 </body>
 <script>
