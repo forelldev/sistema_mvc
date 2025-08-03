@@ -46,3 +46,27 @@ function mostrarInstitucion() {
         institucionInput.value = '';
     }
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    const trabajoInput = document.getElementById('trabajo');
+    const trabajoSelect = document.getElementById('trabajo1');
+
+    if (trabajoInput && trabajoSelect) {
+        const valorTrabajo = trabajoInput.value.trim().toLowerCase();
+
+        if (valorTrabajo && valorTrabajo !== 'no tiene') {
+            trabajoSelect.value = 'Si';
+            mostrarCampoTrabajo(); // activa campos relacionados
+        } else {
+            trabajoSelect.value = 'No';
+            trabajoInput.value = 'No tiene';
+            mostrarCampoTrabajo(); // desactiva campos relacionados
+        }
+    }
+
+    // También inicializa el campo de institución si aplica
+    const trabajaPublico = document.getElementById('trabaja_public');
+    if (trabajaPublico && trabajaPublico.value === 'Si') {
+        mostrarInstitucion();
+    }
+});

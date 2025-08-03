@@ -1,6 +1,7 @@
 <?php 
 require_once 'conexiondb.php';
 class Solicitud{
+    // MOSTRAR LISTA DE SOLICITUDES DE AYUDA:
     public static function buscarLista (){
         $conexion = DB::conectar();
         $consulta = "SELECT * FROM solicitud_ayuda ORDER BY fecha DESC";
@@ -21,135 +22,229 @@ class Solicitud{
                 ];
             }
     }
-    public static function buscarCi($ci){
-                $conexion = DB::conectar();
-            // Consulta para buscar en todas las tablas de solicitantes
-            $consulta = "SELECT 
-                            s.id_solicitante, s.nombre, s.apellido, 
-                            si.fecha_nacimiento, si.lugar_nacimiento, si.estado_civil, si.telefono,
-                            sc.comunidad, sc.direc_habita, sc.estruc_base,
-                            sc.profesion, sc.nivel_instruc,
-                            se.codigo_patria, se.serial_patria,
-                            st.trabajo, st.direccion_trabajo, st.trabaja_public, st.nombre_insti,
-                            sp.propiedad, sp.propiedad_est, sp.observaciones_propiedad
-                        FROM solicitantes s
-                        LEFT JOIN solicitantes_info si ON s.id_solicitante = si.id_solicitante
-                        LEFT JOIN solicitantes_comunidad sc ON s.id_solicitante = sc.id_solicitante
-                        LEFT JOIN solicitantes_conocimiento sk ON s.id_solicitante = sk.id_solicitante
-                        LEFT JOIN solicitantes_extra se ON s.id_solicitante = se.id_solicitante
-                        LEFT JOIN solicitantes_trabajo st ON s.id_solicitante = st.id_solicitante
-                        LEFT JOIN solicitantes_propiedad sp ON s.id_solicitante = sp.id_solicitante
-                        WHERE s.ci = :ci";
-                        
-            try {
-                $stmt = $conexion->prepare($consulta);
-                $stmt->bindParam(':ci', $ci, PDO::PARAM_STR); 
-                $stmt->execute();
-                $mostrar = $stmt->fetch(PDO::FETCH_ASSOC);
-                // Cierra el cursor para liberar recursos
-                $stmt->closeCursor();
-                if ($mostrar) {
-                    return [
-                        'exito' => true,
-                        'datos' => $mostrar
-                    ];
-                } else {
-                    return [
-                        'exito' => false
-                    ];
-                }
+    // BUSCAR POR CEDULA DE IDENTIDAD CUANDO SE BUSQUE ANTES DE RELLENAR FORMULARIO
+public static function buscarCi($ci) {
+        $db = DB::conectar();
 
-            } catch (PDOException $e) {
-                error_log("Error al buscar solicitante por CI: " . $e->getMessage());
-                return [
-                    'exito' => false,
-                    'error' => $e->getMessage()
-                ];
-            } finally {
-                $conexion = null;
-            }
+        // Buscar el solicitante principal
+        $stmt = $db->prepare("SELECT * FROM solicitantes WHERE ci = :ci");
+        $stmt->bindParam(':ci', $ci);
+        $stmt->execute();
+        $solicitante = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$solicitante) {
+            return ['exito' => false];
+        }
+
+        $id = $solicitante['id_solicitante'];
+
+        // Buscar datos relacionados
+        $datos = [
+            'solicitante' => $solicitante,
+            'comunidad' => self::buscarUno($db, 'solicitantes_comunidad', $id),
+            'conocimiento' => self::buscarUno($db, 'solicitantes_conocimiento', $id),
+            'extra' => self::buscarUno($db, 'solicitantes_extra', $id),
+            'info' => self::buscarUno($db, 'solicitantes_info', $id),
+            'propiedad' => self::buscarUno($db, 'solicitantes_propiedad', $id),
+            'trabajo' => self::buscarUno($db, 'solicitantes_trabajo', $id),
+            'ingresos' => self::buscarUno($db, 'solicitantes_ingresos', $id),
+            'patologia' => self::buscarTodos($db, 'solicitantes_patologia', $id)
+        ];
+
+        return ['exito' => true, 'mostrar' => $datos];
     }
 
-public static function enviarForm($data) {
-    $db = DB::conectar();
-    $db->beginTransaction();
+    private static function buscarUno($db, $tabla, $id) {
+        $stmt = $db->prepare("SELECT * FROM $tabla WHERE id_solicitante = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-    try {
-        // 1. Obtener datos del promotor
-        $ci_user = $data['ci_user'];
-        $consulta = "
-            SELECT ui.* 
-            FROM usuarios_info ui
-            INNER JOIN usuarios u ON ui.id_usuario = u.id_usuario
-            WHERE u.ci = :ci
-        ";
-        $busqueda = $db->prepare($consulta);
-        $busqueda->bindParam(':ci', $ci_user, PDO::PARAM_STR);
-        $busqueda->execute();
-        $resultado = $busqueda->fetch(PDO::FETCH_ASSOC);
+    private static function buscarTodos($db, $tabla, $id) {
+        $stmt = $db->prepare("SELECT * FROM $tabla WHERE id_solicitante = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        // 2. Insertar solicitud de ayuda
-        $stmt = $db->prepare("
-            INSERT INTO solicitud_ayuda (
-                id_manual, ci, descripcion, estado, fecha, visto, 
-                remitente, observaciones, promotor, categoria, tipo_ayuda
-            ) VALUES (
-                :id_manual, :ci, :descripcion, :estado, :fecha, :visto, 
-                :remitente, :observaciones, :promotor, :categoria, :tipo_ayuda
-            )
-        ");
-        $stmt->execute([
-            ':id_manual' => $data['id_manual'],
-            ':ci' => $data['ci'],
-            ':descripcion' => $data['descripcion'],
-            ':estado' => 'En Espera Del Documento Físico Para Ser Procesado 0/3',
-            ':fecha' => $data['fecha'],
-            ':visto' => 0,
-            ':remitente' => $data['remitente'],
-            ':observaciones' => $data['observaciones'],
-            ':promotor' => $resultado['nombre'] . ' ' . $resultado['apellido'],
-            ':categoria' => $data['categoria'],
-            ':tipo_ayuda' => $data['tipo_ayuda']
-        ]);
+    // PROCESAR FORMULARIO UNA VEZ ENVIADO:
+    public static function enviarForm($data) {
+        $db = DB::conectar();
+        $db->beginTransaction();
+        try {
+            self::normalizarCamposTrabajo($data);
+            // ✅ 1. Validar campos obligatorios
+            $camposObligatorios = [
+                'id_manual', 'ci', 'descripcion', 'fecha', 'remitente',
+                'observaciones', 'categoria', 'tipo_ayuda','ci_user',
+                'nombre', 'apellido', 'fecha_nacimiento', 'lugar_nacimiento',
+                'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
+                'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
+                'propiedad', 'propiedad_est', 'observaciones_propiedad',
+                'trabajo', 'direccion_trabajo', 'trabaja_public', 'nombre_insti',
+                'nivel_ingreso', 'pension', 'bono'
+            ];
 
-        // 3. Insertar solicitante
-        $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci) VALUES (?, ?, ?)")
-           ->execute([$data['nombre'], $data['apellido'], $data['ci']]);
-        $id_solicitante = $db->lastInsertId();
+            foreach ($camposObligatorios as $campo) {
+                if (!isset($data[$campo]) || $data[$campo] === '') {
+                    throw new Exception("Falta el campo obligatorio: $campo");
+                }
+            }
 
-        // 4. Insertar datos de comunidad
+            // ✅ 2. Obtener datos del promotor
+            $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
+            $stmt->execute([':ci' => $data['ci_user']]);
+            $promotor = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$promotor) {
+                throw new Exception("No se encontró el promotor con CI: " . $data['ci_user']);
+            }
+
+            $nombrePromotor = $promotor['nombre'] . ' ' . $promotor['apellido'];
+
+            // ✅ 3. Insertar solicitud de ayuda
+            $stmt = $db->prepare("
+                INSERT INTO solicitud_ayuda (
+                    id_manual, ci, descripcion, estado, fecha, visto,
+                    remitente, observaciones, promotor, categoria, tipo_ayuda
+                ) VALUES (
+                    :id_manual, :ci, :descripcion, :estado, :fecha, :visto,
+                    :remitente, :observaciones, :promotor, :categoria, :tipo_ayuda
+                )
+            ");
+            $stmt->execute([
+                ':id_manual' => $data['id_manual'],
+                ':ci' => $data['ci'],
+                ':descripcion' => $data['descripcion'],
+                ':estado' => 'En Espera Del Documento Físico Para Ser Procesado 0/3',
+                ':fecha' => $data['fecha'],
+                ':visto' => 0,
+                ':remitente' => $data['remitente'],
+                ':observaciones' => $data['observaciones'],
+                ':promotor' => $nombrePromotor,
+                ':categoria' => $data['categoria'],
+                ':tipo_ayuda' => $data['tipo_ayuda']
+            ]);
+
+            // ✅ 4. Verificar si el solicitante ya existe
+            $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = :ci");
+            $stmt->execute([':ci' => $data['ci']]);
+            $solicitante = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($solicitante) {
+                $id_solicitante = $solicitante['id_solicitante'];
+
+                // 🔄 Actualizar datos
+                self::actualizarSolicitante($db, $id_solicitante, $data);
+            } else {
+                // 🆕 Insertar nuevo solicitante
+                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci) VALUES (?, ?, ?)");
+                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci']]);
+                $id_solicitante = $db->lastInsertId();
+
+                self::insertarSolicitante($db, $id_solicitante, $data);
+            }
+
+            $db->commit();
+            return ['exito' => true];
+
+        } catch (Exception $e) {
+            $db->rollBack();
+            error_log("Error al registrar solicitud: " . $e->getMessage());
+            return ['exito' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    private static function normalizarCamposTrabajo(&$data) {
+        $data['trabajo'] = isset($data['trabajo']) && trim($data['trabajo']) !== '' ? $data['trabajo'] : 'No tiene';
+        $data['direccion_trabajo'] = isset($data['direccion_trabajo']) && trim($data['direccion_trabajo']) !== '' ? $data['direccion_trabajo'] : 'No';
+        $data['trabaja_public'] = isset($data['trabaja_public']) && trim($data['trabaja_public']) !== '' ? $data['trabaja_public'] : 'No';
+        $data['nombre_insti'] = isset($data['nombre_insti']) && trim($data['nombre_insti']) !== '' ? $data['nombre_insti'] : 'No';
+    }
+
+
+    private static function actualizarSolicitante($db, $id, $data) {
+        // Actualizar solicitante
         $db->prepare("
-            INSERT INTO solicitantes_comunidad (id_solicitante, comunidad, direc_habita, estruc_base)
-            VALUES (?, ?, ?, ?)
-        ")->execute([$id_solicitante, $data['comunidad'], $data['direc_habita'], $data['estruc_base']]);
-
-        // 5. Insertar datos educativos
+            UPDATE solicitantes
+            SET nombre = ?, apellido = ?
+            WHERE id_solicitante = ?
+        ")->execute([$data['nombre'], $data['apellido'], $id]);
+        // Actualizar comunidad
         $db->prepare("
-            INSERT INTO solicitantes_conocimiento (id_solicitante, profesion, nivel_instruc)
-            VALUES (?, ?, ?)
-        ")->execute([$id_solicitante, $data['profesion'], $data['nivel_instruc']]);
+            UPDATE solicitantes_comunidad 
+            SET comunidad = ?, direc_habita = ?, estruc_base = ?
+            WHERE id_solicitante = ?
+        ")->execute([$data['comunidad'], $data['direc_habita'], $data['estruc_base'], $id]);
 
-        // 6. Insertar datos patria
+        // Actualizar conocimiento
         $db->prepare("
-            INSERT INTO solicitantes_extra (id_solicitante, codigo_patria, serial_patria)
-            VALUES (?, ?, ?)
-        ")->execute([$id_solicitante, $data['codigo_patria'], $data['serial_patria']]);
+            UPDATE solicitantes_conocimiento 
+            SET profesion = ?, nivel_instruc = ?
+            WHERE id_solicitante = ?
+        ")->execute([$data['profesion'], $data['nivel_instruc'], $id]);
 
-        // 7. Insertar información personal
+        // Actualizar patria
         $db->prepare("
-            INSERT INTO solicitantes_info (
-                id_solicitante, fecha_nacimiento, lugar_nacimiento, edad, estado_civil, telefono
-            ) VALUES (?, ?, ?, ?, ?, ?)
+            UPDATE solicitantes_extra 
+            SET codigo_patria = ?, serial_patria = ?
+            WHERE id_solicitante = ?
+        ")->execute([$data['codigo_patria'], $data['serial_patria'], $id]);
+
+        // Actualizar info personal
+        $db->prepare("
+            UPDATE solicitantes_info 
+            SET fecha_nacimiento = ?, lugar_nacimiento = ?, edad = ?, estado_civil = ?, telefono = ?
+            WHERE id_solicitante = ?
         ")->execute([
-            $id_solicitante,
             $data['fecha_nacimiento'],
             $data['lugar_nacimiento'],
             $data['edad'],
             $data['estado_civil'],
-            $data['telefono']
+            $data['telefono'],
+            $id
         ]);
 
-        // 8. Insertar patologías (si existen)
+        // Actualizar propiedad
+        $db->prepare("
+            UPDATE solicitantes_propiedad 
+            SET propiedad = ?, propiedad_est = ?, observaciones_propiedad = ?
+            WHERE id_solicitante = ?
+        ")->execute([
+            $data['propiedad'],
+            $data['propiedad_est'],
+            $data['observaciones_propiedad'],
+            $id
+        ]);
+
+        // Actualizar trabajo
+        $db->prepare("
+            UPDATE solicitantes_trabajo 
+            SET trabajo = ?, direccion_trabajo = ?, trabaja_public = ?, nombre_insti = ?
+            WHERE id_solicitante = ?
+        ")->execute([
+            $data['trabajo'],
+            $data['direccion_trabajo'],
+            $data['trabaja_public'],
+            $data['nombre_insti'],
+            $id
+        ]);
+
+        // Actualizar ingresos
+        $db->prepare("
+            UPDATE solicitantes_ingresos 
+            SET nivel_ingreso = ?, pension = ?, bono = ?
+            WHERE id_solicitante = ?
+        ")->execute([
+            $data['nivel_ingreso'],
+            $data['pension'],
+            $data['bono'],
+            $id
+        ]);
+
+        // Actualizar patologías
+        $db->prepare("DELETE FROM solicitantes_patologia WHERE id_solicitante = ?")
+            ->execute([$id]);
+
         if (!empty($data['tip_patologia']) && is_array($data['tip_patologia'])) {
             $esSinPatologia = count($data['tip_patologia']) === 1 && strtolower($data['tip_patologia'][0]) === 'no';
             if (!$esSinPatologia) {
@@ -159,57 +254,96 @@ public static function enviarForm($data) {
                         $db->prepare("
                             INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
                             VALUES (?, ?, ?)
-                        ")->execute([$id_solicitante, $tipo, $nombre]);
+                        ")->execute([$id, $tipo, $nombre]);
                     }
                 }
             }
         }
-
-        // 9. Insertar propiedad
+    }
+    private static function insertarSolicitante($db, $id, $data) {
+        // Insertar comunidad
         $db->prepare("
-            INSERT INTO solicitantes_propiedad (
-                id_solicitante, propiedad, propiedad_est, observaciones_propiedad
-            ) VALUES (?, ?, ?, ?)
+            INSERT INTO solicitantes_comunidad (id_solicitante, comunidad, direc_habita, estruc_base)
+            VALUES (?, ?, ?, ?)
+        ")->execute([$id, $data['comunidad'], $data['direc_habita'], $data['estruc_base']]);
+
+        // Insertar conocimiento
+        $db->prepare("
+            INSERT INTO solicitantes_conocimiento (id_solicitante, profesion, nivel_instruc)
+            VALUES (?, ?, ?)
+        ")->execute([$id, $data['profesion'], $data['nivel_instruc']]);
+
+        // Insertar patria
+        $db->prepare("
+            INSERT INTO solicitantes_extra (id_solicitante, codigo_patria, serial_patria)
+            VALUES (?, ?, ?)
+        ")->execute([$id, $data['codigo_patria'], $data['serial_patria']]);
+
+        // Insertar info personal
+        $db->prepare("
+            INSERT INTO solicitantes_info (id_solicitante, fecha_nacimiento, lugar_nacimiento, edad, estado_civil, telefono)
+            VALUES (?, ?, ?, ?, ?, ?)
         ")->execute([
-            $id_solicitante,
+            $id,
+            $data['fecha_nacimiento'],
+            $data['lugar_nacimiento'],
+            $data['edad'],
+            $data['estado_civil'],
+            $data['telefono']
+        ]);
+
+        // Insertar propiedad
+        $db->prepare("
+            INSERT INTO solicitantes_propiedad (id_solicitante, propiedad, propiedad_est, observaciones_propiedad)
+            VALUES (?, ?, ?, ?)
+        ")->execute([
+            $id,
             $data['propiedad'],
             $data['propiedad_est'],
             $data['observaciones_propiedad']
         ]);
 
-        // 10. Insertar datos laborales
+        // Insertar trabajo
         $db->prepare("
-            INSERT INTO solicitantes_trabajo (
-                id_solicitante, trabajo, direccion_trabajo, trabaja_public, nombre_insti
-            ) VALUES (?, ?, ?, ?, ?)
+            INSERT INTO solicitantes_trabajo (id_solicitante, trabajo, direccion_trabajo, trabaja_public, nombre_insti)
+            VALUES (?, ?, ?, ?, ?)
         ")->execute([
-            $id_solicitante,
+            $id,
             $data['trabajo'],
             $data['direccion_trabajo'],
             $data['trabaja_public'],
             $data['nombre_insti']
         ]);
 
+        // Insertar ingresos
         $db->prepare("
-            INSERT INTO solicitantes_ingresos (
-                id_solicitante, nivel_ingreso, pensionado, bono
-            ) VALUES (?, ?, ?, ?)
+            INSERT INTO solicitantes_ingresos (id_solicitante, nivel_ingreso, pension, bono)
+            VALUES (?, ?, ?, ?)
         ")->execute([
-            $id_solicitante,
+            $id,
             $data['nivel_ingreso'],
-            $data['pensionado'],
-            $data['bono'],
+            $data['pension'],
+            $data['bono']
         ]);
 
-        $db->commit();
-        return true;
-
-    } catch (Exception $e) {
-    $db->rollBack();
-    echo "Error: " . $e->getMessage(); // 👈 Esto mostrará el error exacto
-    return false;
+        // Insertar patologías
+        if (!empty($data['tip_patologia']) && is_array($data['tip_patologia'])) {
+            $esSinPatologia = count($data['tip_patologia']) === 1 && strtolower($data['tip_patologia'][0]) === 'no';
+            if (!$esSinPatologia) {
+                foreach ($data['tip_patologia'] as $i => $tipo) {
+                    $nombre = $data['nom_patologia'][$i] ?? '';
+                    if (!empty($tipo) && !empty($nombre)) {
+                        $db->prepare("
+                            INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
+                            VALUES (?, ?, ?)
+                        ")->execute([$id, $tipo, $nombre]);
+                    }
+                }
+            }
+        }
     }
-}
+
+
 }
 
 ?>

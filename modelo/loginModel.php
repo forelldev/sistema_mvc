@@ -85,14 +85,11 @@ class UserModel {
             $stmtUsuarios->bindParam(':sesion', $sesion);
             $stmtUsuarios->execute();
 
-            // Obtener el ID autogenerado
-            $idUsuario = $conexion->lastInsertId();
-
             // Insertar en tabla usuarios_info
-            $sqlInfo = "INSERT INTO usuarios_info (id_usuario, nombre, apellido) 
-                        VALUES (:id_usuario, :nombre, :apellido)";
+            $sqlInfo = "INSERT INTO usuarios_info (ci, nombre, apellido) 
+                        VALUES (:ci, :nombre, :apellido)";
             $stmtInfo = $conexion->prepare($sqlInfo);
-            $stmtInfo->bindParam(':id_usuario', $idUsuario);
+            $stmtInfo->bindParam(':ci', $ci);
             $stmtInfo->bindParam(':nombre', $nombre);
             $stmtInfo->bindParam(':apellido', $apellido);
             $stmtInfo->execute();
@@ -104,8 +101,8 @@ class UserModel {
         } catch (PDOException $e) {
             $conexion->rollBack();
             error_log("Error al registrar usuario: " . $e->getMessage());
-            return 'error_desconocido';
-        }
+            return 'error_sql: ' . $e->getMessage(); // TEMPORAL para depuración
+            }
     }
     
     public static function logOut($ci){

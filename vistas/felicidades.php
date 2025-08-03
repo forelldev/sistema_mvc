@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Felicidades!</title>
 </head>
 <body>
-    <h1>Enviado con éxito</h1>
+    <h1>Formulario enviado con éxito!</h1>
     <a href="<?=BASE_URL?>/main">Volver</a>
 </body>
 <script>

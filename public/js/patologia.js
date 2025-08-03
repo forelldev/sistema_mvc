@@ -1,21 +1,23 @@
       //CAMPOS DE PATOLOGIA
-    // Lógica de JavaScript para los campos de patología
-    const tiposPatologiaGuardados = "<?= htmlspecialchars($datos_beneficiario['tip_patologias'] ?? '') ?>".split('|');
-    const nombresPatologiaGuardados = "<?= htmlspecialchars($datos_beneficiario['nom_patologias'] ?? '') ?>".split('|');
-    
     // Función para mostrar el campo de número de familiares
     function mostrarNumeroFamiliares() {
         const select = document.getElementById('tienePatologia');
         const numeroContainer = document.getElementById('numeroFamiliaresContainer');
+        const numeroFamiliares = document.getElementById('numeroFamiliares');
         const camposContainer = document.getElementById('camposFamiliares');
 
         if (select.value === 'si') {
             numeroContainer.style.display = 'block';
+            numeroFamiliares.setAttribute('required', 'required');
         } else {
             numeroContainer.style.display = 'none';
-            camposContainer.innerHTML = ''; // Limpiar campos si elige "No"
+            numeroFamiliares.removeAttribute('required');
+            numeroFamiliares.value = '';
+            camposContainer.innerHTML = '';
         }
-    }
+}
+
+
 
     // Función que genera y precarga los campos de patologías
     function generarCamposFamiliares(precargar = false) {
@@ -50,15 +52,40 @@
         }
     }
 
-    // Ejecutar la precarga al cargar la página si hay datos
-    document.addEventListener('DOMContentLoaded', () => {
-        if ("<?= $data_exists ?>" === "1" && tiposPatologiaGuardados[0] !== "") {
-            const tienePatologiaSelect = document.getElementById('tienePatologia');
-            tienePatologiaSelect.value = 'si';
-            mostrarNumeroFamiliares();
-            
-            const numeroFamiliaresSelect = document.getElementById('numeroFamiliares');
-            numeroFamiliaresSelect.value = tiposPatologiaGuardados.length;
-            generarCamposFamiliares(true); // Pasar 'true' para precargar
+        // Ejecutar la precarga al cargar la página si hay datos
+        document.addEventListener('DOMContentLoaded', () => {
+                validarEstadoInicialPatologia(); 
+            if (data_exists === "1" && tiposPatologiaGuardados.length > 0 && tiposPatologiaGuardados[0] !== "") {
+                const tienePatologiaSelect = document.getElementById('tienePatologia');
+                tienePatologiaSelect.value = 'si';
+                mostrarNumeroFamiliares();
+
+                const numeroFamiliaresSelect = document.getElementById('numeroFamiliares');
+                numeroFamiliaresSelect.value = tiposPatologiaGuardados.length;
+                numeroFamiliaresSelect.disabled = true;
+
+                generarCamposFamiliares(true);
+            }
+        });
+
+    // PARA DESAPARECER EL REQUIRED BUG FIX
+
+    function validarEstadoInicialPatologia() {
+        const tienePatologia = document.getElementById('tienePatologia');
+        const numeroFamiliares = document.getElementById('numeroFamiliares');
+        const numeroContainer = document.getElementById('numeroFamiliaresContainer');
+        const camposContainer = document.getElementById('camposFamiliares');
+
+        if (tienePatologia.value === 'no' || tienePatologia.value === '') {
+            numeroContainer.style.display = 'none';
+            numeroFamiliares.removeAttribute('required');
+            numeroFamiliares.value = '';
+            camposContainer.innerHTML = '';
+        } else {
+            numeroContainer.style.display = 'block';
+            numeroFamiliares.setAttribute('required', 'required');
         }
-    });
+    }
+
+
+

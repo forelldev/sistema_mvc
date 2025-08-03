@@ -82,34 +82,41 @@ public function validarSesionAjax() {
         if ($ci && $clave && $nombre && $apellido && $id_rol) {
             $claveHash = password_hash($clave, PASSWORD_DEFAULT);
             $resultado = UserModel::crearCuenta($ci, $claveHash, $nombre, $apellido, $id_rol, $sesion);
-
-            switch ($resultado) {
-                case 'exito':
-                    $mensaje = "✅ Usuario registrado correctamente.";
-                    break;
-                case 'usuario_existente':
-                    $mensaje = "❌ Error: el usuario ya existe.";
-                    break;
-                case 'limite_superado':
-                    $mensaje = "🚫 Error: se ha alcanzado el límite de usuarios para este rol.";
-                    break;
-                case 'rol_invalido':
-                    $mensaje = "⚠️ Error: el rol seleccionado no es válido.";
-                    break;
-                default:
-                    $mensaje = "❌ Error desconocido al registrar el usuario.";
-                    break;
-            }
+                if (str_starts_with($resultado, 'error_sql:')) {
+                    $mensaje = "❌ Error SQL: " . substr($resultado, strlen('error_sql:'));
+                }
+                else{
+                    switch ($resultado) {
+                        case 'exito':
+                            $mensaje = "✅ Usuario registrado correctamente.";
+                            break;
+                        case 'usuario_existente':
+                            $mensaje = "❌ Error: el usuario ya existe.";
+                            break;
+                        case 'limite_superado':
+                            $mensaje = "🚫 Error: se ha alcanzado el límite de usuarios para este rol.";
+                            break;
+                        case 'rol_invalido':
+                            $mensaje = "⚠️ Error: el rol seleccionado no es válido.";
+                            break;
+                        default:
+                            $mensaje = "❌ Error desconocido al registrar el usuario.";
+                            break;
+                        }
+                    }
         } else {
             $mensaje = "⚠️ Error: datos incompletos.";
         }
-
         // Mostrar la vista con el mensaje
         require_once 'vistas/registro.php';
     }
 
 
         public static function registroIndex() {
+            if (!isset($_SESSION['ci'])) {
+            header('Location: '.BASE_URL.'/');
+            exit;
+        }
             require_once 'vistas/registro.php';
         }
     }
