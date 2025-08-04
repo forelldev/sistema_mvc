@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Formulario enviado con éxito!</h1>
-    <a href="<?=BASE_URL?>/main">Volver</a>
+    <a href="<?=BASE_URL?>/vistas/solicitudes_list">Volver</a>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

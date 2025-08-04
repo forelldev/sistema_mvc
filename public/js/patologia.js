@@ -1,21 +1,31 @@
       //CAMPOS DE PATOLOGIA
     // Función para mostrar el campo de número de familiares
     function mostrarNumeroFamiliares() {
-        const select = document.getElementById('tienePatologia');
-        const numeroContainer = document.getElementById('numeroFamiliaresContainer');
-        const numeroFamiliares = document.getElementById('numeroFamiliares');
-        const camposContainer = document.getElementById('camposFamiliares');
+    const select = document.getElementById('tienePatologia');
+    const numeroContainer = document.getElementById('numeroFamiliaresContainer');
+    const numeroFamiliares = document.getElementById('numeroFamiliares');
+    const camposContainer = document.getElementById('camposFamiliares');
 
-        if (select.value === 'si') {
-            numeroContainer.style.display = 'block';
-            numeroFamiliares.setAttribute('required', 'required');
-        } else {
-            numeroContainer.style.display = 'none';
-            numeroFamiliares.removeAttribute('required');
-            numeroFamiliares.value = '';
-            camposContainer.innerHTML = '';
+    if (select.value === 'si') {
+        numeroContainer.style.display = 'block';
+        numeroFamiliares.setAttribute('required', 'required');
+
+        // ✅ Habilitar el campo si estaba deshabilitado
+        numeroFamiliares.disabled = false;
+
+        // Si ya hay un número seleccionado, generar los campos
+        if (numeroFamiliares.value !== '') {
+            generarCamposFamiliares();
         }
+    } else {
+        numeroContainer.style.display = 'none';
+        numeroFamiliares.removeAttribute('required');
+        numeroFamiliares.value = '';
+        numeroFamiliares.disabled = false; // ✅ Asegurarse de que esté habilitado
+        camposContainer.innerHTML = '';
+    }
 }
+
 
 
 

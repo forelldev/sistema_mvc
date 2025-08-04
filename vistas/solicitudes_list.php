@@ -31,10 +31,10 @@
                     <td><?= htmlspecialchars($fila['ci'] ?? '') ?></td>
                     <td><?= htmlspecialchars($fila['remitente'] ?? '') ?></td>
                     <td><?= htmlspecialchars($fila['observaciones'] ?? '') ?></td>
-                    <td><a href="">Ver</a></td>
-                    <td><a href="">Editar</a></td>
-                    <td><a href="">Inhabilitar</a></td>
-                    <td><a href="">Enviar a <?= 'Ni sé'?></a></td>
+                    <td><a href="<?= BASE_URL ?>">Ver</a></td>
+                    <td><a href="<?= BASE_URL ?>">Editar</a></td>
+                    <td><a href="<?= BASE_URL ?>">Inhabilitar</a></td>
+                    <td><a href="<?=BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>">Enviar a <?= 'porahora'?></a></td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>

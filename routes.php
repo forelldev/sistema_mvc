@@ -9,8 +9,8 @@ Router::get('/logout','loginControl@logout');
 Router::get('/validar-sesion', 'loginControl@validarSesionAjax');
 Router::get('/solicitudes_list','solicitudControl@lista');
 Router::get('/busqueda','solicitudControl@busquedaVista');
-Router::post('/buscar','solicitudControl@buscar');
-Router::get('/buscar','solicitudControl@formulario');
+Router::post('/solicitud_registro','solicitudControl@buscar');
+Router::get('/solicitud_registro','solicitudControl@formulario');
 Router::post('/solicitud_formulario','solicitudControl@enviarFormulario');
 Router::get('/felicidades','solicitudControl@felicidades');
 ?>

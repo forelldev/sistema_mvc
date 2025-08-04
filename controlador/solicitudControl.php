@@ -1,5 +1,6 @@
 <?php 
 require_once 'modelo/solicitudModelo.php';
+require_once 'modelo/procesarModelo.php';
 class SolicitudControl {
     public static function lista(){
         $resultado = Solicitud::buscarLista();
@@ -55,7 +56,6 @@ class SolicitudControl {
         }
     }
 
-
     public static function formulario(){
         $data_exists = false;
         $datos_beneficiario = null;
@@ -64,6 +64,29 @@ class SolicitudControl {
 
     public static function felicidades(){
         require_once 'vistas/felicidades.php';
+    }
+
+    public static function procesar(){
+        if(isset($_GET['id_doc'])){
+            $id_doc = $_GET['id_doc'];
+            $estado = $_GET['estado'];
+            switch($estado){
+                case 'En espera del documento físico para ser procesado 0/3':
+                    $estado_new = 'En Proceso 1/3';
+                    break;
+                case 'En Proceso 1/3':
+                    $estado_new = 'En Proceso 2/3';
+                    break;
+                case 'En Proceso 2/3':
+                    $estado_new = 'En Proceso 3/3';
+                    break;
+                case 'En Proceso 3/3':
+                    
+                    break;
+                
+            }
+        }
+        require_once 'vistas/solicitudes_list.php';
     }
 }
 ?>
