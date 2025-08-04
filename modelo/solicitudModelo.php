@@ -4,7 +4,7 @@ class Solicitud{
     // MOSTRAR LISTA DE SOLICITUDES DE AYUDA:
     public static function buscarLista (){
         $conexion = DB::conectar();
-        $consulta = "SELECT * FROM solicitud_ayuda ORDER BY fecha DESC";
+        $consulta = "SELECT * FROM solicitud_ayuda WHERE estado != 'Inhabilitado' ORDER BY fecha DESC";
         $busqueda = $conexion->prepare($consulta);
         $busqueda->execute();
         $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
@@ -71,6 +71,13 @@ public static function buscarCi($ci) {
         $db = DB::conectar();
         $db->beginTransaction();
         try {
+            // Verificar si el id_manual ya existe
+            $checkStmt = $db->prepare("SELECT COUNT(*) FROM solicitud_ayuda WHERE id_manual = :id_manual");
+            $checkStmt->execute([':id_manual' => $data['id_manual']]);
+            $exists = $checkStmt->fetchColumn();
+            if ($exists > 0) {
+                throw new Exception("❌ El número de documento ya está registrado.");
+            }
             self::normalizarCamposTrabajo($data);
             // ✅ 1. Validar campos obligatorios
             $camposObligatorios = [
@@ -115,7 +122,7 @@ public static function buscarCi($ci) {
                 ':id_manual' => $data['id_manual'],
                 ':ci' => $data['ci'],
                 ':descripcion' => $data['descripcion'],
-                ':estado' => 'En Espera Del Documento Físico Para Ser Procesado 0/3',
+                ':estado' => 'En espera del documento físico para ser procesado 0/3',
                 ':fecha' => $data['fecha'],
                 ':visto' => 0,
                 ':remitente' => $data['remitente'],

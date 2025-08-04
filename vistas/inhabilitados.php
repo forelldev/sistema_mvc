@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Solicitudes</title>
+    <title>Lista de Solicitudes inhabilitadas</title>
 </head>
 <body>
-    <a href="<?=BASE_URL?>/busqueda">Rellenar Formulario</a>
     <a href="<?=BASE_URL?>/main">Volver</a>
-    <a href="<?=BASE_URL?>/inhabilitados_lista">Ver Solicitudes Inhabilitadas</a>
-<table>
+    <a href="<?=BASE_URL?>/solicitudes_list">Ver Solicitudes Habilitadas</a>
+    <table>
     <thead>
         <tr>
             <th>Descripción</th>
@@ -38,8 +37,7 @@
                     <td><?= htmlspecialchars($fila['estado'] ?? '') ?></td>
                     <td><a href="<?= BASE_URL ?>">Ver Información del beneficiario</a></td>
                     <td><a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc']  ?>">Editar</a></td>
-                    <td><a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>">Inhabilitar</a></td>
-                    <td><a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>"><?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?></a></td>
+                    <td><a href="<?= BASE_URL.'/habilitar?id_doc='.$fila['id_doc'] ?>">Habilitar</a></td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
@@ -50,9 +48,4 @@
     </tbody>
 </table>
 </body>
-<script>
-    const BASE_PATH = "<?php echo BASE_PATH; ?>";
-</script>
-<script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
-<script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

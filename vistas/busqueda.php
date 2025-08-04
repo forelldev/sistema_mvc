@@ -6,7 +6,7 @@
     <title>Solicitudes de ayuda</title>
 </head>
 <body>
-    <form action="<?=BASE_URL?>/solicitud_registro" method="POST">
+    <form action="<?=BASE_URL?>/buscar_cedula" method="POST">
         <input type="text" name="ci" placeholder="Ingrese su CI">
         <input type="submit" value="Buscar">
     </form>

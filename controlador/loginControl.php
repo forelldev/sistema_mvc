@@ -15,8 +15,8 @@ class loginControl {
             header('Location: '.BASE_URL.'/main');
             exit;
         } else {
-            // Redirigir con mensaje personalizado
-            $msj = urlencode($respuesta['mensaje']);
+            // Redirigir con msj personalizado
+            $msj = urlencode($respuesta['msj']);
             header('Location: '.BASE_URL.'/?msj=' . $msj);
             exit;
         }
@@ -77,37 +77,37 @@ public function validarSesionAjax() {
         $id_rol = $_POST['id_rol'] ?? null;
         $sesion = 'False'; // Valor inicial de sesión
 
-        $mensaje = '';
+        $msj = '';
 
         if ($ci && $clave && $nombre && $apellido && $id_rol) {
             $claveHash = password_hash($clave, PASSWORD_DEFAULT);
             $resultado = UserModel::crearCuenta($ci, $claveHash, $nombre, $apellido, $id_rol, $sesion);
                 if (str_starts_with($resultado, 'error_sql:')) {
-                    $mensaje = "❌ Error SQL: " . substr($resultado, strlen('error_sql:'));
+                    $msj = "❌ Error SQL: " . substr($resultado, strlen('error_sql:'));
                 }
                 else{
                     switch ($resultado) {
                         case 'exito':
-                            $mensaje = "✅ Usuario registrado correctamente.";
+                            $msj = "✅ Usuario registrado correctamente.";
                             break;
                         case 'usuario_existente':
-                            $mensaje = "❌ Error: el usuario ya existe.";
+                            $msj = "❌ Error: el usuario ya existe.";
                             break;
                         case 'limite_superado':
-                            $mensaje = "🚫 Error: se ha alcanzado el límite de usuarios para este rol.";
+                            $msj = "🚫 Error: se ha alcanzado el límite de usuarios para este rol.";
                             break;
                         case 'rol_invalido':
-                            $mensaje = "⚠️ Error: el rol seleccionado no es válido.";
+                            $msj = "⚠️ Error: el rol seleccionado no es válido.";
                             break;
                         default:
-                            $mensaje = "❌ Error desconocido al registrar el usuario.";
+                            $msj = "❌ Error desconocido al registrar el usuario.";
                             break;
                         }
                     }
         } else {
-            $mensaje = "⚠️ Error: datos incompletos.";
+            $msj = "⚠️ Error: datos incompletos.";
         }
-        // Mostrar la vista con el mensaje
+        // Mostrar la vista con el msj
         require_once 'vistas/registro.php';
     }
 

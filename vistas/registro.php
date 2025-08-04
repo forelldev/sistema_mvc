@@ -7,7 +7,7 @@
 </head>
 <body>
     <h2>Registro de usuario</h2>
-    <h1 class="mensaje"><?= isset($mensaje) ? htmlspecialchars($mensaje) : '' ?></h1>
+    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
     <form action="<?=BASE_URL?>/registro" method="POST">
         <input type="text" name="nombre" placeholder="Nombre" required>
         <input type="text" name="apellido" placeholder="Apellido" required>

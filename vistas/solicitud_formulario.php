@@ -7,7 +7,7 @@
 </head>
 <body>
     <a href="<?=BASE_URL?>/main">Volver</a>
-    <form action="<?=BASE_URL?>/solicitud_formulario" method="POST">
+    <form action="<?=BASE_URL?>/enviarFormulario" method="POST">
         <p>Datos Personales</p>
 
             <label for="nombre">Nombre:</label>
@@ -192,6 +192,7 @@
                 
                 <input type="submit" value="Enviar">
     </form>
+    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
