@@ -12,6 +12,9 @@ class loginControl {
             $_SESSION['id_rol'] = $usuarioDatos['id_rol'];
             $_SESSION['rol'] = UserModel::rol($_SESSION['id_rol']);
             $_SESSION['sesion'] = $usuarioDatos['sesion'];
+            date_default_timezone_set('America/Caracas');
+            $fecha_entrada = date('Y-m-d H:i:s');
+            $_SESSION['id_sesion'] = UserModel::registrarEntrada($usuarioDatos['ci'],$fecha_entrada);
             header('Location: '.BASE_URL.'/main');
             exit;
         } else {
@@ -39,7 +42,10 @@ class loginControl {
 
     public function logout() {
         if(isset($_SESSION['ci'])){
-            $ci = $_SESSION['ci'];
+            date_default_timezone_set('America/Caracas');
+            $fecha_salida = date('Y-m-d H:i:s');
+            $id = $_SESSION['id_sesion'];
+            UserModel::registrarSalida($id,$fecha_salida);
             UserModel::logOut($ci);
             session_unset();      // Elimina variables de sesión
             session_destroy();    // Destruye la sesión
@@ -56,6 +62,10 @@ public function validarSesionAjax() {
         if ($activa) {
             echo json_encode(['sesionActiva' => true]);
         } else {
+            date_default_timezone_set('America/Caracas');
+            $fecha_salida = date('Y-m-d H:i:s');
+            $id = $_SESSION['id_sesion'];
+            UserModel::registrarSalida($id,$fecha_salida);
             // ⚠️ Sesión marcada como inactiva en la base de datos
             session_unset();      // Elimina variables de sesión
             session_destroy();    // Destruye la sesión

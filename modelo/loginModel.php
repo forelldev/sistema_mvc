@@ -135,5 +135,25 @@ class UserModel {
         $rol = $cons->fetchColumn();
         return $rol;
     }
+
+    public static function registrarEntrada($ci,$fecha_entrada){
+        $conexion = DB::conectar();
+        $consulta = "INSERT INTO reportes_entradas (ci,fecha_entrada) VALUES (:ci,:fecha_entrada)";
+        $stmt = $conexion->prepare($consulta);
+        $stmt->bindParam(':ci',$ci);
+        $stmt->bindParam(':fecha_entrada',$fecha_entrada);
+        $stmt->execute();
+        $id = $conexion->lastInsertId();
+        return $id;
+    }
+
+    public static function registrarSalida($id,$fecha_salida){
+        $conexion = DB::conectar();
+        $consulta = "UPDATE reportes_entradas SET fecha_salida = :fecha_salida WHERE id = :id";
+        $stmt = $conexion->prepare($consulta);
+        $stmt->bindParam(':id',$id);
+        $stmt->bindParam(':fecha_salida',$fecha_salida);
+        $stmt->execute();
+    }
 }
 ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-08-2025 a las 23:19:22
+-- Tiempo de generación: 05-08-2025 a las 02:54:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -52,21 +52,6 @@ CREATE TABLE `despacho_invalid` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `primer_proceso`
---
-
-CREATE TABLE `primer_proceso` (
-  `id_doc` int(11) NOT NULL,
-  `ci` varchar(20) DEFAULT NULL,
-  `tipo_ayuda` varchar(100) DEFAULT NULL,
-  `categoría_ayuda` varchar(100) DEFAULT NULL,
-  `remitente` varchar(100) DEFAULT NULL,
-  `observaciones` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `registros_docs`
 --
 
@@ -77,6 +62,41 @@ CREATE TABLE `registros_docs` (
   `fecha` date DEFAULT NULL,
   `ci` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `reportes_acciones`
+--
+
+CREATE TABLE `reportes_acciones` (
+  `id` int(11) NOT NULL,
+  `id_doc` int(11) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `accion` varchar(255) NOT NULL,
+  `ci` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `reportes_entradas`
+--
+
+CREATE TABLE `reportes_entradas` (
+  `id` int(11) NOT NULL,
+  `ci` int(11) NOT NULL,
+  `fecha_entrada` datetime NOT NULL,
+  `fecha_salida` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `reportes_entradas`
+--
+
+INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VALUES
+(1, 3434, '2025-08-04 17:40:25', '2025-08-04 17:41:00'),
+(2, 3434, '2025-08-04 20:52:59', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -103,21 +123,6 @@ INSERT INTO `roles` (`id_rol`, `nombre_rol`, `limite`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `segundo_proceso`
---
-
-CREATE TABLE `segundo_proceso` (
-  `id_doc` int(11) NOT NULL,
-  `ci` varchar(20) DEFAULT NULL,
-  `tipo_ayuda` varchar(100) DEFAULT NULL,
-  `categoría_ayuda` varchar(100) DEFAULT NULL,
-  `remitente` varchar(100) DEFAULT NULL,
-  `observaciones` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `solicitantes`
 --
 
@@ -127,6 +132,13 @@ CREATE TABLE `solicitantes` (
   `nombre` varchar(255) DEFAULT NULL,
   `apellido` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitantes`
+--
+
+INSERT INTO `solicitantes` (`id_solicitante`, `ci`, `nombre`, `apellido`) VALUES
+(4, 1104, 'Pedro', 'Gonzalez');
 
 -- --------------------------------------------------------
 
@@ -142,6 +154,13 @@ CREATE TABLE `solicitantes_comunidad` (
   `estruc_base` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitantes_comunidad`
+--
+
+INSERT INTO `solicitantes_comunidad` (`id`, `id_solicitante`, `comunidad`, `direc_habita`, `estruc_base`) VALUES
+(3, 4, 'plus', 'Cuarzo', 'Asamblea de diosdado');
+
 -- --------------------------------------------------------
 
 --
@@ -155,6 +174,13 @@ CREATE TABLE `solicitantes_conocimiento` (
   `nivel_instruc` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitantes_conocimiento`
+--
+
+INSERT INTO `solicitantes_conocimiento` (`id`, `id_solicitante`, `profesion`, `nivel_instruc`) VALUES
+(3, 4, 'Ingeniero En Medicina', 'Secundaria');
+
 -- --------------------------------------------------------
 
 --
@@ -167,6 +193,13 @@ CREATE TABLE `solicitantes_extra` (
   `codigo_patria` varchar(255) DEFAULT NULL,
   `serial_patria` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitantes_extra`
+--
+
+INSERT INTO `solicitantes_extra` (`id`, `id_solicitante`, `codigo_patria`, `serial_patria`) VALUES
+(3, 4, '34234234', '129129128912');
 
 -- --------------------------------------------------------
 
@@ -184,6 +217,13 @@ CREATE TABLE `solicitantes_info` (
   `telefono` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitantes_info`
+--
+
+INSERT INTO `solicitantes_info` (`id`, `id_solicitante`, `fecha_nacimiento`, `lugar_nacimiento`, `edad`, `estado_civil`, `telefono`) VALUES
+(4, 4, '2017-02-16', 'Caracas', 8, 'Soltero/a', '04242323');
+
 -- --------------------------------------------------------
 
 --
@@ -194,9 +234,16 @@ CREATE TABLE `solicitantes_ingresos` (
   `id` int(11) NOT NULL,
   `id_solicitante` int(11) DEFAULT NULL,
   `nivel_ingreso` varchar(255) DEFAULT NULL,
-  `pensionado` tinyint(1) DEFAULT NULL,
-  `bono` tinyint(1) DEFAULT NULL
+  `pension` varchar(255) DEFAULT NULL,
+  `bono` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitantes_ingresos`
+--
+
+INSERT INTO `solicitantes_ingresos` (`id`, `id_solicitante`, `nivel_ingreso`, `pension`, `bono`) VALUES
+(3, 4, '50033', 'Si', 'Si');
 
 -- --------------------------------------------------------
 
@@ -225,6 +272,13 @@ CREATE TABLE `solicitantes_propiedad` (
   `observaciones_propiedad` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitantes_propiedad`
+--
+
+INSERT INTO `solicitantes_propiedad` (`id`, `id_solicitante`, `propiedad`, `propiedad_est`, `observaciones_propiedad`) VALUES
+(3, 4, 'Apartamento', 'Prestada', 'No tiene observaciones');
+
 -- --------------------------------------------------------
 
 --
@@ -239,6 +293,13 @@ CREATE TABLE `solicitantes_trabajo` (
   `trabaja_public` varchar(100) DEFAULT NULL,
   `nombre_insti` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitantes_trabajo`
+--
+
+INSERT INTO `solicitantes_trabajo` (`id`, `id_solicitante`, `trabajo`, `direccion_trabajo`, `trabaja_public`, `nombre_insti`) VALUES
+(3, 4, 'Developer', 'Empresa Yaritagua', 'No', 'No');
 
 -- --------------------------------------------------------
 
@@ -264,7 +325,7 @@ CREATE TABLE `solicitud_ayuda` (
   `id_doc` int(11) NOT NULL,
   `id_manual` varchar(50) DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
-  `fecha` date DEFAULT NULL,
+  `fecha` datetime DEFAULT NULL,
   `ci` varchar(20) DEFAULT NULL,
   `tipo_ayuda` varchar(100) DEFAULT NULL,
   `categoria` varchar(100) DEFAULT NULL,
@@ -272,8 +333,16 @@ CREATE TABLE `solicitud_ayuda` (
   `promotor` varchar(255) NOT NULL,
   `observaciones` text DEFAULT NULL,
   `visto` int(11) NOT NULL,
-  `estado` varchar(255) NOT NULL
+  `estado` varchar(255) NOT NULL,
+  `razon` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_ayuda`
+--
+
+INSERT INTO `solicitud_ayuda` (`id_doc`, `id_manual`, `descripcion`, `fecha`, `ci`, `tipo_ayuda`, `categoria`, `remitente`, `promotor`, `observaciones`, `visto`, `estado`, `razon`) VALUES
+(2, '2424', 'Tiene sudado el estómago', '2025-08-04 10:26:33', '1104', 'Muletas', 'Laboratorio', 'Jose Gonzalez', 'Admin Supremo', 'la verdad es que no sé', 0, 'Inhabilitado', 'pq si');
 
 -- --------------------------------------------------------
 
@@ -295,27 +364,11 @@ CREATE TABLE `solicitud_inhabilitados` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tercer_proceso`
---
-
-CREATE TABLE `tercer_proceso` (
-  `id_doc` int(11) NOT NULL,
-  `ci` varchar(20) DEFAULT NULL,
-  `tipo_ayuda` varchar(100) DEFAULT NULL,
-  `categoría_ayuda` varchar(100) DEFAULT NULL,
-  `remitente` varchar(100) DEFAULT NULL,
-  `observaciones` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `usuarios`
 --
 
 CREATE TABLE `usuarios` (
-  `id_usuario` int(11) NOT NULL,
-  `ci` varchar(20) DEFAULT NULL,
+  `ci` int(11) NOT NULL,
   `clave` varchar(255) DEFAULT NULL,
   `id_rol` int(11) DEFAULT NULL,
   `sesion` varchar(20) NOT NULL
@@ -325,9 +378,8 @@ CREATE TABLE `usuarios` (
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_usuario`, `ci`, `clave`, `id_rol`, `sesion`) VALUES
-(2, '3434', '$2y$10$Lu5TFzY7EZqQ3.zBYgHjauBI0CYsEtFtzftreNKb4oRJR6m/KmgSi', 4, 'True'),
-(3, '123', '$2y$10$givEp8dPQWf9AzBAkshu9.dNMdWJTb7pebH348W60BtAK16hV53cq', 1, 'False');
+INSERT INTO `usuarios` (`ci`, `clave`, `id_rol`, `sesion`) VALUES
+(3434, '$2y$10$RNNLpe0hPJaIRhYcIHlgk.q.tIz8.YQFuFOrDZbP5YotTJ8IPV22e', 4, 'True');
 
 -- --------------------------------------------------------
 
@@ -336,18 +388,18 @@ INSERT INTO `usuarios` (`id_usuario`, `ci`, `clave`, `id_rol`, `sesion`) VALUES
 --
 
 CREATE TABLE `usuarios_info` (
-  `id_usuario` int(11) NOT NULL,
-  `nombre` varchar(50) DEFAULT NULL,
-  `apellido` varchar(50) DEFAULT NULL
+  `id` int(11) NOT NULL,
+  `ci` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `apellido` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios_info`
 --
 
-INSERT INTO `usuarios_info` (`id_usuario`, `nombre`, `apellido`) VALUES
-(2, 'Admin', 'Supremo'),
-(3, 'Promotor', 'Social');
+INSERT INTO `usuarios_info` (`id`, `ci`, `nombre`, `apellido`) VALUES
+(2, 3434, 'Admin', 'Supremo');
 
 --
 -- Índices para tablas volcadas
@@ -366,15 +418,23 @@ ALTER TABLE `despacho_invalid`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `primer_proceso`
---
-ALTER TABLE `primer_proceso`
-  ADD PRIMARY KEY (`id_doc`);
-
---
 -- Indices de la tabla `registros_docs`
 --
 ALTER TABLE `registros_docs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `reportes_acciones`
+--
+ALTER TABLE `reportes_acciones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_doc` (`id_doc`),
+  ADD KEY `ci` (`ci`);
+
+--
+-- Indices de la tabla `reportes_entradas`
+--
+ALTER TABLE `reportes_entradas`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -382,12 +442,6 @@ ALTER TABLE `registros_docs`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id_rol`);
-
---
--- Indices de la tabla `segundo_proceso`
---
-ALTER TABLE `segundo_proceso`
-  ADD PRIMARY KEY (`id_doc`);
 
 --
 -- Indices de la tabla `solicitantes`
@@ -470,24 +524,18 @@ ALTER TABLE `solicitud_inhabilitados`
   ADD PRIMARY KEY (`id_doc`);
 
 --
--- Indices de la tabla `tercer_proceso`
---
-ALTER TABLE `tercer_proceso`
-  ADD PRIMARY KEY (`id_doc`);
-
---
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id_usuario`),
-  ADD UNIQUE KEY `ci` (`ci`),
+  ADD PRIMARY KEY (`ci`),
   ADD KEY `id_rol` (`id_rol`);
 
 --
 -- Indices de la tabla `usuarios_info`
 --
 ALTER TABLE `usuarios_info`
-  ADD PRIMARY KEY (`id_usuario`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ci` (`ci`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -506,16 +554,22 @@ ALTER TABLE `despacho_invalid`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `primer_proceso`
---
-ALTER TABLE `primer_proceso`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `registros_docs`
 --
 ALTER TABLE `registros_docs`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `reportes_acciones`
+--
+ALTER TABLE `reportes_acciones`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `reportes_entradas`
+--
+ALTER TABLE `reportes_entradas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -524,64 +578,58 @@ ALTER TABLE `roles`
   MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT de la tabla `segundo_proceso`
---
-ALTER TABLE `segundo_proceso`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `solicitantes`
 --
 ALTER TABLE `solicitantes`
-  MODIFY `id_solicitante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_solicitante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_comunidad`
 --
 ALTER TABLE `solicitantes_comunidad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_conocimiento`
 --
 ALTER TABLE `solicitantes_conocimiento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_extra`
 --
 ALTER TABLE `solicitantes_extra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_info`
 --
 ALTER TABLE `solicitantes_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_ingresos`
 --
 ALTER TABLE `solicitantes_ingresos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_patologia`
 --
 ALTER TABLE `solicitantes_patologia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_propiedad`
 --
 ALTER TABLE `solicitantes_propiedad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_trabajo`
 --
 ALTER TABLE `solicitantes_trabajo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitudes_despacho`
@@ -593,7 +641,7 @@ ALTER TABLE `solicitudes_despacho`
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda`
 --
 ALTER TABLE `solicitud_ayuda`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_inhabilitados`
@@ -602,16 +650,10 @@ ALTER TABLE `solicitud_inhabilitados`
   MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `tercer_proceso`
+-- AUTO_INCREMENT de la tabla `usuarios_info`
 --
-ALTER TABLE `tercer_proceso`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `usuarios_info`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
@@ -675,7 +717,7 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `usuarios_info`
 --
 ALTER TABLE `usuarios_info`
-  ADD CONSTRAINT `usuarios_info_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
+  ADD CONSTRAINT `usuarios_info_ibfk_1` FOREIGN KEY (`ci`) REFERENCES `usuarios` (`ci`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
