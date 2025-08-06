@@ -6,7 +6,7 @@
     <title>Felicidades!</title>
 </head>
 <body>
-    <h1>Formulario enviado con éxito!</h1>
+    <h1>Solicitud enviada con éxito!</h1>
     <a href="<?=BASE_URL?>/solicitudes_list">Volver</a>
 </body>
 <script>

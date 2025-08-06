@@ -6,10 +6,17 @@
     <title>Solicitudes de ayuda</title>
 </head>
 <body>
-    <form action="<?=BASE_URL?>/buscar_cedula" method="POST">
-        <input type="text" name="ci" placeholder="Ingrese su CI">
-        <input type="submit" value="Buscar">
-    </form>
+    <?php if($_SESSION['id_rol'] !== 2){?>
+        <form action="<?=BASE_URL?>/buscar_cedula" method="POST">
+            <input type="text" name="ci" placeholder="Ingrese su CI">
+            <input type="submit" value="Buscar">
+        </form>
+    <?php  } else {?>
+        <form action="<?=BASE_URL?>/buscar_cidespacho" method="POST">
+            <input type="text" name="ci" placeholder="Ingrese su CI">
+            <input type="submit" value="Buscar">
+        </form>
+    <?php  } ?>
     <a href="<?=BASE_URL?>/main">Volver</a>
 </body>
 <script>

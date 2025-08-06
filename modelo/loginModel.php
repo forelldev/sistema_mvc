@@ -15,7 +15,7 @@ class UserModel {
             $stmtCerrar = $conexion->prepare($cerrarSesion);
             $stmtCerrar->bindParam(':ci', $ci);
             $stmtCerrar->execute();
-            return ['status' => 'cerrada', 'mensaje' => '¡Había una sesión activa, y se cerró correctamente!'];
+            return ['status' => 'cerrada', 'msj' => '¡Había una sesión activa, y se cerró correctamente!'];
         }
         // Verificar credenciales
         $sql = 'SELECT * FROM usuarios WHERE ci = :ci';
@@ -34,7 +34,7 @@ class UserModel {
 
             return ['status' => 'ok', 'usuario' => $resultado];
         }
-        return ['status' => 'error', 'mensaje' => '¡Credenciales incorrectas!'];
+        return ['status' => 'error', 'msj' => '¡Credenciales incorrectas!'];
     }
 
     public static function crearCuenta($ci, $claveHash, $nombre, $apellido, $id_rol, $sesion) {

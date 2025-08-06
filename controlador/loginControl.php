@@ -5,7 +5,6 @@ class loginControl {
         $ci = $_POST['ci'] ?? null;
         $clave = $_POST['clave'] ?? null;
         $respuesta = UserModel::verificarCredenciales($ci, $clave);
-
         if ($respuesta['status'] === 'ok') {
             $usuarioDatos = $respuesta['usuario'];
             $_SESSION['ci'] = $usuarioDatos['ci'];
@@ -43,6 +42,7 @@ class loginControl {
     public function logout() {
         if(isset($_SESSION['ci'])){
             date_default_timezone_set('America/Caracas');
+            $ci = $_SESSION['ci'];
             $fecha_salida = date('Y-m-d H:i:s');
             $id = $_SESSION['id_sesion'];
             UserModel::registrarSalida($id,$fecha_salida);

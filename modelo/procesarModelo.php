@@ -24,6 +24,18 @@ class Procesar{
         };
     }
 
+    public static function habilitar_solicitud($id_doc,$estado,$razon){
+            try{
+                $conexion = DB::conectar();
+                $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET estado = ?, razon = ? WHERE id_doc = ?");
+                $stmt->execute([$estado,$razon, $id_doc]); 
+                return true;
+            } catch (PDOException $e) {
+                error_log("Error al actualizar solicitud: " . $e->getMessage());
+                return false;
+            };
+        }
+
         public static function inhabilitados_lista(){
             $conexion = DB::conectar();
             $consulta = "SELECT * FROM solicitud_ayuda WHERE estado = 'Inhabilitado' ORDER BY fecha DESC";
@@ -80,11 +92,34 @@ class Procesar{
             $stmt->execute([$data['descripcion'],$data['tipo_ayuda'], $data['categoria'],$data['remitente'],$data['observaciones'],$data['promotor'],$data['id_doc']]); 
             return ['exito' => true];
             } catch (Exception $e) {
-                $db->rollBack();
+                $conexion->rollBack();
                 error_log("Error al editar la solicitud: " . $e->getMessage());
                 return ['exito' => false, 'error' => $e->getMessage()];
             }
-
         }
+
+        public static function registrarReporte($id_doc,$fecha,$accion,$ci){
+            $conexion = DB::conectar();
+            try{
+                $stmt = $conexion->prepare("INSERT INTO reportes_acciones (id_doc,fecha,accion,ci) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$id_doc,$fecha,$accion,$ci]);
+                return ['exito' => true];
+            } catch(Excepction $e){
+                $conexion->rollBack();
+                error_log("Error al insertar el reporte: " . $e->getMessage());
+                return ['exito' => false, 'error' => $e->getMessage()];
+            }
+        }
+        public static function despacho($id_doc,$estado){
+        try {
+            $conexion = DB::conectar();
+            $stmt = $conexion->prepare("UPDATE despacho SET estado = ? WHERE id_doc = ?");
+            $stmt->execute([$estado, $id_doc]); 
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error al actualizar solicitud: " . $e->getMessage());
+            return false;
+        };
+    }
 }
 ?>

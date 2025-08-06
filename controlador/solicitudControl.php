@@ -9,8 +9,9 @@ class SolicitudControl {
             $acciones = [
                 'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
                 'En Proceso 1/3' => 'Enviar a despacho',
-                'En Proceso 2/3' => 'Finalizar Solicitud (Enviar a Administración)',
-                'Finalizado 3/3' => 'Reiniciar en caso de algún error'
+                'En Proceso 2/3' => 'Enviar a Administración',
+                'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+                'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
             ];
 
         }
@@ -69,6 +70,10 @@ class SolicitudControl {
 
         if ($resultado['exito']) {
             header('Location: ' . BASE_URL . '/felicidades');
+            date_default_timezone_set('America/Caracas');
+            $fecha = date('Y-m-d H:i:s');
+            $accion = 'Registró solicitud';
+            Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
             exit;
         } else {
             $msj = "Error al registrar la solicitud: " . $resultado['error'];
@@ -106,22 +111,33 @@ class SolicitudControl {
             $estado = $_GET['estado'];
             switch($estado){
                 case 'En espera del documento físico para ser procesado 0/3':
-                    $estado_new = 'En Proceso 1/3';        
+                    $estado_new = 'En Proceso 1/3';
+                    $accion = 'Recibió documento físico, y aprobó para su procedimiento.';
                     break;
                 case 'En Proceso 1/3':
                     $estado_new = 'En Proceso 2/3';
+                    $accion = 'Envió la solicitud a despacho.';
                     break;
                 case 'En Proceso 2/3':
-                    $estado_new = 'Finalizado 3/3';
+                    $estado_new = 'En Proceso 3/3 (Sin entregar)';
+                    $accion = 'Envió la solicitud a administración.';
                     break;
-                case 'Finalizado 3/3':
+                case 'En Proceso 3/3 (Sin entregar)':
+                    $estado_new = 'Solicitud Finalizada (Ayuda Entregada)';
+                    $accion = 'Confirmó que se aceptó la ayuda.';
+                    break;
+                case 'Solicitud Finalizada (Ayuda Entregada)':
                     $estado_new = 'En espera del documento físico para ser procesado 0/3';
+                    $accion = 'Reinició el proceso de la solicitud.';
                     break;
                 default:
                     $msj = 'Ocurrió un error!';
             }
             if(Procesar::solicitud($id_doc,$estado_new)){
                 header('Location: '.BASE_URL.'/solicitudes_list');
+                date_default_timezone_set('America/Caracas');
+                $fecha = date('Y-m-d H:i:s');
+                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
             else{
@@ -147,6 +163,10 @@ class SolicitudControl {
             $razon = $_POST['razon'];
             if(Procesar::inhabilitar($id_doc,$estado,$razon)){
                 header('Location: '.BASE_URL.'/inhabilitados_lista');
+                date_default_timezone_set('America/Caracas');
+                $fecha = date('Y-m-d H:i:s');
+                $accion = 'Inhabilitó la solicitud razón: '.$razon;
+                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
             else{
@@ -161,6 +181,25 @@ class SolicitudControl {
             $datos = $resultado['datos'];
         }
         require_once 'vistas/inhabilitados.php';
+    }
+
+    public static function habilitar(){
+        if(isset($_GET['id_doc'])){
+            $estado = 'En espera del documento físico para ser procesado 0/3';
+            $id_doc = $_GET['id_doc'];
+            $razon = '';
+            if(Procesar::habilitar_solicitud($id_doc,$estado,$razon)){
+                header('Location: '.BASE_URL.'/solicitudes_list');
+                date_default_timezone_set('America/Caracas');
+                $fecha = date('Y-m-d H:i:s');
+                $accion = 'Habilitó la solicitud';
+                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                exit;
+            }
+            else{
+                $msj = 'Ocurrió un error inesperado';
+            }
+        }
     }
 
     public static function editar(){
@@ -185,6 +224,10 @@ class SolicitudControl {
         $resultado = Procesar::editar_consulta($_POST);
             if($resultado['exito']){
                 header('Location: '.BASE_URL.'/'.$direccion);
+                date_default_timezone_set('America/Caracas');
+                $fecha = date('Y-m-d H:i:s');
+                $accion = 'Editó la solicitud';
+                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
             }
             else{
                 $msj = "Error" . $resultado['error'];

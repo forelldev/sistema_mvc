@@ -12,6 +12,7 @@
     <p>Has iniciado sesión correctamente.</p>
     <a href="<?=BASE_URL?>/solicitudes_list">Solicitudes de Ayuda</a>
     <a href="<?=BASE_URL?>/registro">Registrar Persona</a>
+    <a href="<?=BASE_URL?>/despacho_list">Solicitudes Despacho</a>
     <a href="<?=BASE_URL?>/logout">Cerrar Sesión</a>
 </body>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>

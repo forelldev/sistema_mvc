@@ -1,8 +1,8 @@
 <?php
 // routes.php
 Router::get('/', 'loginControl@index'); // RUTA PARA LOGIN CUANDO NO ESTÁS LOGEADO ES LO PRIMERO
-Router::get('/registro', 'loginControl@registroIndex'); //RUTA PARA REGISTRO
 Router::post('/login', 'loginControl@ingresar'); //RUTA PARA CUANDO SE PRESIONE LOGIN, ESTA ES LA FUNCIÓN DE LOGEARSE
+Router::get('/registro', 'loginControl@registroIndex'); //RUTA PARA REGISTRO VISTA
 Router::post('/registro', 'loginControl@registro'); //RUTA PARA LA FUNCIÓN DE REGISTRARSE
 Router::get('/main', 'loginControl@main'); //RUTA PARA LA VISTA MAIN
 Router::get('/logout','loginControl@logout'); //RUTA PARA DESLOGEARSE, SALIR
@@ -17,6 +17,11 @@ Router::get('/procesar','solicitudControl@procesar');//RUTA PARA PROCESAR LAS SO
 Router::get('/inhabilitar','solicitudControl@inhabilitar');
 Router::post('/inhabilitar_solicitud','solicitudControl@inhabilitar_solicitud');
 Router::get('/inhabilitados_lista','solicitudControl@inhabilitados_lista');
+Router::get('/habilitar','solicitudControl@habilitar');
 Router::get('/editar','solicitudControl@editar');
 Router::post('/editar_solicitud','solicitudControl@editar_solicitud');
+Router::post('/buscar_cidespacho','despachoControl@buscar');
+Router::post('/despacho_enviarForm','despachoControl@enviarFormulario');
+Router::get('/despacho_list','despachoControl@despacho_list');
+Router::get('/procesarDespacho','despachoControl@procesar');
 ?>
