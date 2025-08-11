@@ -8,6 +8,7 @@
 <body>
     <a href="<?=BASE_URL?>/main">Volver</a>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
+    <?php if($_SESSION['id_rol'] !== 2){?>
     <form action="editar_solicitud" method="POST">
         <label for="id_manual">Número de documento:</label>
             <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
@@ -51,13 +52,26 @@
 
             <label for="observaciones">Observaciones:</label>
                 <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)" value="<?= htmlspecialchars($datos['observaciones'] ?? '') ?>">
-
-            <label for="promotor">Promotor:</label>
-                <input type="text" id="promotor" name="promotor" placeholder="Detalles relevantes (Opcional)" value="<?= htmlspecialchars($datos['promotor'] ?? '') ?>">
+                
+                <!-- COMENTÉ PORQUE NO LO VEO NECESARIO POR AHORA DE TODAS MANERAS DESCOMENTAR SI SE VE NECESARIO EDITAR EL PROMOTOR, SI DESPUES DE TODO SERÁ EL MISMO PROMOTOR POR AHORA DE TODAS MANERAS DESCOMENTAR SI ES NECESARIO -->
+            <!-- <label for="promotor">Promotor:</label>
+                <input type="text" id="promotor" name="promotor" placeholder="Detalles relevantes (Opcional)" value="<//?= htmlspecialchars($datos['promotor'] ?? '') ?>"> --> 
+                
             
                 <input type="hidden" name="id_doc" value=<?= htmlspecialchars($datos['id_doc'] ?? '') ?>>
                     
             <input type="submit" value="Enviar">
     </form>
+    <?php  } else {?>
+        <form action="editar_solicitud" method="POST">
+        <label for="id_manual">Número de documento:</label>
+            <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
+        <label for="asunto">Asunto:</label>
+            <input type="text" id="asunto" name="asunto" placeholder="00004578" required value="<?= htmlspecialchars($datos['asunto'] ?? '') ?>">
+            <input type="hidden" name="id_doc" value=<?= htmlspecialchars($datos['id_doc'] ?? '') ?>>
+                    
+            <input type="submit" value="Enviar">
+    </form>
+    <?php } ?>
 </body>
 </html>

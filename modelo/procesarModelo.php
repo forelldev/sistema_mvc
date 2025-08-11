@@ -121,5 +121,91 @@ class Procesar{
             return false;
         };
     }
+
+    public static function inhabilitarDespacho($id_doc,$estado,$razon){
+        try {
+            $conexion = DB::conectar();
+            $stmt = $conexion->prepare("UPDATE despacho SET estado = ?, razon = ? WHERE id_doc = ?");
+            $stmt->execute([$estado,$razon, $id_doc]); 
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error al actualizar solicitud: " . $e->getMessage());
+            return false;
+        };
+    }
+
+    public static function habilitar_solicitudDespacho($id_doc,$estado,$razon){
+            try{
+                $conexion = DB::conectar();
+                $stmt = $conexion->prepare("UPDATE despacho SET estado = ?, razon = ? WHERE id_doc = ?");
+                $stmt->execute([$estado,$razon, $id_doc]); 
+                return true;
+            } catch (PDOException $e) {
+                error_log("Error al actualizar solicitud: " . $e->getMessage());
+                return false;
+            };
+        }
+
+        public static function inhabilitados_listaDespacho(){
+            $conexion = DB::conectar();
+            $consulta = "SELECT * FROM despacho WHERE estado = 'Inhabilitado' ORDER BY fecha DESC";
+            $busqueda = $conexion->prepare($consulta);
+            $busqueda->execute();
+            $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
+                if ($resultado) {
+                    // Usuario encontrado, devolver datos
+                    return [
+                        'exito' => true,
+                        'datos' => $resultado
+                    ];
+                } else {
+                    // No se encontró el usuario
+                    return [
+                        'exito' => false,
+                        'mensaje' => 'Ocurrió un error realizando la búsqueda'
+                    ];
+                }
+        }
+
+        public static function edit_vistaDespacho($id_doc){
+            $conexion = DB::conectar();
+            $stmt =$conexion->prepare("SELECT * FROM despacho WHERE id_doc = ?");
+            $stmt->execute([$id_doc]);
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($resultado) {
+                    // Usuario encontrado, devolver datos
+                    return [
+                        'exito' => true,
+                        'datos' => $resultado
+                    ];
+                } else {
+                    // No se encontró el usuario
+                    return [
+                        'exito' => false,
+                        'mensaje' => 'Ocurrió un error realizando la búsqueda'
+                    ];
+                }
+        }
+
+        public static function editar_consultaDespacho($data){
+            $conexion = DB::conectar();
+            try{
+            $camposObligatorios = [
+                'asunto','id_doc','id_manual'
+            ];
+            foreach ($camposObligatorios as $campo) {
+                if (!isset($data[$campo]) || $data[$campo] === '') {
+                    throw new Exception("Falta el campo obligatorio: $campo");
+                }
+            }
+            $stmt = $conexion->prepare("UPDATE despacho SET asunto = ?, id_manual = ? WHERE id_doc = ?");
+            $stmt->execute([$data['asunto'],$data['id_manual'],$data['id_doc']]); 
+            return ['exito' => true];
+            } catch (Exception $e) {
+                $conexion->rollBack();
+                error_log("Error al editar la solicitud: " . $e->getMessage());
+                return ['exito' => false, 'error' => $e->getMessage()];
+            }
+        }
 }
 ?>

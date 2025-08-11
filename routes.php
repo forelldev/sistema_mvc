@@ -14,6 +14,7 @@ Router::get('/formulario','solicitudControl@formulario'); //RUTA PARA VISTA DEL 
 Router::post('/enviarFormulario','solicitudControl@enviarFormulario');//RUTA PARA FUNCIÓN DE ENVIAR FORMULARIO A TODAS LAS TABLAS INFORMACIÓN
 Router::get('/felicidades','solicitudControl@felicidades'); //RUTA PARA QUE EN CASO DE HABER SUBIDO CON ÉXITO EL FORMULARIO, FELICIDADES AQUÍ
 Router::get('/procesar','solicitudControl@procesar');//RUTA PARA PROCESAR LAS SOLICITUDES(ENVIAR A DESPACHO,ADMINISTRACIÓN)
+Router::get('/beneficiario_info','solicitudControl@beneficiario_info');
 Router::get('/inhabilitar','solicitudControl@inhabilitar');
 Router::post('/inhabilitar_solicitud','solicitudControl@inhabilitar_solicitud');
 Router::get('/inhabilitados_lista','solicitudControl@inhabilitados_lista');
@@ -24,4 +25,11 @@ Router::post('/buscar_cidespacho','despachoControl@buscar');
 Router::post('/despacho_enviarForm','despachoControl@enviarFormulario');
 Router::get('/despacho_list','despachoControl@despacho_list');
 Router::get('/procesarDespacho','despachoControl@procesar');
+Router::get('/inhabilitados_despacho','despachoControl@inhabilitados_lista');
+Router::get('/inhabilitarDespacho','despachoControl@inhabilitar');
+Router::post('/inhabilitar_solicitudDespacho','despachoControl@inhabilitar_solicitud');
+Router::get('/habilitarDespacho','despachoControl@habilitar');
+Router::get('/beneficiario_infoDespacho','despachoControl@beneficiario_info');
+Router::get('/editarDespacho','despachoControl@editar');
+Router::post('/editar_solicitudDespacho','despachoControl@editar_solicitud');
 ?>
