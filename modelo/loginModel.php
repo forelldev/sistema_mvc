@@ -15,6 +15,14 @@ class UserModel {
             $stmtCerrar = $conexion->prepare($cerrarSesion);
             $stmtCerrar->bindParam(':ci', $ci);
             $stmtCerrar->execute();
+                $actualizarSalida = "
+                    UPDATE reportes_entradas
+                    SET fecha_salida = NOW()
+                    WHERE ci = :ci AND fecha_salida = '0000-00-00 00:00:00'
+                ";
+                $stmtSalida = $conexion->prepare($actualizarSalida);
+                $stmtSalida->bindParam(':ci', $ci);
+                $stmtSalida->execute();
             return ['status' => 'cerrada', 'msj' => '¡Había una sesión activa, y se cerró correctamente!'];
         }
         // Verificar credenciales

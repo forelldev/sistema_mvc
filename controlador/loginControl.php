@@ -1,6 +1,6 @@
 <?php 
 require_once 'modelo/loginModel.php';
-class loginControl {
+class LoginControl {
     public function ingresar() {
         $ci = $_POST['ci'] ?? null;
         $clave = $_POST['clave'] ?? null;

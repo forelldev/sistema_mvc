@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-08-2025 a las 02:54:24
+-- Tiempo de generación: 12-08-2025 a las 03:27:53
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,30 +24,26 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `despacho_finalizadas`
+-- Estructura de tabla para la tabla `despacho`
 --
 
-CREATE TABLE `despacho_finalizadas` (
-  `id` int(11) NOT NULL,
-  `id_manual` varchar(50) DEFAULT NULL,
-  `asunto` varchar(100) DEFAULT NULL,
-  `fecha` date DEFAULT NULL,
-  `ci` varchar(20) DEFAULT NULL
+CREATE TABLE `despacho` (
+  `id_doc` int(11) NOT NULL,
+  `id_manual` int(11) NOT NULL,
+  `ci` int(11) NOT NULL,
+  `asunto` varchar(500) NOT NULL,
+  `estado` varchar(50) NOT NULL,
+  `razon` varchar(50) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `creador` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `despacho_invalid`
+-- Volcado de datos para la tabla `despacho`
 --
 
-CREATE TABLE `despacho_invalid` (
-  `id` int(11) NOT NULL,
-  `id_manual` varchar(50) DEFAULT NULL,
-  `asunto` varchar(100) DEFAULT NULL,
-  `fecha` date DEFAULT NULL,
-  `razon` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `despacho` (`id_doc`, `id_manual`, `ci`, `asunto`, `estado`, `razon`, `fecha`, `creador`) VALUES
+(1, 23, 1104, 'prueba 1 despach', 'En Revisión 1/2', '', '2025-08-05 20:19:33', 'pepe gonzalez');
 
 -- --------------------------------------------------------
 
@@ -77,6 +73,29 @@ CREATE TABLE `reportes_acciones` (
   `ci` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `reportes_acciones`
+--
+
+INSERT INTO `reportes_acciones` (`id`, `id_doc`, `fecha`, `accion`, `ci`) VALUES
+(1, 2, '2025-08-05 09:03:52', 'Envió la solicitud a administración por lo tanto, finalizó los 3 procesos, entregado!', 3434),
+(2, 2, '2025-08-05 09:04:56', 'Reinició el proceso de la solicitud', 3434),
+(3, 2, '2025-08-05 09:05:08', 'Recibió documento físico, y aprobó para su procedimiento', 3434),
+(4, 2, '2025-08-05 09:34:19', 'Envió la solicitud a despacho.', 3434),
+(5, 2, '2025-08-05 09:36:40', 'Envió la solicitud a administración.', 3434),
+(6, 2, '2025-08-05 09:38:14', 'Confirmó que se aceptó la ayuda.', 3434),
+(7, 2, '2025-08-05 09:38:26', 'Reinició el proceso de la solicitud.', 3434),
+(8, 1, '2025-08-05 20:27:04', 'Envió la solicitud a Administración. (Despacho)', 123),
+(9, 1, '2025-08-05 20:28:26', 'Confirmó que se entregó la ayuda. (Despacho)', 123),
+(10, 1, '2025-08-05 20:28:36', 'Reinició la solicitud. (Despacho)', 123),
+(11, 1, '2025-08-11 10:45:08', 'Inhabilitó la solicitud razón: porque siii', 3434),
+(12, 1, '2025-08-11 10:48:01', 'Inhabilitó la solicitud razón: pqsi', 3434),
+(13, 1, '2025-08-11 10:50:42', 'Inhabilitó la solicitud razón: pq si', 123),
+(14, 1, '2025-08-11 10:51:04', 'Habilitó la solicitud', 123),
+(15, 1, '2025-08-11 10:52:04', 'Habilitó la solicitud', 123),
+(16, 2, '2025-08-11 21:08:20', 'Recibió documento físico, y aprobó para su procedimiento.', 34),
+(17, 2, '2025-08-11 21:08:31', 'Envió la solicitud a despacho.', 34);
+
 -- --------------------------------------------------------
 
 --
@@ -95,8 +114,26 @@ CREATE TABLE `reportes_entradas` (
 --
 
 INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VALUES
-(1, 3434, '2025-08-04 17:40:25', '2025-08-04 17:41:00'),
-(2, 3434, '2025-08-04 20:52:59', '0000-00-00 00:00:00');
+(1, 3434, '2025-08-05 08:22:06', '2025-08-05 08:22:10'),
+(2, 3434, '2025-08-05 08:26:21', '2025-08-05 08:26:25'),
+(3, 3434, '2025-08-05 08:39:04', '2025-08-05 08:39:08'),
+(4, 3434, '2025-08-05 08:39:36', '2025-08-05 08:39:43'),
+(5, 3434, '2025-08-05 08:48:01', '2025-08-05 08:48:10'),
+(6, 3434, '2025-08-05 08:48:56', '2025-08-05 08:49:00'),
+(7, 3434, '2025-08-05 08:56:21', '2025-08-05 08:56:25'),
+(8, 3434, '2025-08-05 08:58:09', '2025-08-05 08:58:13'),
+(9, 3434, '2025-08-05 08:58:40', '2025-08-05 08:58:44'),
+(10, 3434, '2025-08-05 08:59:51', '2025-08-05 08:59:55'),
+(11, 3434, '2025-08-05 09:00:10', '2025-08-05 19:02:07'),
+(12, 123, '2025-08-05 19:02:41', '0000-00-00 00:00:00'),
+(13, 3434, '2025-08-06 19:35:00', '2025-08-06 19:36:09'),
+(14, 123, '2025-08-06 19:37:11', '2025-08-06 19:37:16'),
+(15, 123, '2025-08-06 19:37:30', '0000-00-00 00:00:00'),
+(16, 3434, '2025-08-11 10:13:35', '2025-08-11 10:49:03'),
+(17, 123, '2025-08-11 10:49:19', '2025-08-11 10:52:20'),
+(18, 3434, '2025-08-11 20:04:49', '2025-08-11 21:07:53'),
+(19, 34, '2025-08-11 21:08:03', '2025-08-11 21:24:12'),
+(20, 3434, '2025-08-11 21:24:23', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -151,15 +188,16 @@ CREATE TABLE `solicitantes_comunidad` (
   `id_solicitante` int(11) DEFAULT NULL,
   `comunidad` varchar(255) DEFAULT NULL,
   `direc_habita` varchar(255) DEFAULT NULL,
-  `estruc_base` varchar(255) DEFAULT NULL
+  `estruc_base` varchar(255) DEFAULT NULL,
+  `creador` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `solicitantes_comunidad`
 --
 
-INSERT INTO `solicitantes_comunidad` (`id`, `id_solicitante`, `comunidad`, `direc_habita`, `estruc_base`) VALUES
-(3, 4, 'plus', 'Cuarzo', 'Asamblea de diosdado');
+INSERT INTO `solicitantes_comunidad` (`id`, `id_solicitante`, `comunidad`, `direc_habita`, `estruc_base`, `creador`) VALUES
+(3, 4, 'plus', 'Cuarzo', 'Asamblea de diosdado', '');
 
 -- --------------------------------------------------------
 
@@ -342,7 +380,7 @@ CREATE TABLE `solicitud_ayuda` (
 --
 
 INSERT INTO `solicitud_ayuda` (`id_doc`, `id_manual`, `descripcion`, `fecha`, `ci`, `tipo_ayuda`, `categoria`, `remitente`, `promotor`, `observaciones`, `visto`, `estado`, `razon`) VALUES
-(2, '2424', 'Tiene sudado el estómago', '2025-08-04 10:26:33', '1104', 'Muletas', 'Laboratorio', 'Jose Gonzalez', 'Admin Supremo', 'la verdad es que no sé', 0, 'Inhabilitado', 'pq si');
+(2, '2424', 'Tiene sudado el estómago', '2025-08-04 10:26:33', '1104', 'Muletas', 'Laboratorio', 'Jose Gonzalez', 'Admin Supremo', 'la verdad es que no sé', 0, 'En Proceso 2/3', '');
 
 -- --------------------------------------------------------
 
@@ -379,6 +417,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`ci`, `clave`, `id_rol`, `sesion`) VALUES
+(34, '$2y$10$B3B3.eLTtqT.iJcPnh/m4.uSJ7M7j3tKvcLZii.D3B9BI5lgp2CwW', 1, 'False'),
+(123, '$2y$10$EUbg2UC5PG3DD2IUBrCf7OrQE.8AYST9kKAPP5MqmTU.9feSrr6Cm', 2, 'False'),
 (3434, '$2y$10$RNNLpe0hPJaIRhYcIHlgk.q.tIz8.YQFuFOrDZbP5YotTJ8IPV22e', 4, 'True');
 
 -- --------------------------------------------------------
@@ -399,23 +439,19 @@ CREATE TABLE `usuarios_info` (
 --
 
 INSERT INTO `usuarios_info` (`id`, `ci`, `nombre`, `apellido`) VALUES
-(2, 3434, 'Admin', 'Supremo');
+(2, 3434, 'Admin', 'Supremo'),
+(5, 123, 'pepe', 'gonzalez'),
+(6, 34, 'promotor', 'socio');
 
 --
 -- Índices para tablas volcadas
 --
 
 --
--- Indices de la tabla `despacho_finalizadas`
+-- Indices de la tabla `despacho`
 --
-ALTER TABLE `despacho_finalizadas`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `despacho_invalid`
---
-ALTER TABLE `despacho_invalid`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `despacho`
+  ADD PRIMARY KEY (`id_doc`);
 
 --
 -- Indices de la tabla `registros_docs`
@@ -542,16 +578,10 @@ ALTER TABLE `usuarios_info`
 --
 
 --
--- AUTO_INCREMENT de la tabla `despacho_finalizadas`
+-- AUTO_INCREMENT de la tabla `despacho`
 --
-ALTER TABLE `despacho_finalizadas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `despacho_invalid`
---
-ALTER TABLE `despacho_invalid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `despacho`
+  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `registros_docs`
@@ -563,13 +593,13 @@ ALTER TABLE `registros_docs`
 -- AUTO_INCREMENT de la tabla `reportes_acciones`
 --
 ALTER TABLE `reportes_acciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_entradas`
 --
 ALTER TABLE `reportes_entradas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -653,7 +683,7 @@ ALTER TABLE `solicitud_inhabilitados`
 -- AUTO_INCREMENT de la tabla `usuarios_info`
 --
 ALTER TABLE `usuarios_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restricciones para tablas volcadas

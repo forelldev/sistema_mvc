@@ -13,8 +13,9 @@
     <a href="<?=BASE_URL?>/solicitudes_list">Solicitudes de Ayuda</a>
     <?php if($_SESSION['id_rol'] == 4){?>
         <a href="<?=BASE_URL?>/registro">Registrar Persona</a>
-        <a href="<?=BASE_URL?>/">Reportes de Acciones</a>
-        <a href="<?=BASE_URL?>/">Reportes</a>
+        <a href="<?=BASE_URL?>/reportes_acciones">Reportes de Acciones</a>
+        <a href="<?=BASE_URL?>/reportes">Reportes</a>
+        <a href="<?=BASE_URL?>/limites">Límite por rol</a>
     <?php } ?>
     <?php if($_SESSION['id_rol'] == 2){?>
         <a href="<?=BASE_URL?>/despacho_list">Solicitudes Despacho</a>
