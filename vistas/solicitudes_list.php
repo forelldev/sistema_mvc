@@ -6,9 +6,13 @@
     <title>Lista de Solicitudes</title>
 </head>
 <body>
-    <a href="<?=BASE_URL?>/busqueda">Rellenar Formulario</a>
+    <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
+        <a href="<?=BASE_URL?>/busqueda">Rellenar Formulario</a>
+    <?php } ?>
     <a href="<?=BASE_URL?>/main">Volver</a>
-    <a href="<?=BASE_URL?>/inhabilitados_lista">Ver Solicitudes Inhabilitadas</a>
+    <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
+        <a href="<?=BASE_URL?>/inhabilitados_lista">Ver Solicitudes Inhabilitadas</a>
+    <?php } ?>
 <table>
     <thead>
         <tr>
@@ -38,7 +42,9 @@
                     <td><?= htmlspecialchars($fila['estado'] ?? '') ?></td>
                     <td><a href="<?= BASE_URL ?>">Ver Información del beneficiario</a></td>
                     <td><a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc']  ?>">Editar</a></td>
-                    <td><a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>">Inhabilitar</a></td>
+                    <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
+                        <td><a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>">Inhabilitar</a></td>
+                    <?php } ?>
                     <td><a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>"><?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?></a></td>
                 </tr>
             <?php endforeach; ?>

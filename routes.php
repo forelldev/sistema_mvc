@@ -32,4 +32,6 @@ Router::get('/habilitarDespacho','despachoControl@habilitar');
 Router::get('/beneficiario_infoDespacho','despachoControl@beneficiario_info');
 Router::get('/editarDespacho','despachoControl@editar');
 Router::post('/editar_solicitudDespacho','despachoControl@editar_solicitud');
+Router::get('/reportes','reportesControl@reportes_entradas');
+Router::get('/reportes_acciones','reportesControl@reportes_acciones');
 ?>

@@ -11,8 +11,17 @@
     </div>
     <p>Has iniciado sesión correctamente.</p>
     <a href="<?=BASE_URL?>/solicitudes_list">Solicitudes de Ayuda</a>
-    <a href="<?=BASE_URL?>/registro">Registrar Persona</a>
-    <a href="<?=BASE_URL?>/despacho_list">Solicitudes Despacho</a>
+    <?php if($_SESSION['id_rol'] == 4){?>
+        <a href="<?=BASE_URL?>/registro">Registrar Persona</a>
+        <a href="<?=BASE_URL?>/">Reportes de Acciones</a>
+        <a href="<?=BASE_URL?>/">Reportes</a>
+    <?php } ?>
+    <?php if($_SESSION['id_rol'] == 2){?>
+        <a href="<?=BASE_URL?>/despacho_list">Solicitudes Despacho</a>
+    <?php } ?>
+    <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
+        <a href="<?=BASE_URL?>/3er proceso no existe">Falta 3er proceso</a>
+    <?php } ?>
     <a href="<?=BASE_URL?>/logout">Cerrar Sesión</a>
 </body>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>

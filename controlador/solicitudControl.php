@@ -4,6 +4,7 @@ require_once 'modelo/procesarModelo.php';
 class SolicitudControl {
     public static function lista(){
         $resultado = Solicitud::buscarLista();
+        $id_rol = $_SESSION['id_rol'];
         if($resultado['exito']){
             $datos = $resultado['datos'];
             $acciones = [

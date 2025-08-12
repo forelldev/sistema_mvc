@@ -2,26 +2,47 @@
 require_once 'conexiondb.php';
 class Solicitud{
     // MOSTRAR LISTA DE SOLICITUDES DE AYUDA:
-    public static function buscarLista (){
+    public static function buscarLista() {
         $conexion = DB::conectar();
-        $consulta = "SELECT * FROM solicitud_ayuda WHERE estado != 'Inhabilitado' ORDER BY fecha DESC";
+        $estados = [];
+        switch ($_SESSION['id_rol']) {
+            case 1:
+                $estados = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3'];
+                break;
+            case 2:
+                $estados = ['En Proceso 2/3'];
+                break;
+            case 3:
+                $estados = ['En Proceso 3/3 (Sin entregar)'];
+                break;
+            default:
+                $estados = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3', 'En Proceso 2/3', 'En Proceso 3/3 (Sin entregar)', 'Solicitud Finalizada (Ayuda entregada)'];
+                break;
+        }
+        // Construir placeholders dinámicos
+        $placeholders = implode(',', array_fill(0, count($estados), '?'));
+        $consulta = "SELECT * FROM solicitud_ayuda 
+                    WHERE estado IN ($placeholders) 
+                    AND estado != 'Inhabilitado' 
+                    ORDER BY fecha DESC";
+
         $busqueda = $conexion->prepare($consulta);
-        $busqueda->execute();
+        $busqueda->execute($estados); // Pasar los valores como parámetros
         $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
-            if ($resultado) {
-                // Usuario encontrado, devolver datos
-                return [
-                    'exito' => true,
-                    'datos' => $resultado
-                ];
-            } else {
-                // No se encontró el usuario
-                return [
-                    'exito' => false,
-                    'mensaje' => 'Ocurrió un error realizando la búsqueda'
-                ];
-            }
+        if ($resultado) {
+            return [
+                'exito' => true,
+                'datos' => $resultado
+            ];
+        } else {
+            return [
+                'exito' => false,
+                'mensaje' => 'Ocurrió un error realizando la búsqueda'
+            ];
+        }
     }
+
+
     // BUSCAR POR CEDULA DE IDENTIDAD CUANDO SE BUSQUE ANTES DE RELLENAR FORMULARIO
 public static function buscarCi($ci) {
         $db = DB::conectar();
