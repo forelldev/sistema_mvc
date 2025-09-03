@@ -4,57 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Solicitudes</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
-<body>
-    <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
-        <a href="<?=BASE_URL?>/busqueda">Rellenar Formulario</a>
-    <?php } ?>
-    <a href="<?=BASE_URL?>/main">Volver</a>
-    <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
-        <a href="<?=BASE_URL?>/inhabilitados_lista">Ver Solicitudes Inhabilitadas</a>
-    <?php } ?>
-<table>
-    <thead>
-        <tr>
-            <th>Descripción</th>
-            <th>Tipo de Ayuda</th>
-            <th>Categoría</th>
-            <th>Número</th>
-            <th>Fecha de la Solicitud</th>
-            <th>Cédula del Beneficiario</th>
-            <th>Remitente</th>
-            <th>Observaciones</th>
-            <th>Estado del documento</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if (!empty($datos)):  ?>
+<body class="solicitud-body">
+    <header class="header">
+        <div class="titulo-header">Lista de solicitudes</div>
+        <div class="header-right">
+         <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
+            <a href="<?=BASE_URL?>/busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+        <?php } ?>
+        <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
+            <a href="<?=BASE_URL?>/inhabilitados_lista"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>
+        <?php } ?>
+      <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+    </div>
+  </header>
+
+    <main>
+    <section class="filtros-card">
+        <form class="filtros-form" action="system_help.php" method="POST">
+            <label>
+                Desde
+                <input type="date" name="fecha_inicio" value="<?php echo $fecha_inicio; ?>">
+            </label>
+            <label>
+                Hasta
+                <input type="date" name="fecha_final" value="<?php echo $fecha_final; ?>">
+            </label>
+            <select name="estado">
+                <option value="">Seleccione un estado</option>
+            
+                </option>
+            </select>
+            <button type="submit" name="btn" value="Filtrar" class="filtrar-btn">
+                <i class="fa fa-filter"></i> <span>Filtrar</span>
+            </button>
+        </form>
+    </section>
+    <nav class="filtros-categorias">
+        <button class="filtro-btn"><i class="fa fa-clock"></i> Más recientes</button>
+        <button class="filtro-btn"><i class="fa fa-clock"></i> Más antiguos</button>
+        <button class="filtro-btn"><i class="fa fa-exclamation-circle"></i> Más urgentes</button>
+        <button class="filtro-btn"><i class="fa fa-medkit"></i> Medicinas</button>
+        <button class="filtro-btn"><i class="fa fa-wheelchair"></i> Ayudas técnicas</button>
+        <button class="filtro-btn"><i class="fa fa-flask"></i> Laboratorio</button>
+        <button class="filtro-btn"><i class="fa fa-couch"></i> Enseres</button>
+    </nav>
+    <section class="solicitudes-lista">
+        <?php if (!empty($datos)): ?>
             <?php foreach ($datos as $fila): ?>
-                <tr>
-                    <td><?= htmlspecialchars($fila['descripcion']) ?></td>
-                    <td><?= htmlspecialchars($fila['tipo_ayuda']) ?></td>
-                    <td><?= htmlspecialchars($fila['categoria'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($fila['id_manual'] ?? '') ?></td>
-                    <td><?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></td>
-                    <td><?= htmlspecialchars($fila['ci'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($fila['remitente'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($fila['observaciones'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($fila['estado'] ?? '') ?></td>
-                    <td><a href="<?= BASE_URL ?>">Ver Información del beneficiario</a></td>
-                    <td><a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc']  ?>">Editar</a></td>
-                    <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
-                        <td><a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>">Inhabilitar</a></td>
-                    <?php } ?>
-                    <td><a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>"><?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?></a></td>
-                </tr>
+                <div class="solicitud-card">
+                    <div class="solicitud-header">
+                        <span class="solicitud-estado 
+                            <?php
+                                $estado = htmlspecialchars($fila['estado'] ?? '');
+                                if ($estado == 'En espera del documento físico para ser procesado 0/3') echo 'pendiente';
+                                else if ($estado == 'En Proceso 1/3') echo 'activo1';
+                                else if ($estado == 'En Proceso 2/3') echo 'activo2';
+                                else if ($estado == 'En Proceso 3/3 (Sin entregar)') echo 'activo3';
+                                else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'finalizada';
+                                else if ($estado == 'Documento inválido') echo 'invalido';
+                            ?>">
+                            <?= $estado ?>
+                        </span>
+                        <div><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?></div>
+                    </div>
+                    <div class="solicitud-info">
+                        <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
+                        <div><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda']) ?></div>
+                        <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
+                        <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
+                        <div><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
+                        <div><strong>Remitente:</strong> <?= htmlspecialchars($fila['remitente'] ?? '') ?></div>
+                        <div><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></div>
+                    </div>
+                    <div class="solicitud-actions">
+                        <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
+                        <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
+                        <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
+                            <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
+                        <?php endif; ?>
+                        <a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
+                            <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
+                        </a>
+                    </div>
+                </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <tr>
-                <td colspan="7">No hay información disponible.</td>
-            </tr>
+            <div class="solicitud-card">
+                <div class="solicitud-header">
+                    <span class="solicitud-estado">Sin información</span>
+                </div>
+                <div class="solicitud-info">
+                    No hay información disponible.
+                </div>
+            </div>
         <?php endif; ?>
-    </tbody>
-</table>
+    </section>
+</main>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

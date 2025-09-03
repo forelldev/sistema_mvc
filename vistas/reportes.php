@@ -4,9 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/reportes.css?v=<?php echo time(); ?>">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
-<body>
-    <table>
+<body class="solicitud-body">
+    <header class="header">
+    <div class="titulo-header">Reportes</div>
+    <div class="header-right">
+      <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+    </div>
+  </header>
+    <section class="reportes-filtros">
+      <form class="reportes-form">
+        <div class="filtro-fecha">
+          <label for="desde"><i class="fa fa-calendar"></i> Desde</label>
+          <input type="date" id="desde" name="desde">
+        </div>
+        <div class="filtro-fecha">
+          <label for="hasta"><i class="fa fa-calendar"></i> Hasta</label>
+          <input type="date" id="hasta" name="hasta">
+        </div>
+        <button type="submit" class="buscar-btn"><i class="fa fa-search"></i> Buscar</button>
+      </form>
+    </section>
+    <!-- Agregar un botón de exportar y búsqueda -->
+        <div class="reportes-busqueda">
+            <input type="text" placeholder="Buscar CI o nombre..." class="buscar-input">
+            <button class="buscar-btn"><i class="fa fa-search"></i> Buscar</button>
+            <button class="buscar-btn"><i class="fa fa-file-excel"></i> Exportar Excel</button>
+        </div>
+    <section class="reportes-tabla-card">
+    <div class="tabla-responsive">
+    <table class="reportes-tabla">
         <thead>
             <tr>
                 <th>Número</th>
@@ -33,5 +64,15 @@
             </tr>
         <?php endif; ?>
     </table>
+    <!-- Paginación Pls darle funcion -->
+    <div class="paginacion">
+      <button>&laquo;</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>&raquo;</button>
+    </div>
+    </div>
+    </section>
 </body>
 </html>

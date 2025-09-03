@@ -4,45 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitudes Internas de Despacho</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
-<body>
-    <a href="<?=BASE_URL?>/busqueda">Rellenar Formulario</a>
-    <a href="<?=BASE_URL?>/main">Volver</a>
-    <a href="<?=BASE_URL?>/inhabilitados_despacho">Ver Solicitudes Inhabilitadas (Despacho)</a>
-<table>
-    <thead>
-        <tr>
-            <th>Asunto</th>
-            <th>Número de documento</th>
-            <th>Fecha de creación</th>
-            <th>Cédula de Identidad</th>
-            <th>Estado</th>
-            <th>Creador</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if (!empty($datos)):  ?>
-            <?php foreach ($datos as $fila): ?>
-                <tr>
-                    <td><?= htmlspecialchars($fila['asunto']) ?></td>
-                    <td><?= htmlspecialchars($fila['id_manual'] ?? '') ?></td>
-                    <td><?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></td>
-                    <td><?= htmlspecialchars($fila['ci'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($fila['estado'] ?? '') ?></td>
-                    <td><?= htmlspecialchars($fila['creador'] ?? '') ?></td>
-                    <td><a href="<?= BASE_URL.'/beneficiario_infoDespacho'?>">Ver Información del beneficiario</a></td>
-                    <td><a href="<?= BASE_URL.'/editarDespacho?id_doc='.$fila['id_doc']  ?>">Editar</a></td>
-                    <td><a href="<?= BASE_URL.'/inhabilitarDespacho?id_doc='.$fila['id_doc'] ?>">Inhabilitar</a></td>
-                    <td><a href="<?= BASE_URL.'/procesarDespacho?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>"><?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?></a></td>
-                </tr>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="7">No hay información disponible.</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+<body class="solicitud-body">
+    <header class="header">
+        <div class="titulo-header">Solicitudes internas de despacho</div>
+        <div class="header-right">
+            <a href="<?=BASE_URL?>/busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+            <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+            <a href="<?=BASE_URL?>/inhabilitados_despacho"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas (Despacho)</button></a>
+        </div>
+    </header>
+    <main>
+        <section class="solicitudes-lista">
+            <?php if (!empty($datos)):  ?>
+                <?php foreach ($datos as $fila): ?>
+                    <div class="solicitud-card">
+                        <div class="solicitud-header">
+                            <span class="solicitud-estado 
+                                <?php
+                                    $estado = htmlspecialchars($fila['estado'] ?? '');
+                                    if ($estado == 'En espera del documento físico para ser procesado 0/3') echo 'pendiente';
+                                    else if ($estado == 'En Revisión 1/2') echo 'activo1';
+                                    else if ($estado == 'En Proceso 2/2 (Sin entregar)') echo 'activo2';
+                                    else if ($estado == 'En Proceso 3/3 (Sin entregar)') echo 'activo3';
+                                    else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'finalizada';
+                                    else if ($estado == 'Documento inválido') echo 'invalido';
+                                ?>">
+                                <?= $estado ?>
+                            </span>
+                            <div><strong>Fecha de creación:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></div>
+                        </div>
+                        <div class="solicitud-info">
+                            <div><strong>Asunto:</strong> <?= htmlspecialchars($fila['asunto']) ?></div>
+                            <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
+                            <div><strong>Cédula de Identidad:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
+                            <div><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
+                        </div>
+                        <div class="solicitud-actions">
+                            <a href="<?= BASE_URL.'/beneficiario_infoDespacho'?>" class="aprobar-btn">Ver Información del beneficiario</a>
+                            <a href="<?= BASE_URL.'/editarDespacho?id_doc='.$fila['id_doc']  ?>" class="aprobar-btn">Editar</a>
+                            <a href="<?= BASE_URL.'/inhabilitarDespacho?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
+                            <a href="<?= BASE_URL.'/procesarDespacho?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
+                                <?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="solicitud-card">
+                    <div class="solicitud-header">
+                        <span class="solicitud-estado">Sin información</span>
+                    </div>
+                    <div class="solicitud-info">
+                        No hay información disponible.
+                    </div>
+                </div>
+            <?php endif; ?>
+        </section>
+    </main>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

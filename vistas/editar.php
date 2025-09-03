@@ -4,23 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Solicitud</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
 </head>
-<body>
-    <a href="<?=BASE_URL?>/main">Volver</a>
-    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
-    <?php if($_SESSION['id_rol'] !== 2){?>
-    <form action="editar_solicitud" method="POST">
-        <label for="id_manual">Número de documento:</label>
-            <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
-                
-        <label for="descripcion">Descripción:</label>
-            <input type="text" id="descripcion" name="descripcion" value="<?= htmlspecialchars($datos['descripcion'] ?? '') ?>" placeholder="Ejem: Ayuda para silla de ruedas" required>
-
-        <label for="ci">Cedula de Identidad:</label>
-            <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos['ci'] ?? '') ?>" required>
-
-        <p>Tipo de Ayuda</p>
-            <label for="tipo_ayuda" value="<?= htmlspecialchars($datos['tipo_ayuda'] ?? '') ?>">Tipo de Ayuda:</label>
+<body class="solicitud-body">
+    <header class="header">
+        <div class="titulo-header">Editar solicitud</div>
+        <div class="header-right">
+            <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
+            <a href="<?=BASE_URL?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+        </div>
+    </header>
+    <main>
+        <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
+        <?php if($_SESSION['id_rol'] !== 2){?>
+        <form action="editar_solicitud" method="POST" class="registro-card form-user" autocomplete="off">
+            <h2><i class="fa fa-edit"></i> Editar solicitud</h2>
+            <div class="campo-user">
+                <label for="id_manual">Número de documento:</label>
+                <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
+            </div>
+            <div class="campo-user">
+                <label for="descripcion">Descripción:</label>
+                <input type="text" id="descripcion" name="descripcion" value="<?= htmlspecialchars($datos['descripcion'] ?? '') ?>" placeholder="Ejem: Ayuda para silla de ruedas" required>
+            </div>
+            <div class="campo-user">
+                <label for="ci">Cedula de Identidad:</label>
+                <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos['ci'] ?? '') ?>" required>
+            </div>
+            <div class="campo-user">
+                <label for="tipo_ayuda">Tipo de Ayuda:</label>
                 <select name="tipo_ayuda" id="tipo_ayuda">
                     <option value="Silla de Ruedas" <?= ($datos['tipo_ayuda'] ?? '') === 'Silla de Ruedas' ? 'selected' : '' ?>>Silla de Ruedas</option>
                     <option value="Silla de Ruedas(Niño)" <?= ($datos['tipo_ayuda'] ?? '') === 'Silla de Ruedas(Niño)' ? 'selected' : '' ?>>Silla de Ruedas(Niño)</option>
@@ -35,9 +49,9 @@
                     <option value="Colchón Anti-escaras" <?= ($datos['tipo_ayuda'] ?? '') === 'Colchón Anti-escaras' ? 'selected' : '' ?>>Colchón Anti-escaras</option>
                     <option value="Otros" <?= ($datos['tipo_ayuda'] ?? '') === 'Otros' ? 'selected' : '' ?>>Otros</option>
                 </select>
-
-        <p>Categoría:</p>
-            <label for="categoria">Categoría</label>
+            </div>
+            <div class="campo-user">
+                <label for="categoria">Categoría</label>
                 <select name="categoria" id="categoria">
                     <option value="Ayudas técnicas" <?= ($datos['categoria'] ?? '') === 'Ayudas técnicas' ? 'selected' : '' ?>>Ayudas técnicas</option>
                     <option value="Medicamentos" <?= ($datos['categoria'] ?? '') === 'Medicamentos' ? 'selected' : '' ?>>Medicamentos</option>
@@ -45,34 +59,34 @@
                     <option value="Enseres" <?= ($datos['categoria'] ?? '') === 'Enseres' ? 'selected' : '' ?>>Enseres</option>
                     <option value="Otros" <?= ($datos['categoria'] ?? '') === 'Otros' ? 'selected' : '' ?>>Otros</option>
                 </select>
-
-
-            <label for="remitente">Remitente:</label>
+            </div>
+            <div class="campo-user">
+                <label for="remitente">Remitente:</label>
                 <input type="text" id="remitente" name="remitente" placeholder="Ejem: María González" required value="<?= htmlspecialchars($datos['remitente'] ?? '') ?>">
-
-            <label for="observaciones">Observaciones:</label>
+            </div>
+            <div class="campo-user">
+                <label for="observaciones">Observaciones:</label>
                 <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)" value="<?= htmlspecialchars($datos['observaciones'] ?? '') ?>">
-                
-                <!-- COMENTÉ PORQUE NO LO VEO NECESARIO POR AHORA DE TODAS MANERAS DESCOMENTAR SI SE VE NECESARIO EDITAR EL PROMOTOR, SI DESPUES DE TODO SERÁ EL MISMO PROMOTOR POR AHORA DE TODAS MANERAS DESCOMENTAR SI ES NECESARIO -->
-            <!-- <label for="promotor">Promotor:</label>
-                <input type="text" id="promotor" name="promotor" placeholder="Detalles relevantes (Opcional)" value="<//?= htmlspecialchars($datos['promotor'] ?? '') ?>"> --> 
-                
-            
-                <input type="hidden" name="id_doc" value=<?= htmlspecialchars($datos['id_doc'] ?? '') ?>>
-                    
-            <input type="submit" value="Enviar">
-    </form>
-    <?php  } else {?>
-        <form action="editar_solicitud" method="POST">
-        <label for="id_manual">Número de documento:</label>
-            <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
-        <label for="asunto">Asunto:</label>
-            <input type="text" id="asunto" name="asunto" placeholder="00004578" required value="<?= htmlspecialchars($datos['asunto'] ?? '') ?>">
-            <input type="hidden" name="id_doc" value=<?= htmlspecialchars($datos['id_doc'] ?? '') ?>>
-                    
-            <input type="submit" value="Enviar">
-    </form>
-    <?php } ?>
+            </div>
+            <input type="hidden" name="id_doc" value="<?= htmlspecialchars($datos['id_doc'] ?? '') ?>">
+            <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-save"></i> Guardar cambios</button>
+        </form>
+        <?php  } else {?>
+        <form action="editar_solicitud" method="POST" class="registro-card form-user" autocomplete="off">
+            <h2><i class="fa fa-edit"></i> Editar solicitud</h2>
+            <div class="campo-user">
+                <label for="id_manual">Número de documento:</label>
+                <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
+            </div>
+            <div class="campo-user">
+                <label for="asunto">Asunto:</label>
+                <input type="text" id="asunto" name="asunto" placeholder="Asunto" required value="<?= htmlspecialchars($datos['asunto'] ?? '') ?>">
+            </div>
+            <input type="hidden" name="id_doc" value="<?= htmlspecialchars($datos['id_doc'] ?? '') ?>">
+            <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-save"></i> Guardar cambios</button>
+        </form>
+        <?php } ?>
+    </main>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
