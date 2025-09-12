@@ -21,6 +21,7 @@ Router::get('/inhabilitados_lista','SolicitudControl@inhabilitados_lista');
 Router::get('/habilitar','SolicitudControl@habilitar');
 Router::get('/editar','SolicitudControl@editar');
 Router::post('/editar_solicitud','SolicitudControl@editar_solicitud');
+Router::get('/filtrar','SolicitudControl@filtrar');
 Router::post('/buscar_cidespacho','DespachoControl@buscar');
 Router::post('/despacho_enviarForm','DespachoControl@enviarFormulario');
 Router::get('/despacho_list','DespachoControl@despacho_list');

@@ -18,8 +18,7 @@
     </header>
     <main>
         <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
-        <?php if($_SESSION['id_rol'] !== 2){?>
-        <form action="editar_solicitud" method="POST" class="registro-card form-user" autocomplete="off">
+        <form action="editar_solicitud" method="POST" class="registro-card form-user">
             <h2><i class="fa fa-edit"></i> Editar solicitud</h2>
             <div class="campo-user">
                 <label for="id_manual">Número de documento:</label>
@@ -69,23 +68,9 @@
                 <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)" value="<?= htmlspecialchars($datos['observaciones'] ?? '') ?>">
             </div>
             <input type="hidden" name="id_doc" value="<?= htmlspecialchars($datos['id_doc'] ?? '') ?>">
+            <input type="hidden" name="promotor" value="<?= htmlspecialchars($datos['promotor'] ?? '') ?>">
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-save"></i> Guardar cambios</button>
         </form>
-        <?php  } else {?>
-        <form action="editar_solicitud" method="POST" class="registro-card form-user" autocomplete="off">
-            <h2><i class="fa fa-edit"></i> Editar solicitud</h2>
-            <div class="campo-user">
-                <label for="id_manual">Número de documento:</label>
-                <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required value="<?= htmlspecialchars($datos['id_manual'] ?? '') ?>">
-            </div>
-            <div class="campo-user">
-                <label for="asunto">Asunto:</label>
-                <input type="text" id="asunto" name="asunto" placeholder="Asunto" required value="<?= htmlspecialchars($datos['asunto'] ?? '') ?>">
-            </div>
-            <input type="hidden" name="id_doc" value="<?= htmlspecialchars($datos['id_doc'] ?? '') ?>">
-            <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-save"></i> Guardar cambios</button>
-        </form>
-        <?php } ?>
     </main>
 </body>
 <script>

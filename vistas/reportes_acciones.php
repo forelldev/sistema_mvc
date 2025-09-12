@@ -23,7 +23,7 @@
 
     <div class="auditoria-filtros-bar">
         <input type="text" id="filtro-nombre" class="auditoria-filtro" placeholder="Buscar por nombre...">
-            <select id="filtro-rol" class="auditoria-filtro">
+            <select id="filtro-rol" class="auditoria-filtro" name="filtro">
                 <option value="">Todos los roles</option>
                 <option value="1">Promotor Social</option>
                 <option value="2">Despacho</option>

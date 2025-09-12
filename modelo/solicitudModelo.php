@@ -371,6 +371,61 @@ public static function buscarCi($ci) {
         }
     }
 
+    public static function filtrar_solicitud($filtro){
+    $conexion = DB::conectar();
+
+    try {
+        switch($filtro){
+            case "recientes":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda ORDER BY fecha DESC");
+                break;
+
+            case "antiguos":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda ORDER BY fecha ASC");
+                break;
+
+            case "medicinas":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Medicinas'");
+                break;
+
+            case "laboratorio":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Laboratorio'");
+                break;
+
+            case "ayuda_tecnica":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Ayudas Técnicas'");
+                break;
+
+            case "enseres":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Enseres'");
+                break;
+
+            case "urgentes":
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'urgentes'");
+                break;
+
+            default:
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda ");
+                break;
+        }
+
+        $stmt->execute();
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'exito' => true,
+            'datos' => $resultados
+        ];
+
+    } catch (Exception $e) {
+        error_log("Error al filtrar solicitudes: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
 
 }
 

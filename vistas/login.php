@@ -15,7 +15,7 @@
     <form action="<?= BASE_URL?>/login" method="POST">
             <div class="input-group">
             <i class="fa fa-id-card"></i>
-            <input type="text" name="ci" required placeholder="CI">
+            <input type="text" name="ci" required placeholder="CI" autocomplete="off">
             </div>
         <div class="input-group">
             <i class="fa fa-lock"></i>
@@ -28,7 +28,7 @@
     </form>
     </section>
     <div class="footer">
-    Desarrollado por: Carlos Soteldo, David Felipe, Luis Lucena, Stefanni Legon, Manuel Rosales
+    Desarrollado por: Carlos Soteldo, David Felipe, Luis Lucena, Stefanni Legon, Manuel Rosales, Carlos Serradas
   </div>
 </body>
 <!-- Copiar y pegar para los mensajes de error, se puede cambiar el "error" por "info" -->

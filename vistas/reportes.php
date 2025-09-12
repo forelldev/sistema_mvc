@@ -54,7 +54,7 @@
                         <td><?= htmlspecialchars($fila['id']) ?></td>
                         <td><?= htmlspecialchars($fila['ci']) ?></td>
                         <td><?= htmlspecialchars($fila['fecha_entrada']) ?></td>
-                        <td><?= htmlspecialchars($fila['fecha_salida']) ?></td>
+                        <td><?= htmlspecialchars($fila['fecha_salida'] === '0000-00-00 00:00:00' ? 'En Línea' : $fila['fecha_salida']) ?></td>
                         <td><?= htmlspecialchars($fila['nombre']) ?></td>
                     </tr>
                 <?php endforeach; ?>

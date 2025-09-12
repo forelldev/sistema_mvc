@@ -36,22 +36,25 @@
             </label>
             <select name="estado">
                 <option value="">Seleccione un estado</option>
-            
-                </option>
+                <option value="En espera del documento físico para ser procesado 0/3">En espera del documento físico para ser procesado 0/3</option>
+                <option value="En Proceso 1/3">En Proceso 1/3</option>
+                <option value="En Proceso 2/3">En Proceso 2/3</option>
+                <option value="En Proceso 3/3">En Proceso 3/3</option>
+                <option value="Solicitud Finalizada (Ayuda Entregada)">Solicitud Finalizada (Ayuda Entregada)</option>
             </select>
-            <button type="submit" name="btn" value="Filtrar" class="filtrar-btn">
+            <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
                 <i class="fa fa-filter"></i> <span>Filtrar</span>
             </button>
         </form>
     </section>
     <nav class="filtros-categorias">
-        <button class="filtro-btn"><i class="fa fa-clock"></i> Más recientes</button>
-        <button class="filtro-btn"><i class="fa fa-clock"></i> Más antiguos</button>
-        <button class="filtro-btn"><i class="fa fa-exclamation-circle"></i> Más urgentes</button>
-        <button class="filtro-btn"><i class="fa fa-medkit"></i> Medicinas</button>
-        <button class="filtro-btn"><i class="fa fa-wheelchair"></i> Ayudas técnicas</button>
-        <button class="filtro-btn"><i class="fa fa-flask"></i> Laboratorio</button>
-        <button class="filtro-btn"><i class="fa fa-couch"></i> Enseres</button>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=recientes" class="filtro-btn" name="recientes"><i class="fa fa-clock"></i> Más recientes</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=antiguos" class="filtro-btn" name="antiguos"><i class="fa fa-clock"></i> Más antiguos</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=urgentes" class="filtro-btn" name="urgentes"><i class="fa fa-exclamation-circle"></i> Más urgentes</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=medicinas" class="filtro-btn" name="medicinas"><i class="fa fa-medkit"></i> Medicinas</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=ayuda_tecnica" class="filtro-btn" name="ayudas técnicas"><i class="fa fa-wheelchair"></i> Ayudas técnicas</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=laboratorio" class="filtro-btn" name="laboratorio"><i class="fa fa-flask"></i> Laboratorio</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=enseres" class="filtro-btn" name="enseres"><i class="fa fa-couch"></i> Enseres</a>
     </nav>
     <section class="solicitudes-lista">
         <?php if (!empty($datos)): ?>

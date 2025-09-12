@@ -231,8 +231,22 @@ class SolicitudControl {
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
             }
             else{
-                $msj = "Error" . $resultado['error'];
+                echo $resultado['error'];
             }
     }
+
+  public static function filtrar(){
+    $resultado = Solicitud::filtrar_solicitud($_GET['filtro'] ?? '');
+    if ($resultado['exito']) {
+        $datos = $resultado['datos'];
+        require_once 'vistas/solicitudes_list.php';
+    } else {
+        // Puedes redirigir, mostrar un mensaje, o cargar una vista de error
+        echo "Error al filtrar solicitudes: " . $resultado['error'];
+        // Alternativamente:
+        // require_once 'vistas/error.php';
+    }
+}
+
 }
 ?>

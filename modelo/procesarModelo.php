@@ -79,24 +79,44 @@ class Procesar{
 
         public static function editar_consulta($data){
             $conexion = DB::conectar();
-            try{
-            $camposObligatorios = [
-                'id_doc','id_manual','descripcion','ci','tipo_ayuda','categoria','remitente','observaciones','promotor'
-            ];
-            foreach ($camposObligatorios as $campo) {
-                if (!isset($data[$campo]) || $data[$campo] === '') {
-                    throw new Exception("Falta el campo obligatorio: $campo");
+            try {
+                // Iniciar transacción
+                $conexion->beginTransaction();
+
+                $camposObligatorios = [
+                    'id_doc','id_manual','descripcion','ci','tipo_ayuda','categoria','remitente','observaciones','promotor'
+                ];
+                foreach ($camposObligatorios as $campo) {
+                    if (!isset($data[$campo]) || $data[$campo] === '') {
+                        throw new Exception("Falta el campo obligatorio: $campo");
+                    }
                 }
-            }
-            $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET descripcion = ?, tipo_ayuda = ?, categoria = ?, remitente = ?, observaciones = ?, promotor = ? WHERE id_doc = ?");
-            $stmt->execute([$data['descripcion'],$data['tipo_ayuda'], $data['categoria'],$data['remitente'],$data['observaciones'],$data['promotor'],$data['id_doc']]); 
-            return ['exito' => true];
-            } catch (Exception $e) {
-                $conexion->rollBack();
-                error_log("Error al editar la solicitud: " . $e->getMessage());
-                return ['exito' => false, 'error' => $e->getMessage()];
-            }
+
+                $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET descripcion = ?, tipo_ayuda = ?, categoria = ?, remitente = ?, observaciones = ?, promotor = ? WHERE id_doc = ?");
+                $stmt->execute([
+                    $data['descripcion'],
+                    $data['tipo_ayuda'],
+                    $data['categoria'],
+                    $data['remitente'],
+                    $data['observaciones'],
+                    $data['promotor'],
+                    $data['id_doc']
+        ]);
+
+        // Confirmar transacción
+        $conexion->commit();
+        return ['exito' => true];
+
+    } catch (Exception $e) {
+        // Verificar si hay una transacción activa antes de hacer rollback
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
         }
+        error_log("Error al editar la solicitud: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+
 
         public static function registrarReporte($id_doc,$fecha,$accion,$ci){
             $conexion = DB::conectar();
