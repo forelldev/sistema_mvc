@@ -248,5 +248,23 @@ class SolicitudControl {
     }
 }
 
+    public static function filtrar_fecha() {
+    if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_final']) && isset($_POST['estado'])) {
+        $resultado = Solicitud::fecha_filtro($_POST);
+        if ($resultado['exito']) {
+            $datos = $resultado['datos'];
+            $fecha_inicio = $_POST['fecha_inicio'];
+            $fecha_final = $_POST['fecha_final'];
+            $estado = $_POST['estado'];
+            require_once 'vistas/solicitudes_list.php';
+        } else {
+            echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+        }
+    } else {
+        echo "No está llegando el POST correctamente.";
+    }
+}
+
+
 }
 ?>

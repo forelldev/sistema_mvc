@@ -17,22 +17,22 @@
     </div>
   </header>
     <section class="reportes-filtros">
-      <form class="reportes-form">
-        <div class="filtro-fecha">
-          <label for="desde"><i class="fa fa-calendar"></i> Desde</label>
-          <input type="date" id="desde" name="desde">
-        </div>
-        <div class="filtro-fecha">
-          <label for="hasta"><i class="fa fa-calendar"></i> Hasta</label>
-          <input type="date" id="hasta" name="hasta">
-        </div>
+      <form class="reportes-form" action="fecha_reportes" method="POST">
+          <div class="filtro-fecha">
+              <label for="desde"><i class="fa fa-calendar"></i> Desde</label>
+              <input type="date" id="desde" name="fecha_inicio" value="<?php echo isset($fecha_inicio) ? $fecha_inicio : ''; ?>" required>
+          </div>
+          <div class="filtro-fecha">
+              <label for="hasta"><i class="fa fa-calendar"></i> Hasta</label>
+              <input type="date" id="hasta" name="fecha_final" value="<?php echo isset($fecha_final) ? $fecha_final : ''; ?>" required>
+          </div>
         <button type="submit" class="buscar-btn"><i class="fa fa-search"></i> Buscar</button>
       </form>
     </section>
     <!-- Agregar un botón de exportar y búsqueda -->
         <div class="reportes-busqueda">
-            <input type="text" placeholder="Buscar CI o nombre..." class="buscar-input">
-            <button class="buscar-btn"><i class="fa fa-search"></i> Buscar</button>
+            <!-- LO VI INNECESARIO EN CASO DE IMPLEMENTAR QUITAR ETIQUETA Y ESTE TEXTO <input type="text" placeholder="Buscar CI o nombre..." class="buscar-input">
+            <button class="buscar-btn"><i class="fa fa-search"></i> Buscar</button> -->
             <button class="buscar-btn"><i class="fa fa-file-excel"></i> Exportar Excel</button>
         </div>
     <section class="reportes-tabla-card">
@@ -43,7 +43,9 @@
                 <th>Número</th>
                 <th>Cédula de Identidad</th>
                 <th>Fecha de Entrada</th>
+                <th>Hora de Entrada</th>
                 <th>Fecha de Salida</th>
+                <th>Hora de Salida</th>
                 <th>Nombre</th>
             </tr>
         </thead>
@@ -53,8 +55,10 @@
                     <tr>
                         <td><?= htmlspecialchars($fila['id']) ?></td>
                         <td><?= htmlspecialchars($fila['ci']) ?></td>
-                        <td><?= htmlspecialchars($fila['fecha_entrada']) ?></td>
-                        <td><?= htmlspecialchars($fila['fecha_salida'] === '0000-00-00 00:00:00' ? 'En Línea' : $fila['fecha_salida']) ?></td>
+                        <td><?= date('d-m-Y', strtotime($fila['fecha_entrada'])) ?></td>
+                        <td><?= date('H:i', strtotime($fila['fecha_entrada'])) ?></td>
+                        <td><?= ($fila['fecha_salida'] === '0000-00-00 00:00:00' || empty($fila['fecha_salida'])) ? 'En Línea' : date('d-m-Y', strtotime($fila['fecha_salida'])) ?></td>
+                        <td><?= ($fila['fecha_salida'] === '0000-00-00 00:00:00' || empty($fila['fecha_salida'])) ? 'En Línea' : date('H:i', strtotime($fila['fecha_salida'])) ?></td>
                         <td><?= htmlspecialchars($fila['nombre']) ?></td>
                     </tr>
                 <?php endforeach; ?>

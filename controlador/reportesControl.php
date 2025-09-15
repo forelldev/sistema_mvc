@@ -40,51 +40,50 @@ class ReportesControl{
     }
 
     public static function consulta_limite() {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id_rol = $_POST['id_rol'];
-            $nuevo_limite = intval($_POST['limite']);
-            $nombre_rol = $_POST['nombre_rol'];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id_rol = $_POST['id_rol'];
+        $nuevo_limite = intval($_POST['limite']);
+        $nombre_rol = $_POST['nombre_rol'];
 
-            // Actualizar el límite
-            $actualizado = reportesModelo::actualizarLimite($id_rol, $nuevo_limite);
+        // Contar usuarios actuales antes de actualizar el límite
+        $conteo = reportesModelo::contarUsuariosPorRol($id_rol);
+        $total_usuarios = intval($conteo['datos'][0]['total'] ?? 0);
 
-            if ($actualizado['exito']) {
-                // Contar usuarios actuales
-                $conteo = reportesModelo::contarUsuariosPorRol($id_rol);
-                $total_usuarios = intval($conteo['datos'][0]['total'] ?? 0);
+        if ($total_usuarios > $nuevo_limite) {
+            // Hay excedentes, no se actualiza el límite aún
+            $usuarios = reportesModelo::obtenerUsuariosPorRol($id_rol);
+            $excedentes = array_slice($usuarios['datos'], 0, $total_usuarios - $nuevo_limite);
 
-                if ($total_usuarios > $nuevo_limite) {
-                    // Obtener usuarios excedentes
-                    $usuarios = reportesModelo::obtenerUsuariosPorRol($id_rol);
-                    $excedentes = array_slice($usuarios['datos'], 0, $total_usuarios - $nuevo_limite);
-
-                    $datos = [
-                        'id_rol' => $id_rol,
-                        'nombre_rol' => $nombre_rol,
-                        'limite' => $nuevo_limite
-                    ];
-                    $msj = "Hay usuarios excedentes. Elimina " . count($excedentes) . " cuenta(s) para cumplir el nuevo límite.";
-                    require_once 'vistas/limite_editar.php';
-                    return;
-                } else {
-                    $msj = "Límite actualizado correctamente. No hay usuarios excedentes.";
-                    $datos = [
-                        'id_rol' => $id_rol,
-                        'nombre_rol' => $nombre_rol,
-                        'limite' => $nuevo_limite
-                    ];
-                    require_once 'vistas/limite_editar.php';
-                    return;
-                }
-            } else {
-                $msj = "Error al actualizar el límite: " . $actualizado['mensaje'];
-                require_once 'vistas/limite_editar.php';
-                return;
-            }
+            $datos = [
+                'id_rol' => $id_rol,
+                'nombre_rol' => $nombre_rol,
+                'limite' => $nuevo_limite
+            ];
+            $msj = "Hay usuarios excedentes. Elimina " . count($excedentes) . " cuenta(s) para cumplir el nuevo límite.";
+            require_once 'vistas/limite_editar.php';
+            return;
         }
-        
+
+        // Si no hay excedentes, se actualiza el límite
+        $actualizado = reportesModelo::actualizarLimite($id_rol, $nuevo_limite);
+        if ($actualizado['exito']) {
+            $msj = "Límite actualizado correctamente. No hay usuarios excedentes.";
+        } else {
+            $msj = "Error al actualizar el límite: " . $actualizado['mensaje'];
+        }
+
+        $datos = [
+            'id_rol' => $id_rol,
+            'nombre_rol' => $nombre_rol,
+            'limite' => $nuevo_limite
+        ];
         require_once 'vistas/limite_editar.php';
+        return;
     }
+    require_once 'vistas/limite_editar.php';
+}
+
+
     public static function eliminar_usuario() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ci = $_POST['ci'];
@@ -97,6 +96,38 @@ class ReportesControl{
             }
         }
     }
+
+    public static function filtrar_fecha() {
+        if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_final'])) {
+            $resultado = reportesModelo::fecha_filtro($_POST);
+            if ($resultado['exito']) {
+                $datos = $resultado['datos'];
+                $fecha_inicio = $_POST['fecha_inicio'];
+                $fecha_final = $_POST['fecha_final'];
+                require_once 'vistas/reportes.php';
+            } else {
+                echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+            }
+        } else {
+            echo "No está llegando el POST correctamente.";
+        }
+    }
+
+        public static function filtrar_acciones() {
+            if (isset($_POST['fecha']) && isset($_POST['id_rol'])) {
+                $fecha = $_POST['fecha'];
+                $id_rol = $_POST['id_rol'];
+                $resultado = reportesModelo::filtro_acciones($fecha,$id_rol);
+                if ($resultado['exito']) {
+                    $datos = $resultado['datos'];
+                    require_once 'vistas/reportes_acciones.php';
+                } else {
+                    echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+                }
+            } else {
+                echo "No está llegando el POST correctamente.";
+            }
+        }
 
 }
 ?>

@@ -385,7 +385,7 @@ public static function buscarCi($ci) {
                 break;
 
             case "medicinas":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Medicinas'");
+                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Medicamentos'");
                 break;
 
             case "laboratorio":
@@ -425,6 +425,39 @@ public static function buscarCi($ci) {
         ];
     }
 }
+
+    public static function fecha_filtro($datos) {
+        $conexion = DB::conectar();
+        $fecha_inicio = $datos['fecha_inicio'];
+        $fecha_final = $datos['fecha_final'];
+        $estado = $datos['estado'];
+
+        try {
+            $stmt = $conexion->prepare("
+                SELECT * FROM solicitud_ayuda 
+                WHERE fecha >= :fecha_inicio 
+                AND fecha <= :fecha_final 
+                AND estado = :estado
+            ");
+            $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+            $stmt->bindParam(':fecha_final', $fecha_final);
+            $stmt->bindParam(':estado', $estado);
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'exito' => true,
+                'datos' => $resultados
+            ];
+        } catch (Exception $e) {
+            error_log("Error al filtrar solicitudes por fecha: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
 
 
 }

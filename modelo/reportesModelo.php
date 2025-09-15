@@ -158,6 +158,71 @@ class reportesModelo{
             }
         }
 
+        public static function fecha_filtro($datos) {
+            $conexion = DB::conectar();
+            $fecha_inicio = $datos['fecha_inicio'];
+            $fecha_final = $datos['fecha_final'];
+            try {
+                $stmt = $conexion->prepare("
+                    SELECT re.*, ui.nombre 
+                    FROM reportes_entradas re
+                    INNER JOIN usuarios_info ui ON re.ci = ui.ci
+                    WHERE re.fecha_entrada >= :fecha_inicio 
+                    AND re.fecha_salida <= :fecha_final
+                    ORDER BY re.fecha_entrada DESC, re.fecha_salida DESC
+                ");
+
+                $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+                $stmt->bindParam(':fecha_final', $fecha_final);
+                $stmt->execute();
+                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                return [
+                    'exito' => true,
+                    'datos' => $resultados
+                ];
+            } catch (Exception $e) {
+                error_log("Error al filtrar reportes por fecha: " . $e->getMessage());
+                return [
+                    'exito' => false,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
+        public static function filtro_acciones($fecha,$id_rol) {
+            $conexion = DB::conectar();
+            $fecha_inicio = $fecha . ' 00:00:00';
+            $fecha_fin = $fecha . ' 23:59:59';
+            try {
+                $stmt = $conexion->prepare("
+                    SELECT ra.*, u.id_rol, ui.nombre
+                    FROM reportes_acciones ra
+                    INNER JOIN usuarios u ON ra.ci = u.ci
+                    INNER JOIN usuarios_info ui ON ra.ci = ui.ci
+                    WHERE ra.fecha BETWEEN :fecha_inicio AND :fecha_fin
+                    AND (:id_rol = 0 OR u.id_rol = :id_rol)
+                ");
+
+                $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+                $stmt->bindParam(':fecha_fin', $fecha_fin);
+                $stmt->bindParam(':id_rol', $id_rol);
+                $stmt->execute();
+                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                return [
+                    'exito' => true,
+                    'datos' => $resultados
+                ];
+            } catch (Exception $e) {
+                error_log("Error al filtrar reportes por fecha: " . $e->getMessage());
+                return [
+                    'exito' => false,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
 
 }
 

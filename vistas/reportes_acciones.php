@@ -22,18 +22,20 @@
     </div>
 
     <div class="auditoria-filtros-bar">
-        <input type="text" id="filtro-nombre" class="auditoria-filtro" placeholder="Buscar por nombre...">
-            <select id="filtro-rol" class="auditoria-filtro" name="filtro">
-                <option value="">Todos los roles</option>
-                <option value="1">Promotor Social</option>
-                <option value="2">Despacho</option>
-                <option value="3">Administración</option>
-                <option value="4">Admin</option>
+        <form action="filtro_acciones" method="POST">
+        <!-- <input type="text" id="filtro-nombre" class="auditoria-filtro" placeholder="Buscar por nombre..." required> POR AHORA INNECESARIO IGUAL QUE EN REPORTES-->
+            <select id="filtro-rol" class="auditoria-filtro" name="id_rol" required>
+                <option value="0" <?= ($id_rol ?? '') === '0' ? 'selected' : '' ?>>Todos los roles</option>
+                <option value="1" <?= ($id_rol ?? '') === '1' ? 'selected' : '' ?>>Promotor Social</option>
+                <option value="2" <?= ($id_rol ?? '') === '2' ? 'selected' : '' ?>>Despacho</option>
+                <option value="3" <?= ($id_rol ?? '') === '3' ? 'selected' : '' ?>>Administración</option>
+                <option value="4" <?= ($id_rol ?? '') === '4' ? 'selected' : '' ?>>Admin</option>
             </select>
-            <input type="date" id="filtro-fecha" class="auditoria-filtro">
-        <button class="filtrar-btn"><i class="fa fa-search"></i> Filtrar</button>
-        <button class="filtrar-btn"><i class="fa fa-file-excel"></i> Exportar Excel</button>
-  </div>
+            <input type="date" id="filtro-fecha" class="auditoria-filtro" required name="fecha" value="<?php echo isset($fecha) ? $fecha : ''; ?>">
+        <button type="submit" class="filtrar-btn"><i class="fa fa-search"></i> Filtrar</button>
+        </form>
+    </div>
+    <button class="filtrar-btn"><i class="fa fa-file-excel"></i> Exportar Excel</button>
   <section class="auditoria-tabla-card">
     <div class="tabla-responsive">
     <table class="auditoria-tabla" id="tabla-auditoria">
@@ -42,6 +44,7 @@
                 <th>CI</th>
                 <th>Nombre</th>
                 <th>Fecha de acción</th>
+                <th>Hora de la acción</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -51,7 +54,8 @@
                     <tr>
                         <td><?= htmlspecialchars($fila['ci']) ?></td>
                         <td><?= htmlspecialchars($fila['nombre']) ?></td>
-                        <td class="auditoria-fecha"><?= htmlspecialchars($fila['fecha']) ?></td>
+                        <td class="auditoria-fecha"><?= date('d-m-Y', strtotime($fila['fecha'])) ?></td>
+                        <td class="auditoria-fecha"><?= date('H:i', strtotime($fila['fecha'])) ?></td>
                         <td><?= htmlspecialchars($fila['accion']) ?></td>
                     </tr>
                 <?php endforeach; ?>

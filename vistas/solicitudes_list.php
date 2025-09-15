@@ -25,27 +25,30 @@
 
     <main>
     <section class="filtros-card">
-        <form class="filtros-form" action="system_help.php" method="POST">
+        <form class="filtros-form" action="filtrar_fecha" method="POST">
             <label>
                 Desde
-                <input type="date" name="fecha_inicio" value="<?php echo $fecha_inicio; ?>">
+                <input type="date" name="fecha_inicio" value="<?php echo isset($fecha_inicio) ? $fecha_inicio : ''; ?>">
             </label>
             <label>
                 Hasta
-                <input type="date" name="fecha_final" value="<?php echo $fecha_final; ?>">
+                <input type="date" name="fecha_final" value="<?php echo isset($fecha_final) ? $fecha_final : ''; ?>">
             </label>
-            <select name="estado">
-                <option value="">Seleccione un estado</option>
-                <option value="En espera del documento físico para ser procesado 0/3">En espera del documento físico para ser procesado 0/3</option>
-                <option value="En Proceso 1/3">En Proceso 1/3</option>
-                <option value="En Proceso 2/3">En Proceso 2/3</option>
-                <option value="En Proceso 3/3">En Proceso 3/3</option>
-                <option value="Solicitud Finalizada (Ayuda Entregada)">Solicitud Finalizada (Ayuda Entregada)</option>
-            </select>
+            <label>
+                Seleccione un Estado:
+                <select name="estado">
+                    <option value="En espera del documento físico para ser procesado 0/3" <?= ($estado ?? '') == 'En espera del documento físico para ser procesado 0/3' ? 'selected' : '' ?>>En espera del documento físico para ser procesado 0/3</option>
+                    <option value="En Proceso 1/3" <?= ($estado ?? '') == 'En Proceso 1/3' ? 'selected' : '' ?>>En Proceso 1/3</option>
+                    <option value="En Proceso 2/3" <?= ($estado ?? '') == 'En Proceso 2/3' ? 'selected' : '' ?>>En Proceso 2/3</option>
+                    <option value="En Proceso 3/3" <?= ($estado ?? '') == 'En Proceso 3/3' ? 'selected' : '' ?>>En Proceso 3/3</option>
+                    <option value="Solicitud Finalizada (Ayuda Entregada)" <?= ($estado ?? '') == 'Solicitud Finalizada (Ayuda Entregada)' ? 'selected' : '' ?>>Solicitud Finalizada (Ayuda Entregada)</option>
+                </select>
+            </label>
             <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
                 <i class="fa fa-filter"></i> <span>Filtrar</span>
             </button>
         </form>
+
     </section>
     <nav class="filtros-categorias">
         <a href="<?= BASE_URL ?>/filtrar?filtro=recientes" class="filtro-btn" name="recientes"><i class="fa fa-clock"></i> Más recientes</a>
