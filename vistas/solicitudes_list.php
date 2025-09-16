@@ -89,7 +89,9 @@
                     </div>
                     <div class="solicitud-actions">
                         <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
+                        <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
                         <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
+                        <?php endif; ?>
                         <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
                             <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
                         <?php endif; ?>

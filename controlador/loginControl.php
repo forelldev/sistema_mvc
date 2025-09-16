@@ -101,7 +101,7 @@ public function validarSesionAjax() {
                             $msj = "✅ Usuario registrado correctamente.";
                             break;
                         case 'usuario_existente':
-                            $msj = "❌ Error: el usuario ya existe.";
+                            $msj = "❌ Error: el usuario con esta Cédula de Identidad ya existe.";
                             break;
                         case 'limite_superado':
                             $msj = "🚫 Error: se ha alcanzado el límite de usuarios para este rol.";

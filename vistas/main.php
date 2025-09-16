@@ -13,8 +13,17 @@
         <div class="titulo-header">Sistema de Solicitud de Ayudas</div> 
         <div class="header-right">
             <div class="rol">Rol: <?= $_SESSION['rol'] ?></div>
-            <a href="<?= BASE_URL ?>/solicitudes_list" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
-            <a href="#" class="notificaciones-btn"><i class="fas fa-bell"></i> Notificaciones</a>
+            <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
+            <a href="<?= BASE_URL ?>/busqueda" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
+            <button class="notificaciones-btn" id="btn-notificaciones">
+                <i class="fas fa-bell"></i> Notificaciones
+            </button>
+            
+            <div id="barra-notificaciones" class="barra-notificaciones oculto">
+            <ul id="lista-notificaciones" class="notificaciones-lista"></ul>
+            </div>
+            <?php } ?>
+
         </div>
     </header>
     <nav class="navbar" aria-label="Menú principal">
@@ -29,7 +38,6 @@
                 <a href="<?= BASE_URL ?>/reportes_acciones">Reportes de Acciones</a>
                 <a href="<?= BASE_URL ?>/reportes">Reportes</a>
                 <a href="<?= BASE_URL ?>/limites">Límite por rol</a>
-            <?php } ?>
         </div>
     </div>
     <div class="dropdown">
@@ -41,6 +49,7 @@
             <a href="<?= BASE_URL ?>">Estadísticas de Usuarios</a>
         </div>
     </div>
+    <?php } ?>
     <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
             <i class="fas fa-folder-open"></i> Solicitudes
@@ -52,12 +61,13 @@
     <?php } ?>
         </div>
     </div>
+    <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
     <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
             <i class="fas fa-signal"></i> !!!!!
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-    <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
+    
         <a href="<?= BASE_URL ?>/3er proceso no existe">Falta 3er proceso</a>
     <?php } ?>
         </div>
@@ -102,4 +112,7 @@
 </script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/dropdown.js"></script>
+<script src="<?= BASE_URL ?>/public/js/notificacionNuevas.js"></script>
+<script src="<?= BASE_URL ?>/public/js/notificacionEstados.js"></script>
+<script src="<?= BASE_URL ?>/public/js/notificacionDespacho.js"></script>
 </html>

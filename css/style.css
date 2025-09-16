@@ -1074,3 +1074,37 @@ html, body {
   }
 }
 
+/* notificaciones */
+
+.barra-notificaciones {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #ff6060;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.notificaciones-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notificacion-item {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.notificacion-item:last-child {
+  border-bottom: none;
+}
+
+.oculto {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+

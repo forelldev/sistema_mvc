@@ -13,7 +13,7 @@ class Solicitud{
                 $estados = ['En Proceso 2/3'];
                 break;
             case 3:
-                $estados = ['En Proceso 3/3 (Sin entregar)'];
+                $estados = ['En Proceso 3/3 (Sin entregar)','Solicitud Finalizada (Ayuda entregada)'];
                 break;
             default:
                 $estados = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3', 'En Proceso 2/3', 'En Proceso 3/3 (Sin entregar)', 'Solicitud Finalizada (Ayuda entregada)'];
