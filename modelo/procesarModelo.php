@@ -4,13 +4,13 @@ class Procesar{
     public static function solicitud($id_doc,$estado){
         try {
             $conexion = DB::conectar();
-            $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET estado = ? WHERE id_doc = ?");
-            $stmt->execute([$estado, $id_doc]); 
+            $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET estado = ?, visto = ? WHERE id_doc = ?");
+            $stmt->execute([$estado, 0, $id_doc]);
             return true;
         } catch (PDOException $e) {
             error_log("Error al actualizar solicitud: " . $e->getMessage());
             return false;
-        };
+        }
     }
     public static function inhabilitar($id_doc,$estado,$razon){
         try {
@@ -21,7 +21,7 @@ class Procesar{
         } catch (PDOException $e) {
             error_log("Error al actualizar solicitud: " . $e->getMessage());
             return false;
-        };
+        }
     }
 
     public static function habilitar_solicitud($id_doc,$estado,$razon){
@@ -33,7 +33,7 @@ class Procesar{
             } catch (PDOException $e) {
                 error_log("Error al actualizar solicitud: " . $e->getMessage());
                 return false;
-            };
+            }
         }
 
         public static function inhabilitados_lista(){

@@ -15,14 +15,50 @@
             <div class="rol">Rol: <?= $_SESSION['rol'] ?></div>
             <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
             <a href="<?= BASE_URL ?>/busqueda" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
-            <button class="notificaciones-btn" id="btn-notificaciones">
-                <i class="fas fa-bell"></i> Notificaciones
-            </button>
-            
-            <div id="barra-notificaciones" class="barra-notificaciones oculto">
-            <ul id="lista-notificaciones" class="notificaciones-lista"></ul>
-            </div>
             <?php } ?>
+          <button class="notificaciones-btn" id="btn-notificaciones">
+                <i class="fas fa-bell"></i> Notificaciones
+                <?php
+                    $total = 0;
+                    foreach ($datos as $grupo) {
+                        // Si es un mensaje plano, no es un array de notificaciones
+                        if (isset($grupo['mensaje'])) {
+                            continue;
+                        }
+                        $total += count($grupo);
+                    }
+                    ?>
+
+                    <?php if ($total > 0): ?>
+                        <span class="badge"><?= $total ?></span>
+                    <?php endif; ?>
+                    </button>
+
+                    <div id="barra-notificaciones" class="barra-notificaciones oculto">
+                        <ul id="lista-notificaciones" class="notificaciones-lista">
+                            <?php if ($total > 0): ?>
+                                <?php foreach ($datos as $tipo => $notificaciones): ?>
+                                    <?php foreach ($notificaciones as $noti): ?>
+                                        <li class="notificacion-item">
+                                            <strong><?= ucfirst($tipo) ?>:</strong>
+                                            <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc']?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
+                                            <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
+                                            <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span></a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
+                                <a href="marcar_vistas">Marcar todas como vistas</a>
+                            <?php else: ?>
+                                <li class="notificacion-item">
+                                    <strong>Info:</strong> No hay notificaciones disponibles
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
+
+
+            
 
         </div>
     </header>
@@ -57,8 +93,8 @@
         <div class="dropdown-menu" id="menuDropdown">
             <a href="<?= BASE_URL ?>/solicitudes_list">Solicitudes de Ayuda</a>
             <?php if ($_SESSION['id_rol'] == 2) { ?>
-        <a href="<?= BASE_URL ?>/despacho_list">Solicitudes Despacho</a>
-    <?php } ?>
+                <a href="<?= BASE_URL ?>/despacho_list">Solicitudes Despacho</a>
+            <?php } ?>
         </div>
     </div>
     <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
@@ -112,7 +148,6 @@
 </script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/dropdown.js"></script>
-<script src="<?= BASE_URL ?>/public/js/notificacionNuevas.js"></script>
-<script src="<?= BASE_URL ?>/public/js/notificacionEstados.js"></script>
-<script src="<?= BASE_URL ?>/public/js/notificacionDespacho.js"></script>
+<script src="<?= BASE_URL ?>/public/js/notificacionAdministrador.js"></script>
+
 </html>

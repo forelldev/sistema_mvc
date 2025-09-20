@@ -1,5 +1,6 @@
 <?php 
 require_once 'modelo/loginModel.php';
+require_once 'modelo/notificacionesModelo.php';
 class LoginControl {
     public function ingresar() {
         $ci = $_POST['ci'] ?? null;
@@ -31,13 +32,28 @@ class LoginControl {
         }
         require_once 'vistas/login.php';
     }
-    public function main(){
-        if (!isset($_SESSION['ci'])) {
-            header('Location: '.BASE_URL.'/');
-            exit;
-        }
-        require_once 'vistas/main.php';
+
+    public function main() {
+    if (!isset($_SESSION['ci'])) {
+        header('Location: ' . BASE_URL . '/');
+        exit;
     }
+    // Capturar el resultado de las notificaciones
+    $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
+
+    // Validar si hubo error
+    if ($notificaciones === false || !isset($notificaciones['exito'])) {
+        echo 'false error';
+        return;
+    }
+    // Extraer los datos si la búsqueda fue exitosa
+    $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
+
+    // Pasar los datos a la vista
+    require_once 'vistas/main.php';
+}
+
+
 
     public function logout() {
         if(isset($_SESSION['ci'])){
@@ -128,6 +144,44 @@ public function validarSesionAjax() {
             exit;
         }
             require_once 'vistas/registro.php';
+        }
+
+        public static function solicitud_notificacion(){
+            if(isset($_GET['id_doc'])){
+                $id_doc = $_GET['id_doc'];
+                $notificaciones = Notificaciones::mostrar_notis($id_doc);
+                // Validar si hubo error
+                if ($notificaciones === false || !isset($notificaciones['exito'])) {
+                    echo 'false error';
+                    return;
+                }
+                // Extraer los datos si la búsqueda fue exitosa
+                $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
+                $acciones = [
+                    'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+                    'En Proceso 1/3' => 'Enviar a despacho',
+                    'En Proceso 2/3' => 'Enviar a Administración',
+                    'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+                    'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+                ];
+                // Pasar los datos a la vista
+                require_once 'vistas/solicitud.php';
+
+            }
+        }
+        public static function marcar_vistas(){
+            Notificaciones::marcar_vista();
+            // Capturar el resultado de las notificaciones
+            $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
+
+            // Validar si hubo error
+            if ($notificaciones === false || !isset($notificaciones['exito'])) {
+                echo 'false error';
+                return;
+            }
+            // Extraer los datos si la búsqueda fue exitosa
+            $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
+            require_once 'vistas/main.php';
         }
     }
 ?>

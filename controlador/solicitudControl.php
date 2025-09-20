@@ -73,7 +73,7 @@ class SolicitudControl {
             header('Location: ' . BASE_URL . '/felicidades');
             date_default_timezone_set('America/Caracas');
             $fecha = date('Y-m-d H:i:s');
-            $accion = 'Registró solicitud';
+            $accion = 'Creó una nueva solicitud de ayuda.';
             Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
             exit;
         } else {
@@ -125,7 +125,7 @@ class SolicitudControl {
                     break;
                 case 'En Proceso 3/3 (Sin entregar)':
                     $estado_new = 'Solicitud Finalizada (Ayuda Entregada)';
-                    $accion = 'Confirmó que se aceptó la ayuda.';
+                    $accion = 'Confirmó que se entregó la ayuda.';
                     break;
                 case 'Solicitud Finalizada (Ayuda Entregada)':
                     $estado_new = 'En espera del documento físico para ser procesado 0/3';
