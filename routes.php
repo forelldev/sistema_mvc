@@ -8,7 +8,8 @@ Router::get('/main', 'LoginControl@main'); //RUTA PARA LA VISTA MAIN
 Router::get('/logout','LoginControl@logout'); //RUTA PARA DESLOGEARSE, SALIR
 Router::get('/validar-sesion', 'LoginControl@validarSesionAjax'); //RUTA PARA VALIDAR SESIÓN (EN CONJUNTO CON JAVASCRIPT)
 Router::get('/noti', 'LoginControl@solicitud_notificacion'); 
-Router::get('/marcar_vistas', 'LoginControl@marcar_vistas'); 
+Router::get('/marcar_vistas', 'LoginControl@marcar_vistas');
+Router::get('/marcar_vistasDespacho', 'LoginControl@marcar_vistasDespacho'); 
 Router::get('/solicitudes_list','SolicitudControl@lista'); //RUTA PARA LA VISTA DE SOLICITUDES_LIST Y A LA MISMA VEZ MOSTRAR LA TABLA SOLICITUD_AYUDA
 Router::get('/busqueda','SolicitudControl@busquedaVista'); //RUTA PARA BUSQUEDA VISTA, PARA LA CEDULA ANTES DE RELLENAR FORMULARIO
 Router::post('/buscar_cedula','SolicitudControl@buscar'); // RUTA PARA FUNCIÓN DE BUSCAR CEDULA EN TABLA SOLICITANTE

@@ -109,5 +109,39 @@ require_once 'conexiondb.php';
     }
 }
 
+    public static function marcar_vistaDespacho() {
+    $conexion = DB::conectar();
+
+    $consulta1 = "UPDATE solicitud_ayuda SET visto = 1 WHERE visto = 0";
+    $consulta2 = "UPDATE despacho SET visto = 1 WHERE visto = 0";
+
+    try {
+        // Ejecutar primera consulta
+        $stmt1 = $conexion->prepare($consulta1);
+        $stmt1->execute();
+        $filas1 = $stmt1->rowCount();
+
+        // Ejecutar segunda consulta
+        $stmt2 = $conexion->prepare($consulta2);
+        $stmt2->execute();
+        $filas2 = $stmt2->rowCount();
+
+        return [
+            'exito' => true,
+            'datos' => [
+                'solicitud_ayuda_actualizadas' => $filas1,
+                'despacho_actualizadas' => $filas2,
+                'total_actualizadas' => $filas1 + $filas2
+            ]
+        ];
+    } catch (PDOException $e) {
+        return [
+            'exito' => false,
+            'mensaje' => 'Error en la actualización: ' . $e->getMessage()
+        ];
+    }
+}
+
+
   }
 ?>

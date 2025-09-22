@@ -183,5 +183,20 @@ public function validarSesionAjax() {
             $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
             require_once 'vistas/main.php';
         }
+
+        public static function marcar_vistasDespacho(){
+            Notificaciones::marcar_vistaDespacho();
+            // Capturar el resultado de las notificaciones
+            $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
+
+            // Validar si hubo error
+            if ($notificaciones === false || !isset($notificaciones['exito'])) {
+                echo 'false error';
+                return;
+            }
+            // Extraer los datos si la búsqueda fue exitosa
+            $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
+            require_once 'vistas/main.php';
+        }
     }
 ?>

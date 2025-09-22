@@ -47,7 +47,7 @@
                                         </li>
                                     <?php endforeach; ?>
                                 <?php endforeach; ?>
-                                <a href="marcar_vistas">Marcar todas como vistas</a>
+                                <a href="<?= $_SESSION['id_rol'] == 2 ? 'marcar_vistasDespacho' : 'marcar_vistas' ?>">Marcar todas como vistas</a>
                             <?php else: ?>
                                 <li class="notificacion-item">
                                     <strong>Info:</strong> No hay notificaciones disponibles

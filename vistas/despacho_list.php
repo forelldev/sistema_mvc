@@ -46,11 +46,13 @@
                         </div>
                         <div class="solicitud-actions">
                             <a href="<?= BASE_URL.'/beneficiario_infoDespacho'?>" class="aprobar-btn">Ver Información del beneficiario</a>
+                            <?php if($estado == 'En Revisión 1/2' || $estado == 'Solicitud Finalizada (Ayuda Entregada)'){ ?>
                             <a href="<?= BASE_URL.'/editarDespacho?id_doc='.$fila['id_doc']  ?>" class="aprobar-btn">Editar</a>
                             <a href="<?= BASE_URL.'/inhabilitarDespacho?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
-                            <a href="<?= BASE_URL.'/procesarDespacho?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
-                                <?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
-                            </a>
+                                <a href="<?= BASE_URL.'/procesarDespacho?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
+                                    <?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
+                                </a>
+                            <?php } ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
