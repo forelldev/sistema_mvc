@@ -1,7 +1,8 @@
 <?php 
 require_once 'conexiondb.php';
+require_once 'correoModelo.php';
 class Procesar{
-    public static function solicitud($id_doc, $estado) {
+ public static function solicitud($id_doc, $estado) {
     try {
         $conexion = DB::conectar();
         date_default_timezone_set('America/Caracas');
@@ -15,29 +16,50 @@ class Procesar{
         ");
         $stmt->execute([$estado, 0, $fecha, $id_doc]);
 
-        // Verificar si existe el registro y obtener correo_enviado
+        // Obtener correo_enviado y ci del registro actualizado
         $stmt2 = $conexion->prepare("
-            SELECT correo_enviado FROM solicitud_ayuda 
+            SELECT correo_enviado, ci FROM solicitud_ayuda 
             WHERE id_doc = ?
         ");
         $stmt2->execute([$id_doc]);
         $fila = $stmt2->fetch(PDO::FETCH_ASSOC);
 
-        // Si se obtuvo el registro y correo_enviado es distinto de 0, lo reiniciamos
-        if ($fila && $fila['correo_enviado'] != 0) {
+        // Si existe el registro y correo_enviado es distinto de 0, enviar correo y reiniciar
+        if ($fila && $fila['correo_enviado'] != 0 && !empty($fila['ci'])) {
+            $ci = $fila['ci'];
+
+            // Obtener nombre y correo del solicitante
             $stmt3 = $conexion->prepare("
-                UPDATE solicitud_ayuda 
-                SET correo_enviado = 0 
-                WHERE id_doc = ?
+                SELECT nombre, correo FROM solicitantes 
+                WHERE ci = ?
             ");
-            $stmt3->execute([$id_doc]);
+            $stmt3->execute([$ci]);
+            $info = $stmt3->fetch(PDO::FETCH_ASSOC);
+
+            if ($info) {
+                $nombre = $info['nombre'];
+                $correo = $info['correo'];
+
+                // Enviar correo de renovación
+                Correo::correoRenovado($correo, $nombre);
+
+                // Reiniciar correo_enviado
+                $stmt4 = $conexion->prepare("
+                    UPDATE solicitud_ayuda 
+                    SET correo_enviado = 0 
+                    WHERE id_doc = ?
+                ");
+                $stmt4->execute([$id_doc]);
+            }
         }
+
         return true;
     } catch (PDOException $e) {
         error_log("Error al actualizar solicitud: " . $e->getMessage());
         return false;
     }
 }
+
 
     public static function inhabilitar($id_doc,$invalido,$razon){
         try {
