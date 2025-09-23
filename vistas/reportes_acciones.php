@@ -78,4 +78,9 @@
 </section>
 </main>
 </body>
+<script>
+    const BASE_PATH = "<?php echo BASE_PATH; ?>";
+</script>
+<script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
+<script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

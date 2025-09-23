@@ -44,5 +44,6 @@ Router::post('/filtro_acciones','ReportesControl@filtrar_acciones');
 Router::get('/limites','ReportesControl@limites');
 Router::get('/limite_editar','ReportesControl@edit_limite');
 Router::post('/consulta_limite','ReportesControl@consulta_limite');
-Router::get('/informacion_beneficiario','BeneficiarioControl@mostrar')
+Router::get('/informacion_beneficiario','BeneficiarioControl@mostrar');
+Router::get('/estadisticas','EstadisticasControl@estadisticas');
 ?>

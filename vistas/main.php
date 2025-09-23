@@ -81,7 +81,7 @@
             <i class="fas fa-chart-bar"></i> Estadísticas
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>">Estadísticas de Solicitudes</a>
+            <a href="<?= BASE_URL ?>/estadisticas">Estadísticas de Solicitudes</a>
             <a href="<?= BASE_URL ?>">Estadísticas de Usuarios</a>
         </div>
     </div>
