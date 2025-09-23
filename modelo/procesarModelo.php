@@ -1,22 +1,49 @@
 <?php 
 require_once 'conexiondb.php';
 class Procesar{
-    public static function solicitud($id_doc,$estado){
-        try {
-            $conexion = DB::conectar();
-            $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET estado = ?, visto = ? WHERE id_doc = ?");
-            $stmt->execute([$estado, 0, $id_doc]);
-            return true;
-        } catch (PDOException $e) {
-            error_log("Error al actualizar solicitud: " . $e->getMessage());
-            return false;
+    public static function solicitud($id_doc, $estado) {
+    try {
+        $conexion = DB::conectar();
+        date_default_timezone_set('America/Caracas');
+        $fecha = date('Y-m-d H:i:s');
+
+        // Actualizar estado, visto y fecha_modificacion
+        $stmt = $conexion->prepare("
+            UPDATE solicitud_ayuda 
+            SET estado = ?, visto = ?, fecha_modificacion = ? 
+            WHERE id_doc = ?
+        ");
+        $stmt->execute([$estado, 0, $fecha, $id_doc]);
+
+        // Verificar si existe el registro y obtener correo_enviado
+        $stmt2 = $conexion->prepare("
+            SELECT correo_enviado FROM solicitud_ayuda 
+            WHERE id_doc = ?
+        ");
+        $stmt2->execute([$id_doc]);
+        $fila = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+        // Si se obtuvo el registro y correo_enviado es distinto de 0, lo reiniciamos
+        if ($fila && $fila['correo_enviado'] != 0) {
+            $stmt3 = $conexion->prepare("
+                UPDATE solicitud_ayuda 
+                SET correo_enviado = 0 
+                WHERE id_doc = ?
+            ");
+            $stmt3->execute([$id_doc]);
         }
+        return true;
+    } catch (PDOException $e) {
+        error_log("Error al actualizar solicitud: " . $e->getMessage());
+        return false;
     }
-    public static function inhabilitar($id_doc,$estado,$razon){
+}
+
+    public static function inhabilitar($id_doc,$invalido,$razon){
         try {
             $conexion = DB::conectar();
-            $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET estado = ?, razon = ? WHERE id_doc = ?");
-            $stmt->execute([$estado,$razon, $id_doc]); 
+            $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET invalido = ?, razon = ? WHERE id_doc = ?");
+            $stmt->execute([$invalido,$razon, $id_doc]); 
             return true;
         } catch (PDOException $e) {
             error_log("Error al actualizar solicitud: " . $e->getMessage());
@@ -24,11 +51,11 @@ class Procesar{
         }
     }
 
-    public static function habilitar_solicitud($id_doc,$estado,$razon){
+    public static function habilitar_solicitud($id_doc,$invalido,$razon){
             try{
                 $conexion = DB::conectar();
-                $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET estado = ?, razon = ? WHERE id_doc = ?");
-                $stmt->execute([$estado,$razon, $id_doc]); 
+                $stmt = $conexion->prepare("UPDATE solicitud_ayuda SET invalido = ?, razon = ? WHERE id_doc = ?");
+                $stmt->execute([$invalido,$razon, $id_doc]);
                 return true;
             } catch (PDOException $e) {
                 error_log("Error al actualizar solicitud: " . $e->getMessage());

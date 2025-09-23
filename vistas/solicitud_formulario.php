@@ -29,6 +29,10 @@
                     <label for="apellido">Apellido:</label>
                     <input type="text" id="apellido" name="apellido" value="<?= $datos_beneficiario['solicitante']['apellido'] ?? '' ?>" required>
                 </div>
+                <div class="campo-formulario">
+                    <label for="correo">Apellido:</label>
+                    <input type="text" id="correo" name="correo" value="<?= $datos_beneficiario['solicitante']['correo'] ?? '' ?>" required>
+                </div>
             </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">

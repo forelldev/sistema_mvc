@@ -149,5 +149,4 @@
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/dropdown.js"></script>
 <script src="<?= BASE_URL ?>/public/js/notificacionAdministrador.js"></script>
-
 </html>

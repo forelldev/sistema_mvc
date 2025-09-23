@@ -1,5 +1,6 @@
 <?php 
 require_once 'conexiondb.php';
+require_once 'correoModelo.php';
 class Solicitud{
     // MOSTRAR LISTA DE SOLICITUDES DE AYUDA:
     public static function buscarLista() {
@@ -23,7 +24,7 @@ class Solicitud{
         $placeholders = implode(',', array_fill(0, count($estados), '?'));
         $consulta = "SELECT * FROM solicitud_ayuda 
                     WHERE estado IN ($placeholders) 
-                    AND estado != 'Inhabilitado' 
+                    AND invalido != 1 
                     ORDER BY fecha DESC";
 
         $busqueda = $conexion->prepare($consulta);
@@ -104,7 +105,7 @@ public static function buscarCi($ci) {
             $camposObligatorios = [
                 'id_manual', 'ci', 'descripcion', 'fecha', 'remitente',
                 'observaciones', 'categoria', 'tipo_ayuda','ci_user',
-                'nombre', 'apellido', 'fecha_nacimiento', 'lugar_nacimiento',
+                'nombre', 'apellido','correo', 'fecha_nacimiento', 'lugar_nacimiento',
                 'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
                 'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
                 'propiedad', 'propiedad_est', 'observaciones_propiedad',
@@ -133,10 +134,10 @@ public static function buscarCi($ci) {
             $stmt = $db->prepare("
                 INSERT INTO solicitud_ayuda (
                     id_manual, ci, descripcion, estado, fecha, visto,
-                    remitente, observaciones, promotor, categoria, tipo_ayuda
+                    remitente, observaciones, promotor, categoria, tipo_ayuda, fecha_modificacion
                 ) VALUES (
                     :id_manual, :ci, :descripcion, :estado, :fecha, :visto,
-                    :remitente, :observaciones, :promotor, :categoria, :tipo_ayuda
+                    :remitente, :observaciones, :promotor, :categoria, :tipo_ayuda, :fecha_modificacion
                 )
             ");
             $stmt->execute([
@@ -150,7 +151,8 @@ public static function buscarCi($ci) {
                 ':observaciones' => $data['observaciones'],
                 ':promotor' => $nombrePromotor,
                 ':categoria' => $data['categoria'],
-                ':tipo_ayuda' => $data['tipo_ayuda']
+                ':tipo_ayuda' => $data['tipo_ayuda'],
+                ':fecha_modificacion' => $data['fecha']
             ]);
 
             // ✅ 4. Verificar si el solicitante ya existe
@@ -165,8 +167,8 @@ public static function buscarCi($ci) {
                 self::actualizarSolicitante($db, $id_solicitante, $data);
             } else {
                 // 🆕 Insertar nuevo solicitante
-                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci) VALUES (?, ?, ?)");
-                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci']]);
+                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo']]);
                 $id_solicitante = $db->lastInsertId();
 
                 self::insertarSolicitante($db, $id_solicitante, $data);
@@ -457,6 +459,112 @@ public static function buscarCi($ci) {
             ];
         }
     }
+
+    //NOTIFICACIONES DE LOS MEDICAMENTOS Y ENVIAR CORREO:
+
+    public static function notiMedicamentos() {
+    $conexion = DB::conectar();
+    $rol = $_SESSION['id_rol'];
+    try {
+        // Consulta general (sin filtrar por correo_enviado)
+        switch ($rol) {
+        case 1:
+            $stmt = $conexion->prepare("
+                SELECT * FROM solicitud_ayuda 
+                WHERE categoria = :categoria 
+                AND estado IN (
+                    'En espera del documento físico para ser procesado 0/3',
+                    'En Proceso 1/3'
+                )
+                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
+                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                AND invalido = 0
+            ");
+            break;
+
+        case 2:
+            $stmt = $conexion->prepare("
+                SELECT * FROM solicitud_ayuda 
+                WHERE categoria = :categoria 
+                AND estado = 'En Proceso 2/3'
+                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
+                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                AND invalido = 0
+            ");
+            break;
+
+        case 3:
+            $stmt = $conexion->prepare("
+                SELECT * FROM solicitud_ayuda 
+                WHERE categoria = :categoria 
+                AND estado = 'En Proceso 3/3'
+                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
+                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                AND invalido = 0
+            ");
+            break;
+
+        case 4:
+        default:
+            $stmt = $conexion->prepare("
+                SELECT * FROM solicitud_ayuda 
+                WHERE categoria = :categoria 
+                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
+                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                AND invalido = 0
+            ");
+            break;
+    }
+
+
+        $stmt->execute(['categoria' => 'Medicamentos']);
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Enviar correos solo si correo_enviado = 0
+        foreach ($resultados as $fila) {
+            if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
+                $ci = $fila['ci'];
+                $stmtSolicitante = $conexion->prepare("
+                    SELECT nombre, correo FROM solicitantes WHERE ci = :ci
+                ");
+                $stmtSolicitante->execute(['ci' => $ci]);
+                $solicitante = $stmtSolicitante->fetch(PDO::FETCH_ASSOC);
+
+                if ($solicitante) {
+                    $correo = $solicitante['correo'];
+                    $nombre = $solicitante['nombre'];
+
+                    $enviado = Correo::correoVencido($correo, $nombre);
+
+                    if ($enviado) {
+                        $stmtUpdate = $conexion->prepare("
+                            UPDATE solicitud_ayuda 
+                            SET correo_enviado = 1 
+                            WHERE id_doc = :id_doc
+                        ");
+                        $stmtUpdate->execute(['id_doc' => $fila['id_doc']]);
+                    }
+                }
+            }
+        }
+
+        return [
+            'exito' => true,
+            'datos' => $resultados
+        ];
+    } catch (Exception $e) {
+        error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
+
+
+
+
 
 
 

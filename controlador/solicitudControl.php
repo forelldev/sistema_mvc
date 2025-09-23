@@ -4,20 +4,31 @@ require_once 'modelo/procesarModelo.php';
 class SolicitudControl {
     public static function lista(){
         $resultado = Solicitud::buscarLista();
+        $medicamentos = Solicitud::notiMedicamentos();
         $id_rol = $_SESSION['id_rol'];
-        if($resultado['exito']){
-            $datos = $resultado['datos'];
-            $acciones = [
-                'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
-                'En Proceso 1/3' => 'Enviar a despacho',
-                'En Proceso 2/3' => 'Enviar a Administración',
-                'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
-                'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-            ];
 
+        $datos = $resultado['exito'] ? $resultado['datos'] : [];
+        $notificacion = $medicamentos['exito'] ? $medicamentos['datos'] : [];
+
+        // Agrupar notificaciones por categoría
+        $notificacionAgrupada = [];
+        foreach ($notificacion as $item) {
+            $tipo = $item['categoria'] ?? 'general';
+            $notificacionAgrupada[$tipo][] = $item;
         }
+
+        $acciones = [
+            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+            'En Proceso 1/3' => 'Enviar a despacho',
+            'En Proceso 2/3' => 'Enviar a Administración',
+            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+        ];
+
         require_once 'vistas/solicitudes_list.php';
     }
+
+
 
     public static function busquedaVista(){
         require_once 'vistas/busqueda.php';
@@ -159,7 +170,7 @@ class SolicitudControl {
     }
     public static function inhabilitar_solicitud(){
         if(isset($_POST['id_doc'])){
-            $estado = 'Inhabilitado';
+            $invalido = 1;
             $id_doc = $_POST['id_doc'];
             $razon = $_POST['razon'];
             if(Procesar::inhabilitar($id_doc,$estado,$razon)){
@@ -186,10 +197,10 @@ class SolicitudControl {
 
     public static function habilitar(){
         if(isset($_GET['id_doc'])){
-            $estado = 'En espera del documento físico para ser procesado 0/3';
+            $invalido = 0;
             $id_doc = $_GET['id_doc'];
             $razon = '';
-            if(Procesar::habilitar_solicitud($id_doc,$estado,$razon)){
+            if(Procesar::habilitar_solicitud($id_doc,$invalido,$razon)){
                 header('Location: '.BASE_URL.'/solicitudes_list');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
