@@ -33,11 +33,11 @@
         <div class="reportes-busqueda">
             <!-- LO VI INNECESARIO EN CASO DE IMPLEMENTAR QUITAR ETIQUETA Y ESTE TEXTO <input type="text" placeholder="Buscar CI o nombre..." class="buscar-input">
             <button class="buscar-btn"><i class="fa fa-search"></i> Buscar</button> -->
-            <button class="buscar-btn"><i class="fa fa-file-excel"></i> Exportar Excel</button>
+            <button class="buscar-btn" id="btnPDF" onclick="generarPDF()"><i class="fa fa-file-excel"></i> Exportar PDF</button>
         </div>
     <section class="reportes-tabla-card">
     <div class="tabla-responsive">
-    <table class="reportes-tabla">
+    <table class="reportes-tabla" id="exportarPDF">
         <thead>
             <tr>
                 <th>Número</th>
@@ -79,9 +79,12 @@
     </div>
     </section>
 </body>
+<script src="<?= BASE_URL ?>/libs/jspdf.umd.min.js"></script>
+<script src="<?= BASE_URL ?>/libs/jspdf.plugin.autotable.min.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
+<script src="<?= BASE_URL ?>/public/js/exportarPDF.js"></script>
 </html>

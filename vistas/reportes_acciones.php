@@ -6,6 +6,7 @@
     <title>Reportes de acciones</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/reportes.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
@@ -35,15 +36,15 @@
         <button type="submit" class="filtrar-btn"><i class="fa fa-search"></i> Filtrar</button>
         </form>
     </div>
-    <button class="filtrar-btn"><i class="fa fa-file-excel"></i> Exportar Excel</button>
+    <button class="filtrar-btn" id="btnPDF" onclick="generarPDF()"><i class="fa fa-file-excel" ></i> Exportar PDF</button>
   <section class="auditoria-tabla-card">
     <div class="tabla-responsive">
-    <table class="auditoria-tabla" id="tabla-auditoria">
+    <table class="auditoria-tabla"  id="exportarPDF">
         <thead>
             <tr>
                 <th>CI</th>
                 <th>Nombre</th>
-                <th>Fecha de acción</th>
+                <th>Fecha de la acción</th>
                 <th>Hora de la acción</th>
                 <th>Acción</th>
             </tr>
@@ -78,9 +79,13 @@
 </section>
 </main>
 </body>
+<script src="<?= BASE_URL ?>/libs/jspdf.umd.min.js"></script>
+<script src="<?= BASE_URL ?>/libs/jspdf.plugin.autotable.min.js"></script>
+<script src="<?= BASE_URL ?>/public/js/exportarPDF.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
+
 </html>
