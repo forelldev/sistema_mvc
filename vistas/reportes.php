@@ -68,14 +68,19 @@
             </tr>
         <?php endif; ?>
     </table>
-    <!-- Paginación Pls darle funcion -->
-    <div class="paginacion">
-      <button>&laquo;</button>
-      <button class="active">1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>&raquo;</button>
     </div>
+    <div class="paginacion">
+        <?php if ($paginaActual > 1): ?>
+            <a href="?pagina=<?= $paginaActual - 1 ?>" class="paginacion-btn">&laquo;</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+            <a href="?pagina=<?= $i ?>" class="paginacion-btn <?= $i == $paginaActual ? 'active' : '' ?>"><?= $i ?></a>
+        <?php endfor; ?>
+
+        <?php if ($paginaActual < $totalPaginas): ?>
+            <a href="?pagina=<?= $paginaActual + 1 ?>" class="paginacion-btn">&raquo;</a>
+        <?php endif; ?>
     </div>
     </section>
 </body>

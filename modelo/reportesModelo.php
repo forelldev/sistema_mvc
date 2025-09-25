@@ -2,43 +2,73 @@
 require_once 'conexiondb.php';
 class reportesModelo{
 
-    public static function mostrarReportes() {
+    public static function mostrarReportes($pagina = 1, $porPagina = 10) {
         try {
             $conexion = DB::conectar();
+            $offset = ($pagina - 1) * $porPagina;
+
+            // Obtener total de registros
+            $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
+            $totalRegistros = $totalConsulta->fetchColumn();
             $consulta = "
                 SELECT r.*, ui.nombre
                 FROM reportes_entradas r
                 INNER JOIN usuarios_info ui ON r.ci = ui.ci
                 ORDER BY r.fecha_entrada DESC
+                LIMIT :limite OFFSET :offset
             ";
             $stmt = $conexion->prepare($consulta);
+            $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return ['exito' => true, 'datos' => $datos];
+            return [
+                'exito' => true,
+                'datos' => $datos,
+                'total' => $totalRegistros,
+                'pagina' => $pagina,
+                'porPagina' => $porPagina
+            ];
         } catch (PDOException $e) {
             return ['exito' => false, 'mensaje' => $e->getMessage()];
         }
     }
 
-    public static function mostrarReportesAcciones() {
+    public static function mostrarReportesAcciones($pagina = 1, $porPagina = 10) {
         try {
             $conexion = DB::conectar();
+            $offset = ($pagina - 1) * $porPagina;
+
+            // Obtener total de registros
+            $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
+            $totalRegistros = $totalConsulta->fetchColumn();
+
+            // Obtener registros paginados
             $consulta = "
                 SELECT ra.*, ui.nombre
                 FROM reportes_acciones ra
                 INNER JOIN usuarios_info ui ON ra.ci = ui.ci
                 ORDER BY ra.fecha DESC
+                LIMIT :limite OFFSET :offset
             ";
             $stmt = $conexion->prepare($consulta);
+            $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return ['exito' => true, 'datos' => $datos];
+            return [
+                'exito' => true,
+                'datos' => $datos,
+                'total' => $totalRegistros,
+                'pagina' => $pagina,
+                'porPagina' => $porPagina
+            ];
         } catch (PDOException $e) {
             return ['exito' => false, 'mensaje' => $e->getMessage()];
         }
     }
+
 
     public static function mostrarLimites() {
         try {

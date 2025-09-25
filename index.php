@@ -7,5 +7,4 @@ require_once 'config/router.php';
 require_once 'routes.php';
 // Finalmente, ejecuta el router para que maneje la petición
 Router::dispatch();
-
 ?>

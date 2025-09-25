@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes de acciones</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/reportes.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/font/css/all.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/reportes.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
@@ -42,6 +42,7 @@
     <table class="auditoria-tabla"  id="exportarPDF">
         <thead>
             <tr>
+                <th>Número</th>
                 <th>CI</th>
                 <th>Nombre</th>
                 <th>Fecha de la acción</th>
@@ -53,6 +54,7 @@
             <?php if (!empty($datos)):  ?>
                 <?php foreach ($datos as $fila): ?>
                     <tr>
+                        <td><?= htmlspecialchars($fila['id']) ?></td>
                         <td><?= htmlspecialchars($fila['ci']) ?></td>
                         <td><?= htmlspecialchars($fila['nombre']) ?></td>
                         <td class="auditoria-fecha"><?= date('d-m-Y', strtotime($fila['fecha'])) ?></td>
@@ -68,13 +70,18 @@
         </tbody>
     </table>
     </div>
-    <!-- Paginación Pls darle funcion -->
     <div class="paginacion">
-      <button>&laquo;</button>
-      <button class="active">1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>&raquo;</button>
+        <?php if ($paginaActual > 1): ?>
+            <a href="?pagina=<?= $paginaActual - 1 ?>" class="paginacion-btn">&laquo;</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+            <a href="?pagina=<?= $i ?>" class="paginacion-btn <?= $i == $paginaActual ? 'active' : '' ?>"><?= $i ?></a>
+        <?php endfor; ?>
+
+        <?php if ($paginaActual < $totalPaginas): ?>
+            <a href="?pagina=<?= $paginaActual + 1 ?>" class="paginacion-btn">&raquo;</a>
+        <?php endif; ?>
     </div>
 </section>
 </main>
@@ -87,5 +94,4 @@
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
-
 </html>

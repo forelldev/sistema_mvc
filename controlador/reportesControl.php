@@ -2,20 +2,36 @@
 require_once 'modelo/reportesModelo.php';
 class ReportesControl{
     public static function reportes_entradas(){
-        $resultado = reportesModelo::mostrarReportes();
-            if($resultado['exito']){
-                $datos = $resultado['datos'];
-            }
+        $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $porPagina = 10;
+
+        $resultado = reportesModelo::mostrarReportes($pagina, $porPagina);
+        if ($resultado['exito']) {
+            $datos = $resultado['datos'];
+            $total = $resultado['total'];
+            $porPagina = $resultado['porPagina'];
+            $paginaActual = $resultado['pagina'];
+            $totalPaginas = ceil($total / $porPagina);
+        }
         require_once 'vistas/reportes.php'; 
     }
 
     public static function reportes_acciones(){
-        $resultado = reportesModelo::mostrarReportesAcciones();
-            if($resultado['exito']){
-                $datos = $resultado['datos'];
-            }
+        $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+        $porPagina = 10;
+
+        $resultado = reportesModelo::mostrarReportesAcciones($pagina, $porPagina);
+        if ($resultado['exito']) {
+            $datos = $resultado['datos'];
+            $total = $resultado['total'];
+            $porPagina = $resultado['porPagina'];
+            $paginaActual = $resultado['pagina'];
+            $totalPaginas = ceil($total / $porPagina);
+        }
+
         require_once 'vistas/reportes_acciones.php';
     }
+
 
     public static function limites(){
         $resultado = reportesModelo::mostrarLimites();
