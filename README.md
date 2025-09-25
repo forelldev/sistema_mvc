@@ -16,7 +16,7 @@ Construido con tecnologías estándar (HTML, CSS, JavaScript, PHP), garantizando
 
 **1. ✅ Clona este repositorio en tu dispositivo.**
 
-    git clone https://github.com/forelldev/sistema
+    git clone https://github.com/forelldev/sistema_mvc
 
 **2. 🛡️ Importa el archivo SQL desde la carpeta database a tu gestor de base de datos (como phpMyAdmin).**
 
