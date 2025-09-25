@@ -2,6 +2,8 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php';
+require_once 'envLoader.php';
+loadEnv(__DIR__ . '/.env');
 class Correo {
     private static function configurarMailer($correo, $nombre, $asunto, $mensajeHTML) {
         $mail = new PHPMailer(true);
@@ -10,8 +12,8 @@ class Correo {
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'correosoficial23@gmail.com';
-            $mail->Password   = 'hbpx acqy rwmr vexx';
+            $mail->Username = getenv('GMAIL_USER');
+            $mail->Password = getenv('GMAIL_PASS');
             $mail->SMTPSecure = 'tls';
             $mail->Port       = 587;
 
