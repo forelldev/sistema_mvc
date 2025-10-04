@@ -39,7 +39,6 @@ class SolicitudControl {
     if ($ci) {
         $data = self::obtenerDatosBeneficiario($ci);
         extract($data); // crea $data_exists, $datos_beneficiario, etc.
-
         require_once 'vistas/solicitud_formulario.php';
     }
 }
@@ -74,34 +73,40 @@ class SolicitudControl {
 
     
     public static function enviarFormulario() {
-        date_default_timezone_set('America/Caracas');
-        $_POST['fecha'] = date('Y-m-d H:i:s');
-        $_POST['ci_user'] = $_SESSION['ci'];
-
-        $resultado = Solicitud::enviarForm($_POST);
-
-        if ($resultado['exito']) {
-            header('Location: ' . BASE_URL . '/felicidades');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
             date_default_timezone_set('America/Caracas');
-            $fecha = date('Y-m-d H:i:s');
-            $accion = 'Creó una nueva solicitud de ayuda.';
-            Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
-            exit;
-        } else {
-            $msj = "Error al registrar la solicitud: " . $resultado['error'];
+            $_POST['fecha'] = date('Y-m-d H:i:s');
+            $_POST['ci_user'] = $_SESSION['ci'];
 
-            $ci = $_POST['ci'] ?? null;
-            $data_exists = false;
-            $datos_beneficiario = $_POST; // mantener datos del intento fallido
-            $tiposJS = $_POST['tiposJS'] ?? '';
-            $nombresJS = $_POST['nombresJS'] ?? '';
+            $resultado = Solicitud::enviarForm($_POST);
 
-            // Rebuscar datos si es necesario
-            if ($ci) {
-                $data = self::obtenerDatosBeneficiario($ci);
-                extract($data);
+            if ($resultado['exito']) {
+                header('Location: ' . BASE_URL . '/felicidades');
+                date_default_timezone_set('America/Caracas');
+                $fecha = date('Y-m-d H:i:s');
+                $accion = 'Creó una nueva solicitud de ayuda.';
+                $id_doc = $resultado['id_doc'];
+                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                exit;
+            } else {
+                $msj = "Error al registrar la solicitud: " . $resultado['error'];
+
+                $ci = $_POST['ci'] ?? null;
+                $data_exists = false;
+                $datos_beneficiario = $_POST; // mantener datos del intento fallido
+                $tiposJS = $_POST['tiposJS'] ?? '';
+                $nombresJS = $_POST['nombresJS'] ?? '';
+
+                // Rebuscar datos si es necesario
+                if ($ci) {
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data);
+                }
             }
-
+            require_once 'vistas/solicitud_formulario.php';
+        }
+        else{
+            $msj = "Solicitud inválida. No se recibieron datos. (Método POST)";
             require_once 'vistas/solicitud_formulario.php';
         }
 }

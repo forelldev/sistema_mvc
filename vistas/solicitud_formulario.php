@@ -30,7 +30,7 @@
                     <input type="text" id="apellido" name="apellido" value="<?= $datos_beneficiario['solicitante']['apellido'] ?? '' ?>" required>
                 </div>
                 <div class="campo-formulario">
-                    <label for="correo">Apellido:</label>
+                    <label for="correo">Correo:</label>
                     <input type="text" id="correo" name="correo" value="<?= $datos_beneficiario['solicitante']['correo'] ?? '' ?>" required>
                 </div>
             </div>
@@ -185,14 +185,17 @@
                         <option value="no" <?= empty($datos_beneficiario['patologia']) ? 'selected' : '' ?>>No</option>
                     </select>
                 </div>
-                <div class="campo-formulario" id="numeroFamiliaresContainer" style="<?= $cantidad > 0 ? '' : 'display:none;' ?>; margin-top:10px;">
-                    <label for="numeroFamiliares" name="numeroFamiliares">¿Cuántos familiares?</label>
-                    <select id="numeroFamiliares" onchange="generarCamposFamiliares()" required>
-                        <option value="">Seleccione</option>
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <option value="<?= $i ?>" <?= $cantidad === $i ? 'selected' : '' ?>><?= $i ?></option>
-                        <?php endfor; ?>
-                    </select>
+            <?php $cantidad = isset($datos_beneficiario['cantidad']) ? $datos_beneficiario['cantidad'] : 0; ?>
+            <div class="campo-formulario" id="numeroFamiliaresContainer" style="<?= $cantidad > 0 ? '' : 'display:none;' ?>; margin-top:10px;">
+                <label for="numeroFamiliares" name="numeroFamiliares">¿Cuántos familiares?</label>
+                <select id="numeroFamiliares" onchange="generarCamposFamiliares()" required>
+                    <option value="">Seleccione</option>
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <option value="<?= $i ?>" <?= $cantidad == $i ? 'selected' : '' ?>><?= $i ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+
                 </div>
             </div>
             <div id="camposFamiliares" style="margin-top:10px;"></div>
@@ -268,5 +271,4 @@
     const data_exists = "<?= $data_exists ? '1' : '0' ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/patologia.js"></script>
-
 </html>
