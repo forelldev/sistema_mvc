@@ -14,13 +14,13 @@
         <div class="titulo-header">¡Registrado con éxito!</div>
         <div class="header-right">
             <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
-            <a href="<?=BASE_URL?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+            <a href="<?=BASE_URL?>/constancias"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
     <main>
         <div class="registro-card form-user" style="text-align:center;">
-            <h1><i class="fa fa-check-circle" style="color:#3b4cca"></i> Solicitud enviada con éxito!</h1>
-            <a href="<?=BASE_URL?>/solicitudes_list" class="boton-enviar-ayuda" style="margin-top:1.5rem;"><i class="fa fa-arrow-left"></i> Volver</a>
+            <h1><i class="fa fa-check-circle" style="color:#3b4cca"></i> Constancia registrada con éxito!</h1>
+            <a href="<?=BASE_URL?>/constancias" class="boton-enviar-ayuda" style="margin-top:1.5rem;"><i class="fa fa-arrow-left"></i> Volver</a>
         </div>
     </main>
 </body>

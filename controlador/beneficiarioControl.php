@@ -18,5 +18,39 @@ Class BeneficiarioControl {
     require_once 'vistas/informacion_beneficiario.php';
 }
 
+    public static function beneficiarios_list() {
+    $resultado = BeneficiarioModelo::lista();
+    if($resultado['exito']){
+        $datos = $resultado['datos'];
+    }
+    require_once 'vistas/beneficiario_list.php';
+    }
+
+    public static function registro_beneficiario(){
+        require_once 'vistas/beneficiario_registro.php';
+    }
+
+    public static function registrar_beneficiario(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+                $resultado = BeneficiarioModelo::registrar_beneficiario($_POST);
+                if ($resultado['exito']) {
+                    header('Location: ' . BASE_URL . '/felicidades_beneficiario');
+                    date_default_timezone_set('America/Caracas');
+                    $id_solicitante = $resultado['id_solicitante'];
+                    $fecha = date('Y-m-d H:i:s');
+                    $accion = 'Registró un nuevo beneficiario.';
+                    Procesar::registrarReporte($id_solicitante, $fecha, $accion, $_SESSION['ci']);
+                    exit;
+                } else {
+                    $msj = "Error al registrar la solicitud: " . $resultado['error'];
+                    require_once 'vistas/beneficiario_registro.php';
+                    }
+                } else {
+                    // Manejo si no es POST o está vacío
+                    $msj = "Solicitud inválida. No se recibieron datos.";
+                    require_once 'vistas/beneficiario_registro.php';
+                }
+    }
+
 }
 ?>

@@ -12,7 +12,7 @@ Router::get('/marcar_vistas', 'LoginControl@marcar_vistas');
 Router::get('/marcar_vistasDespacho', 'LoginControl@marcar_vistasDespacho'); 
 Router::get('/solicitudes_list','SolicitudControl@lista'); //RUTA PARA LA VISTA DE SOLICITUDES_LIST Y A LA MISMA VEZ MOSTRAR LA TABLA SOLICITUD_AYUDA
 Router::get('/busqueda','SolicitudControl@busquedaVista'); //RUTA PARA BUSQUEDA VISTA, PARA LA CEDULA ANTES DE RELLENAR FORMULARIO
-Router::post('/buscar_cedula','SolicitudControl@buscar'); // RUTA PARA FUNCIÓN DE BUSCAR CEDULA EN TABLA SOLICITANTE
+Router::post('/formulario','SolicitudControl@buscar'); // RUTA PARA FUNCIÓN DE BUSCAR CEDULA EN TABLA SOLICITANTE
 Router::get('/formulario','SolicitudControl@formulario'); //RUTA PARA VISTA DEL FORMULARIO, LO QUE SE TIENE QUE ENVIAR PARA LA SOLICITUD
 Router::post('/enviarFormulario','SolicitudControl@enviarFormulario');//RUTA PARA FUNCIÓN DE ENVIAR FORMULARIO A TODAS LAS TABLAS INFORMACIÓN
 Router::get('/felicidades','SolicitudControl@felicidades'); //RUTA PARA QUE EN CASO DE HABER SUBIDO CON ÉXITO EL FORMULARIO, FELICIDADES AQUÍ
@@ -45,5 +45,13 @@ Router::get('/limites','ReportesControl@limites');
 Router::get('/limite_editar','ReportesControl@edit_limite');
 Router::post('/consulta_limite','ReportesControl@consulta_limite');
 Router::get('/informacion_beneficiario','BeneficiarioControl@mostrar');
+Router::get('/beneficiarios_lista','BeneficiarioControl@beneficiarios_list');
+Router::get('/registro_beneficiario','BeneficiarioControl@registro_beneficiario');
+Router::post('/registrar_beneficiario','BeneficiarioControl@registrar_beneficiario');
+Router::get('/felicidades_beneficiario','BeneficiarioControl@felicidades_beneficiario');
 Router::get('/estadisticas','EstadisticasControl@estadisticas');
+Router::get('/constancias','ConstanciasControl@mostrar');
+Router::get('/registro_constancia','ConstanciasControl@registro_constancia');
+Router::post('/registrar_constancia','ConstanciasControl@registrar_constancia');
+Router::get('/felicidades_constancia','ConstanciasControl@felicidades_constancia'); 
 ?>

@@ -19,7 +19,7 @@
 <main>
 
     <?php if($_SESSION['id_rol'] !== 2){?>
-        <form action="<?=BASE_URL?>/buscar_cedula" method="POST" class="registro-card form-user" autocomplete="off">
+        <form action="<?=BASE_URL?>/formulario" method="POST" class="registro-card form-user" autocomplete="off">
             <h2><i class="fa fa-search"></i> Buscar por CI</h2>
             <div class="campo-user">
             <label for="ci">Cédula de Identidad</label>

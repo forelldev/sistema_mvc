@@ -60,6 +60,8 @@ public static function buscarCi($ci) {
 
         $id = $solicitante['id_solicitante'];
 
+        $patologias = self::buscarTodos($db, 'solicitantes_patologia', $id);
+        $cantidad = count($patologias);
         // Buscar datos relacionados
         $datos = [
             'solicitante' => $solicitante,
@@ -69,8 +71,8 @@ public static function buscarCi($ci) {
             'info' => self::buscarUno($db, 'solicitantes_info', $id),
             'propiedad' => self::buscarUno($db, 'solicitantes_propiedad', $id),
             'trabajo' => self::buscarUno($db, 'solicitantes_trabajo', $id),
-            'ingresos' => self::buscarUno($db, 'solicitantes_ingresos', $id),
-            'patologia' => self::buscarTodos($db, 'solicitantes_patologia', $id)
+            'patologia' => $patologias,
+            'cantidad' => $cantidadPatologias
         ];
 
         return ['exito' => true, 'mostrar' => $datos];
@@ -167,15 +169,17 @@ public static function buscarCi($ci) {
                 self::actualizarSolicitante($db, $id_solicitante, $data);
             } else {
                 // 🆕 Insertar nuevo solicitante
-                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo']]);
+                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo'], $data['fecha']]);
                 $id_solicitante = $db->lastInsertId();
 
                 self::insertarSolicitante($db, $id_solicitante, $data);
             }
-
+            $idInsertado = $conexion->lastInsertId();
             $db->commit();
-            return ['exito' => true];
+            return ['exito' => true,
+                    'id_doc' => $idInsertado
+            ];
 
         } catch (Exception $e) {
             $db->rollBack();
@@ -290,6 +294,7 @@ public static function buscarCi($ci) {
             }
         }
     }
+    
     private static function insertarSolicitante($db, $id, $data) {
         // Insertar comunidad
         $db->prepare("
