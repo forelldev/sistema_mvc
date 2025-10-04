@@ -60,13 +60,14 @@ class BeneficiarioModelo{
     public static function registrar_beneficiario($data) {
         $conexion = DB::conectar();
             try {
+                self::normalizarCamposTrabajo($data);
                 // Validar campos obligatorios
-                $camposObligatorios = ['id_manual', 'ci','categoria','nombre', 'apellido',
+                $camposObligatorios = ['ci','nombre', 'apellido',
                 'correo', 'fecha_nacimiento', 'lugar_nacimiento','fecha',
                 'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
                 'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
-                'propiedad', 'propiedad_est', 'observaciones_propiedad',
-                'trabajo', 'direccion_trabajo', 'trabaja_public', 'nombre_insti',
+                'propiedad', 'propiedad_est',
+                'trabajo', 'nombre_insti',
                 'nivel_ingreso', 'pension', 'bono'];
                 foreach ($camposObligatorios as $campo) {
                     if (!isset($data[$campo]) || $data[$campo] === '') {
@@ -84,10 +85,10 @@ class BeneficiarioModelo{
                         'error' => 'Ya existe una constancia con ese ID.'
                     ];
                 }
-                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
+                $stmt = $conexion->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
                 $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo'], $data['fecha']]);
-                $id_solicitante = $db->lastInsertId();
-                self::insertarSolicitante($db, $id_solicitante, $data);
+                $id_solicitante = $conexion->lastInsertId();
+                self::insertarSolicitante($conexion, $id_solicitante, $data);
 
                 return ['exito' => true,
                         'id_solicitante' => $id_solicitante];
@@ -97,27 +98,27 @@ class BeneficiarioModelo{
             }
     }
 
-    private static function insertarSolicitante($db, $id, $data) {
+    private static function insertarSolicitante($conexion, $id, $data) {
         // Insertar comunidad
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_comunidad (id_solicitante, comunidad, direc_habita, estruc_base)
             VALUES (?, ?, ?, ?)
         ")->execute([$id, $data['comunidad'], $data['direc_habita'], $data['estruc_base']]);
 
         // Insertar conocimiento
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_conocimiento (id_solicitante, profesion, nivel_instruc)
             VALUES (?, ?, ?)
         ")->execute([$id, $data['profesion'], $data['nivel_instruc']]);
 
         // Insertar patria
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_extra (id_solicitante, codigo_patria, serial_patria)
             VALUES (?, ?, ?)
         ")->execute([$id, $data['codigo_patria'], $data['serial_patria']]);
 
         // Insertar info personal
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_info (id_solicitante, fecha_nacimiento, lugar_nacimiento, edad, estado_civil, telefono)
             VALUES (?, ?, ?, ?, ?, ?)
         ")->execute([
@@ -130,7 +131,7 @@ class BeneficiarioModelo{
         ]);
 
         // Insertar propiedad
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_propiedad (id_solicitante, propiedad, propiedad_est, observaciones_propiedad)
             VALUES (?, ?, ?, ?)
         ")->execute([
@@ -141,7 +142,7 @@ class BeneficiarioModelo{
         ]);
 
         // Insertar trabajo
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_trabajo (id_solicitante, trabajo, direccion_trabajo, trabaja_public, nombre_insti)
             VALUES (?, ?, ?, ?, ?)
         ")->execute([
@@ -153,7 +154,7 @@ class BeneficiarioModelo{
         ]);
 
         // Insertar ingresos
-        $db->prepare("
+        $conexion->prepare("
             INSERT INTO solicitantes_ingresos (id_solicitante, nivel_ingreso, pension, bono)
             VALUES (?, ?, ?, ?)
         ")->execute([
@@ -170,7 +171,7 @@ class BeneficiarioModelo{
                 foreach ($data['tip_patologia'] as $i => $tipo) {
                     $nombre = $data['nom_patologia'][$i] ?? '';
                     if (!empty($tipo) && !empty($nombre)) {
-                        $db->prepare("
+                        $conexion->prepare("
                             INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
                             VALUES (?, ?, ?)
                         ")->execute([$id, $tipo, $nombre]);
@@ -178,6 +179,13 @@ class BeneficiarioModelo{
                 }
             }
         }
+    }
+
+    private static function normalizarCamposTrabajo(&$data) {
+        $data['trabajo'] = isset($data['trabajo']) && trim($data['trabajo']) !== '' ? $data['trabajo'] : 'No tiene';
+        $data['direccion_trabajo'] = isset($data['direccion_trabajo']) && trim($data['direccion_trabajo']) !== '' ? $data['direccion_trabajo'] : 'No';
+        $data['trabaja_public'] = isset($data['trabaja_public']) && trim($data['trabaja_public']) !== '' ? $data['trabaja_public'] : 'No';
+        $data['nombre_insti'] = isset($data['nombre_insti']) && trim($data['nombre_insti']) !== '' ? $data['nombre_insti'] : 'No';
     }
 
 

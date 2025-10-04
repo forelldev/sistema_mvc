@@ -25,14 +25,18 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="correo">Correo:</label>
-                    <input type="text" id="correo" name="correo" value="" required>
+                    <input type="correo" id="correo" name="correo" value="" required>
+                </div>
+                <div class="campo-formulario">
+                    <label for="correo">Cédula:</label>
+                    <input type="text" id="ci" name="ci" value="" required>
                 </div>
             </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
                     <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="" required>
-                    <input type="hidden" id="edad" name="edad" value="">
+                    <input type="hidden" id="edad" name="edad">
                 </div>
                 <div class="campo-formulario">
                     <label for="telefono">Teléfono:</label>
@@ -197,6 +201,7 @@
                     </select>
                 </div>
             </div>
+            <div id="camposFamiliares" style="margin-top:10px;"></div>
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-paper-plane"></i> Enviar</button>
     </form>
 </body>
@@ -206,6 +211,7 @@
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/trabajo.js"></script>
+<script src="<?= BASE_URL ?>/public/js/edad.js"></script>
 <script>
     const tiposPatologiaGuardados = "<?= $tiposJS ?>".split('|');
     const nombresPatologiaGuardados = "<?= $nombresJS ?>".split('|');

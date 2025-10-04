@@ -106,12 +106,12 @@ public static function buscarCi($ci) {
             // ✅ 1. Validar campos obligatorios
             $camposObligatorios = [
                 'id_manual', 'ci', 'descripcion', 'fecha', 'remitente',
-                'observaciones', 'categoria', 'tipo_ayuda','ci_user',
+                'categoria', 'tipo_ayuda','ci_user',
                 'nombre', 'apellido','correo', 'fecha_nacimiento', 'lugar_nacimiento',
                 'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
                 'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
-                'propiedad', 'propiedad_est', 'observaciones_propiedad',
-                'trabajo', 'direccion_trabajo', 'trabaja_public', 'nombre_insti',
+                'propiedad', 'propiedad_est',
+                'trabajo', 'nombre_insti',
                 'nivel_ingreso', 'pension', 'bono'
             ];
 

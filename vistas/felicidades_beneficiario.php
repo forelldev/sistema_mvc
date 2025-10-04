@@ -20,7 +20,7 @@
     <main>
         <div class="registro-card form-user" style="text-align:center;">
             <h1><i class="fa fa-check-circle" style="color:#3b4cca"></i> Beneficiario registrada con éxito!</h1>
-            <a href="<?=BASE_URL?>/constancias" class="boton-enviar-ayuda" style="margin-top:1.5rem;"><i class="fa fa-arrow-left"></i> Volver</a>
+            <a href="<?=BASE_URL?>/beneficiarios_lista" class="boton-enviar-ayuda" style="margin-top:1.5rem;"><i class="fa fa-arrow-left"></i> Volver</a>
         </div>
     </main>
 </body>
