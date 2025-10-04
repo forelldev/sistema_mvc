@@ -9,11 +9,17 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
-    <a href="<?= BASE_URL ?>/main">Volver</a>
-         <form method="POST" action="<?= BASE_URL ?>/registrar_beneficiario">
-            <div class="titulo-seccion"><i class="fa fa-user"></i> Datos Personales</div>
+<body class="solicitud-body">
+    <header class="header">
+        <div class="titulo-header">Registro de Beneficiario</div>
+        <div class="header-right">
+            <a href="<?= BASE_URL ?>/beneficiarios_lista"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+        </div>
+    </header>
+    <main>
+        <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
+        <form method="POST" action="<?= BASE_URL ?>/registrar_beneficiario" class="formulario-ayuda" autocomplete="off">
+            <h2><i class="fa fa-user"></i> Datos Personales</h2>
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="nombre">Nombre:</label>
@@ -25,10 +31,10 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="correo">Correo:</label>
-                    <input type="correo" id="correo" name="correo" value="" required>
+                    <input type="email" id="correo" name="correo" value="" required>
                 </div>
                 <div class="campo-formulario">
-                    <label for="correo">Cédula:</label>
+                    <label for="ci">Cédula:</label>
                     <input type="text" id="ci" name="ci" value="" required>
                 </div>
             </div>
@@ -112,7 +118,7 @@
                     <label for="comunidad">Comunidad:</label>
                     <select name="comunidad" id="comunidad" required>
                         <option value="plus">Agregar Comunidad</option>
-                        </select>
+                    </select>
                 </div>
                 <div class="campo-formulario">
                     <label for="direc_habita">Dirección de Habitación:</label>
@@ -125,9 +131,6 @@
                     <input type="text" id="estruc_base" name="estruc_base" value="" required>
                 </div>
             </div>
-
-            ---
-
             <div class="titulo-seccion"><i class="fa fa-home"></i> Datos Físicos Ambientales</div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
@@ -154,9 +157,6 @@
                     <input type="text" id="observaciones" name="observaciones_propiedad" placeholder="Detalles adicionales relevantes (Opcional)" value="">
                 </div>
             </div>
-
-            ---
-
             <div class="titulo-seccion"><i class="fa fa-money-bill"></i> Datos Socio-Económicos</div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
@@ -178,9 +178,6 @@
                     </select>
                 </div>
             </div>
-
-            ---
-
             <div class="titulo-seccion"><i class="fa fa-medkit"></i> Datos de Asistencia Médica</div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
@@ -203,7 +200,8 @@
             </div>
             <div id="camposFamiliares" style="margin-top:10px;"></div>
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-paper-plane"></i> Enviar</button>
-    </form>
+        </form>
+    </main>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

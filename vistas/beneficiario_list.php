@@ -4,20 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Beneficiarios Registrados</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/reportes.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="solicitud-body">
+    <header class="header">
+    <div class="titulo-header">Lista de beneficiarios</div>
+    <div class="header-right">
+      <a href="<?= BASE_URL ?>/registro_beneficiario"><button class="principal-btn"><i class="fa fa-plus"></i>Registrar Beneficiario</button></a>
+      <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+    </div>
+  </header>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
     <!-- En caso de que exista la busqueda a través de get osea que ingresó a una pues se le pone boton de exportar en word o pdf, en caso de que no pues no existe este botón -->
-     <table>
+     <main class="auditoria-main">
+    <section class="auditoria-tabla-card">
+        <div class="tabla-responsive">
+     <table class="auditoria-tabla">
         <?php if (!empty($datos)): ?>
         <tr>
             <th>Nombre</th>
             <th>Apellido</th>
-            <th>Cedula</th>
+            <th>Cédula</th>
             <th>Ver Información Completa</th>
         </tr>
             <?php foreach ($datos as $fila): ?>
@@ -25,7 +35,7 @@
             <td><?= htmlspecialchars($fila['nombre']) ?></td>
             <td><?= htmlspecialchars($fila['apellido']) ?></td>
             <td><?= htmlspecialchars($fila['ci']) ?></td>
-            <td><a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']; ?>">Ver información Completa</a></td>
+            <td><a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']; ?>" class="usuario-btn">Ver información Completa</a></td>
         </tr>
         <?php endforeach; ?>
         <?php else: ?>
@@ -39,8 +49,9 @@
             </div>
         <?php endif; ?>
      </table>
-     <a href="<?= BASE_URL ?>/main">Volver</a>
-     <a href="<?= BASE_URL ?>/registro_beneficiario">Registrar Beneficiario</a>
+        </div>
+    </section>
+    </main>
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

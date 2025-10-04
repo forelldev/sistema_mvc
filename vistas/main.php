@@ -16,9 +16,10 @@
             <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
             <a href="<?= BASE_URL ?>/busqueda" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
             <?php } ?>
-          <button class="notificaciones-btn" id="btn-notificaciones">
-                <i class="fas fa-bell"></i> Notificaciones
-                <?php
+          <div class="notification-dropdown">
+                <button class="notificaciones-btn" id="btn-notificaciones">
+                    <i class="fas fa-bell"></i> Notificaciones
+                    <?php
                     $total = 0;
                     foreach ($datos as $grupo) {
                         // Si es un mensaje plano, no es un array de notificaciones
@@ -32,34 +33,29 @@
                     <?php if ($total > 0): ?>
                         <span class="badge"><?= $total ?></span>
                     <?php endif; ?>
-                    </button>
-
-                    <div id="barra-notificaciones" class="barra-notificaciones oculto">
-                        <ul id="lista-notificaciones" class="notificaciones-lista">
-                            <?php if ($total > 0): ?>
-                                <?php foreach ($datos as $tipo => $notificaciones): ?>
-                                    <?php foreach ($notificaciones as $noti): ?>
-                                        <li class="notificacion-item">
-                                            <strong><?= ucfirst($tipo) ?>:</strong>
-                                            <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc']?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
+                </button>
+                <div id="barra-notificaciones" class="barra-notificaciones oculto">
+                    <ul id="lista-notificaciones" class="notificaciones-lista">
+                        <?php if ($total > 0): ?>
+                            <?php foreach ($datos as $tipo => $notificaciones): ?>
+                                <?php foreach ($notificaciones as $noti): ?>
+                                    <li class="notificacion-item">
+                                        <strong><?= ucfirst($tipo) ?>:</strong>
+                                        <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc'] ?>">
+                                            <?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
                                             <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
-                                            <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span></a>
-                                        </li>
-                                    <?php endforeach; ?>
+                                            <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span>
+                                        </a>
+                                    </li>
                                 <?php endforeach; ?>
-                                <a href="<?= $_SESSION['id_rol'] == 2 ? 'marcar_vistasDespacho' : 'marcar_vistas' ?>">Marcar todas como vistas</a>
-                            <?php else: ?>
-                                <li class="notificacion-item">
-                                    <strong>Info:</strong> No hay notificaciones disponibles
-                                </li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-
-
-
-            
-
+                            <?php endforeach; ?>
+                            <a href="<?= $_SESSION['id_rol'] == 2 ? 'marcar_vistasDespacho' : 'marcar_vistas' ?>">Marcar todas como vistas</a>
+                        <?php else: ?>
+                            <li class="notificacion-item">No hay notificaciones nuevas.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </div>
         </div>
     </header>
     <nav class="navbar" aria-label="Menú principal">
@@ -69,11 +65,11 @@
             <i class="fas fa-bars"></i> Menú
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-                <a href="<?= BASE_URL ?>/beneficiarios_lista">Lista de beneficiarios</a>
-                <a href="<?= BASE_URL ?>/registro">Registrar Usuario</a>
-                <a href="<?= BASE_URL ?>/reportes_acciones">Reportes de Acciones</a>
-                <a href="<?= BASE_URL ?>/reportes">Reportes</a>
-                <a href="<?= BASE_URL ?>/limites">Límite por rol</a>
+                <a href="<?= BASE_URL ?>/beneficiarios_lista"><i class="fas fa-users"></i> Lista de beneficiarios</a>
+                <a href="<?= BASE_URL ?>/registro"><i class="fas fa-user-plus"></i> Registrar Usuario</a>
+                <a href="<?= BASE_URL ?>/reportes_acciones"><i class="fas fa-file-alt"></i> Reportes de Acciones</a>
+                <a href="<?= BASE_URL ?>/reportes"><i class="fas fa-chart-bar"></i> Reportes</a>
+                <a href="<?= BASE_URL ?>/limites"><i class="fas fa-user-shield"></i> Límite por rol</a>
         </div>
     </div>
     <div class="dropdown">
@@ -81,7 +77,7 @@
             <i class="fas fa-chart-bar"></i> Estadísticas
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>/estadisticas">Estadísticas de Solicitudes</a>
+            <a href="<?= BASE_URL ?>/estadisticas"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes</a>
             <!-- <a href="">Estadísticas de Usuarios</a> -->
         </div>
     </div>
@@ -91,20 +87,19 @@
             <i class="fas fa-folder-open"></i> Solicitudes
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>/solicitudes_list">Solicitudes de Ayuda</a>
+            <a href="<?= BASE_URL ?>/solicitudes_list"><i class="fas fa-folder-open"></i> Solicitudes de Ayuda</a>
             <?php if ($_SESSION['id_rol'] == 2) { ?>
-                <a href="<?= BASE_URL ?>/despacho_list">Solicitudes Despacho</a>
+                <a href="<?= BASE_URL ?>/despacho_list"><i class="fas fa-folder-open"></i> Solicitudes Despacho</a>
             <?php } ?>
         </div>
     </div>
     <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
     <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-signal"></i> Constancias
+            <i class="fas fa-file-alt"></i> Constancias
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-    
-        <a href="<?= BASE_URL ?>/constancias">Constancias</a>
+            <a href="<?= BASE_URL ?>/constancias"><i class="fas fa-file-alt"></i> Constancias</a>
     <?php } ?>
         </div>
     </div>
@@ -113,7 +108,7 @@
             <i class="fas fa-user"></i> Usuario
         </button>
         <div class="dropdown-menu" id="usuarioDropdown">
-            <a href="<?= BASE_URL ?>/logout">Cerrar Sesión</a>
+            <a href="<?= BASE_URL ?>/logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
         </div>
     </div>
     

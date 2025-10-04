@@ -14,11 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
         label: 'Cantidad de Solicitudes',
         data: window.solicitudesData,
         backgroundColor: [
-          '#f39c12',
-          '#3498db',
-          '#9b59b6',
-          '#e74c3c',
-          '#2ecc71'
+          '#3b4cca', // En espera (igual al contador)
+          '#ffd600', // Proceso (igual al contador)
+          '#ffd600', // Proceso (igual al contador)
+          '#ffd600', // Proceso (igual al contador)
+          '#4caf50'  // Finalizadas (igual al contador)
         ]
       }]
     },

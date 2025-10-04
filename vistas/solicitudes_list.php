@@ -15,7 +15,7 @@
         <div class="titulo-header">Lista de solicitudes</div>
         <div class="header-right">
          <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
-            <a href="<?=BASE_URL?>/busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+            <a href="<?=BASE_URL?>/busqueda"><button class="principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
         <?php } ?>
         <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
             <a href="<?=BASE_URL?>/inhabilitados_lista"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>

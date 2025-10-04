@@ -9,7 +9,16 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="solicitud-body">
+    <header class="header">
+        <div class="titulo-header">Lista de solicitudes</div>
+        <div class="header-right">
+            <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+        </div>
+    </header>
+    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
+    <!-- En caso de que exista la busqueda a través de get osea que ingresó a una pues se le pone boton de exportar en word o pdf, en caso de que no pues no existe este botón -->
+     <main class="solicitudes-main">
 <section class="solicitudes-lista">
     <?php if (!empty($datos)): ?>
             <?php foreach ($datos as $fila): ?>
