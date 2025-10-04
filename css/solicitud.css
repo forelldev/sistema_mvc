@@ -2225,7 +2225,7 @@
   color: #232946;
   background: #f5f7fa;
   transition: border 0.2s;
-  width: 20%;
+  max-width: 100%;
   box-sizing: border-box;
   appearance: none;
   -webkit-appearance: none;
@@ -2237,6 +2237,7 @@
   height: 42px;
   line-height: 1.5;
   cursor: pointer;
+
 }
 
 .filtros-form select:focus {

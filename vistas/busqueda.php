@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
 </head>
 <body class="solicitud-body">
     <header class="header">
@@ -23,14 +24,17 @@
             <h2><i class="fa fa-search"></i> Buscar por CI</h2>
             <div class="campo-user">
             <label for="ci">Cédula de Identidad</label>
-            <input type="text" name="ci" placeholder="Ingrese su CI">
+            <input type="text" name="ci" placeholder="Ingrese su CI" class="input-ci" required>
             </div>
             <button type="submit" value="Buscar" class="boton-enviar-ayuda"><i class="fa fa-search"></i>Buscar</button>
         </form>
     <?php  } else {?>
         <form action="<?=BASE_URL?>/buscar_cidespacho" method="POST" class="registro-card form-user" autocomplete="off">
             <h2><i class="fa fa-search"></i> Buscar por CI</h2>
-            <input type="text" name="ci" placeholder="Ingrese su CI">
+            <div class="campo-user">
+            <label for="ci">Cédula de Identidad</label>
+            <input type="text" name="ci" placeholder="Ingrese su CI" class="input-ci" required>
+            </div>
             <button type="submit" value="Buscar" class="boton-enviar-ayuda"><i class="fa fa-search"></i>Buscar</button>
         </form>
     <?php  } ?>
