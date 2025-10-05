@@ -12,7 +12,7 @@ require_once 'conexiondb.php';
             case 2:
                 $estado = ['En Proceso 2/3'];
                 // Consulta adicional para solicitud_despacho
-                $consulta2 = "SELECT * FROM despacho WHERE visto = 0 ORDER BY fecha DESC";
+                $consulta2 = "SELECT * FROM despacho_fecha WHERE visto = 0 ORDER BY fecha DESC";
                 $busqueda2 = $conexion->prepare($consulta2);
                 $busqueda2->execute();
                 $resultadoDespacho = $busqueda2->fetchAll(PDO::FETCH_ASSOC);
@@ -43,14 +43,23 @@ require_once 'conexiondb.php';
         // Construir consulta dinámica según cantidad de estados
         if (is_array($estado)) {
             $placeholders = implode(',', array_fill(0, count($estado), '?'));
-            $consulta = "SELECT * FROM solicitud_ayuda WHERE visto = 0 AND estado IN ($placeholders) ORDER BY fecha DESC";
+            $consulta = "SELECT saf.* 
+                        FROM solicitud_ayuda_fecha saf
+                        INNER JOIN solicitud_ayuda sa ON saf.id_doc = sa.id_doc
+                        WHERE saf.visto = 0 AND sa.estado IN ($placeholders)
+                        ORDER BY saf.fecha DESC";
             $busqueda = $conexion->prepare($consulta);
             $busqueda->execute($estado);
         } else {
-            $consulta = "SELECT * FROM solicitud_ayuda WHERE visto = 0 AND estado = ? ORDER BY fecha DESC";
+            $consulta = "SELECT saf.* 
+                        FROM solicitud_ayuda_fecha saf
+                        INNER JOIN solicitud_ayuda sa ON saf.id_doc = sa.id_doc
+                        WHERE saf.visto = 0 AND sa.estado = ?
+                        ORDER BY saf.fecha DESC";
             $busqueda = $conexion->prepare($consulta);
             $busqueda->execute([$estado]);
         }
+
 
         $resultadoAyuda = $busqueda->fetchAll(PDO::FETCH_ASSOC);
         if ($resultadoAyuda) {
@@ -93,7 +102,7 @@ require_once 'conexiondb.php';
 
     public static function marcar_vista() {
     $conexion = DB::conectar();
-    $consulta = "UPDATE solicitud_ayuda SET visto = 1 WHERE visto = 0";
+    $consulta = "UPDATE solicitud_ayuda_fecha SET visto = 1 WHERE visto = 0";
     $busqueda = $conexion->prepare($consulta);
     if ($busqueda->execute()) {
         $filas_afectadas = $busqueda->rowCount();

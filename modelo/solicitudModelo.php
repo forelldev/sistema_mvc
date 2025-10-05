@@ -22,11 +22,12 @@ class Solicitud{
         }
         // Construir placeholders dinámicos
         $placeholders = implode(',', array_fill(0, count($estados), '?'));
-        $consulta = "SELECT * FROM solicitud_ayuda 
-                    WHERE estado IN ($placeholders) 
-                    AND invalido != 1 
-                    ORDER BY fecha DESC";
-
+        $consulta = "SELECT sa.* 
+                    FROM solicitud_ayuda sa
+                    INNER JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    WHERE sa.estado IN ($placeholders) 
+                    AND sa.invalido != 1 
+                    ORDER BY saf.fecha DESC";
         $busqueda = $conexion->prepare($consulta);
         $busqueda->execute($estados); // Pasar los valores como parámetros
         $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
@@ -135,26 +136,79 @@ public static function buscarCi($ci) {
             // ✅ 3. Insertar solicitud de ayuda
             $stmt = $db->prepare("
                 INSERT INTO solicitud_ayuda (
-                    id_manual, ci, descripcion, estado, fecha, visto,
-                    remitente, observaciones, promotor, categoria, tipo_ayuda, fecha_modificacion
+                    id_manual, ci, estado
                 ) VALUES (
-                    :id_manual, :ci, :descripcion, :estado, :fecha, :visto,
-                    :remitente, :observaciones, :promotor, :categoria, :tipo_ayuda, :fecha_modificacion
+                    :id_manual, :ci, :estado
                 )
             ");
             $stmt->execute([
                 ':id_manual' => $data['id_manual'],
                 ':ci' => $data['ci'],
-                ':descripcion' => $data['descripcion'],
-                ':estado' => 'En espera del documento físico para ser procesado 0/3',
-                ':fecha' => $data['fecha'],
-                ':visto' => 0,
-                ':remitente' => $data['remitente'],
-                ':observaciones' => $data['observaciones'],
-                ':promotor' => $nombrePromotor,
-                ':categoria' => $data['categoria'],
+                ':estado' => 'En espera del documento físico para ser procesado 0/3'
+            ]);
+
+            $id_doc = $db->lastInsertId(); // Obtener el ID generado
+
+            // Correo Enviado Tabla
+
+            $stmt = $db->prepare("
+                INSERT INTO solicitud_ayuda_correo (
+                    id_doc, correo_enviado
+                ) VALUES (
+                    :id_doc, :correo_enviado
+                )
+            ");
+            $stmt->execute([
+                ':id_doc' => $id_doc,
+                ':correo_enviado' =>  0
+            ]);
+
+            // Categoría y tipo Tabla
+
+            $stmt = $db->prepare("
+                INSERT INTO solicitud_categoria (
+                    id_doc, tipo_ayuda, categoria
+                ) VALUES (
+                    :id_doc, :tipo_ayuda, :categoria
+                )
+            ");
+            $stmt->execute([
+                ':id_doc' => $id_doc,
                 ':tipo_ayuda' => $data['tipo_ayuda'],
-                ':fecha_modificacion' => $data['fecha']
+                ':categoria' => $data['categoria']
+            ]);
+
+            // Descripción, promotor, remitente
+
+            $stmt = $db->prepare("
+                INSERT INTO solicitud_descripcion (
+                    id_doc, descripcion, promotor, remitente, observaciones
+                ) VALUES (
+                    :id_doc, :descripcion, :promotor, :remitente, :observaciones
+                )
+            ");
+            $stmt->execute([
+                ':id_doc' => $id_doc,
+                ':descripcion' => $data['descripcion'],
+                ':promotor' => $data['promotor'],
+                ':remitente' => $data['remitente'],
+                ':observaciones' => $data['observaciones'] ?? null
+            ]);
+
+            // Fecha y visto
+
+            $stmt = $db->prepare("
+                INSERT INTO solicitud_ayuda_fecha (
+                    id_doc, fecha, fecha_modificacion, visto
+                ) VALUES (
+                    :id_doc, :fecha, :fecha_modificacion, :visto
+                )
+            ");
+            $stmt->execute([
+                ':id_doc' => $id_doc,
+                ':fecha' => $data['fecha'],
+                ':fecha_modificacion' => $data['fecha'],
+                ':visto' => 0
             ]);
 
             // ✅ 4. Verificar si el solicitante ya existe
@@ -380,39 +434,164 @@ public static function buscarCi($ci) {
 
     public static function filtrar_solicitud($filtro){
     $conexion = DB::conectar();
-
     try {
         switch($filtro){
             case "recientes":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda ORDER BY fecha DESC");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
 
             case "antiguos":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda ORDER BY fecha ASC");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0
+                    ORDER BY saf.fecha ASC
+                ");
                 break;
 
             case "medicinas":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Medicamentos'");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0 AND sc.categoria = 'Medicamentos'
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
 
             case "laboratorio":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Laboratorio'");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0 AND sc.categoria = 'Laboratorio'
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
 
             case "ayuda_tecnica":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Ayudas Técnicas'");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0 AND sc.categoria = 'Ayudas Técnicas'
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
 
             case "enseres":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'Enseres'");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0 AND sc.categoria = 'Enseres'
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
 
             case "urgentes":
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda WHERE categoria = 'urgentes'");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0 AND sc.categoria = 'Urgentes'
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
 
             default:
-                $stmt = $conexion->prepare("SELECT * FROM solicitud_ayuda ");
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sai.razon,
+                        sac.correo_enviado,
+                        sc.tipo_ayuda, sc.categoria,
+                        sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                    WHERE sa.invalido = 0
+                    ORDER BY saf.fecha DESC
+                ");
                 break;
         }
 
@@ -441,10 +620,24 @@ public static function buscarCi($ci) {
 
         try {
             $stmt = $conexion->prepare("
-                SELECT * FROM solicitud_ayuda 
-                WHERE fecha >= :fecha_inicio 
-                AND fecha <= :fecha_final 
-                AND estado = :estado
+                SELECT 
+                    sa.*, 
+                    saf.fecha, saf.fecha_modificacion, saf.visto,
+                    sai.razon,
+                    sac.correo_enviado,
+                    sc.tipo_ayuda, sc.categoria,
+                    sd.descripcion, sd.promotor, sd.remitente, sd.observaciones
+                FROM solicitud_ayuda sa
+                LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                WHERE saf.fecha >= :fecha_inicio 
+                AND saf.fecha <= :fecha_final 
+                AND sa.estado = :estado
+                AND sa.invalido = 0
+                ORDER BY saf.fecha DESC
             ");
             $stmt->bindParam(':fecha_inicio', $fecha_inicio);
             $stmt->bindParam(':fecha_final', $fecha_final);
@@ -465,113 +658,91 @@ public static function buscarCi($ci) {
         }
     }
 
+
     //NOTIFICACIONES DE LOS MEDICAMENTOS Y ENVIAR CORREO:
 
     public static function notiMedicamentos() {
-    $conexion = DB::conectar();
-    $rol = $_SESSION['id_rol'];
-    try {
-        // Consulta general (sin filtrar por correo_enviado)
-        switch ($rol) {
-        case 1:
-            $stmt = $conexion->prepare("
-                SELECT * FROM solicitud_ayuda 
-                WHERE categoria = :categoria 
-                AND estado IN (
-                    'En espera del documento físico para ser procesado 0/3',
-                    'En Proceso 1/3'
-                )
-                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
-                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
-                AND invalido = 0
-            ");
-            break;
+            $conexion = DB::conectar();
+            $rol = $_SESSION['id_rol'];
 
-        case 2:
-            $stmt = $conexion->prepare("
-                SELECT * FROM solicitud_ayuda 
-                WHERE categoria = :categoria 
-                AND estado = 'En Proceso 2/3'
-                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
-                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
-                AND invalido = 0
-            ");
-            break;
+            try {
+                $estadoFiltro = '';
+                switch ($rol) {
+                    case 1:
+                        $estadoFiltro = "sa.estado IN (
+                            'En espera del documento físico para ser procesado 0/3',
+                            'En Proceso 1/3'
+                        )";
+                        break;
+                    case 2:
+                        $estadoFiltro = "sa.estado = 'En Proceso 2/3'";
+                        break;
+                    case 3:
+                        $estadoFiltro = "sa.estado = 'En Proceso 3/3'";
+                        break;
+                    case 4:
+                    default:
+                        $estadoFiltro = "sa.estado != 'Solicitud Finalizada (Ayuda Entregada)'";
+                        break;
+                }
 
-        case 3:
-            $stmt = $conexion->prepare("
-                SELECT * FROM solicitud_ayuda 
-                WHERE categoria = :categoria 
-                AND estado = 'En Proceso 3/3'
-                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
-                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
-                AND invalido = 0
-            ");
-            break;
-
-        case 4:
-        default:
-            $stmt = $conexion->prepare("
-                SELECT * FROM solicitud_ayuda 
-                WHERE categoria = :categoria 
-                AND estado != 'Solicitud Finalizada (Ayuda Entregada)'
-                AND fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
-                AND invalido = 0
-            ");
-            break;
-    }
-
-
-        $stmt->execute(['categoria' => 'Medicamentos']);
-        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Enviar correos solo si correo_enviado = 0
-        foreach ($resultados as $fila) {
-            if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
-                $ci = $fila['ci'];
-                $stmtSolicitante = $conexion->prepare("
-                    SELECT nombre, correo FROM solicitantes WHERE ci = :ci
+                $stmt = $conexion->prepare("
+                    SELECT 
+                        sa.*, 
+                        saf.fecha_modificacion,
+                        sac.correo_enviado,
+                        sc.categoria
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                    WHERE sc.categoria = :categoria
+                    AND $estadoFiltro
+                    AND sa.invalido = 0
+                    AND saf.fecha_modificacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
                 ");
-                $stmtSolicitante->execute(['ci' => $ci]);
-                $solicitante = $stmtSolicitante->fetch(PDO::FETCH_ASSOC);
+                $stmt->execute(['categoria' => 'Medicamentos']);
+                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                if ($solicitante) {
-                    $correo = $solicitante['correo'];
-                    $nombre = $solicitante['nombre'];
-
-                    $enviado = Correo::correoVencido($correo, $nombre);
-
-                    if ($enviado) {
-                        $stmtUpdate = $conexion->prepare("
-                            UPDATE solicitud_ayuda 
-                            SET correo_enviado = 1 
-                            WHERE id_doc = :id_doc
+                foreach ($resultados as $fila) {
+                    if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
+                        $ci = $fila['ci'];
+                        $stmtSolicitante = $conexion->prepare("
+                            SELECT nombre, correo FROM solicitantes WHERE ci = :ci
                         ");
-                        $stmtUpdate->execute(['id_doc' => $fila['id_doc']]);
+                        $stmtSolicitante->execute(['ci' => $ci]);
+                        $solicitante = $stmtSolicitante->fetch(PDO::FETCH_ASSOC);
+
+                        if ($solicitante) {
+                            $correo = $solicitante['correo'];
+                            $nombre = $solicitante['nombre'];
+
+                            $enviado = Correo::correoVencido($correo, $nombre);
+
+                            if ($enviado) {
+                                $stmtUpdate = $conexion->prepare("
+                                    UPDATE solicitud_ayuda_correo 
+                                    SET correo_enviado = 1 
+                                    WHERE id_doc = :id_doc
+                                ");
+                                $stmtUpdate->execute(['id_doc' => $fila['id_doc']]);
+                            }
+                        }
                     }
                 }
+
+                return [
+                    'exito' => true,
+                    'datos' => $resultados
+                ];
+            } catch (Exception $e) {
+                error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
+                return [
+                    'exito' => false,
+                    'error' => $e->getMessage()
+                ];
             }
         }
-
-        return [
-            'exito' => true,
-            'datos' => $resultados
-        ];
-    } catch (Exception $e) {
-        error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
-        return [
-            'exito' => false,
-            'error' => $e->getMessage()
-        ];
-    }
-}
-
-
-
-
-
-
-
 
 }
 

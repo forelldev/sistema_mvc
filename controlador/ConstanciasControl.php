@@ -16,12 +16,13 @@ Class ConstanciasControl {
 
     public static function registrar_constancia() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+        date_default_timezone_set('America/Caracas');
+        $fecha = date('Y-m-d H:i:s');
+        $_POST['fecha'] = $fecha;
         $resultado = ConstanciasModelo::registrar_constancia($_POST);
         if ($resultado['exito']) {
             header('Location: ' . BASE_URL . '/felicidades_constancia');
-            date_default_timezone_set('America/Caracas');
             $id = $resultado['id'];
-            $fecha = date('Y-m-d H:i:s');
             $accion = 'Creó una nueva constancia.';
             Procesar::registrarReporte($id, $fecha, $accion, $_SESSION['ci']);
             exit;

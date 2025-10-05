@@ -50,13 +50,14 @@ class ConstanciasModelo{
             }
 
             // Insertar nueva constancia
-            $stmt = $conexion->prepare("INSERT INTO constancias (id_manual, tipo, ci, nombre, apellido) VALUES (?, ?, ?, ?, ?)");
+            $stmt = $conexion->prepare("INSERT INTO constancias (id_manual, tipo, ci, nombre, apellido, fecha) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $data['id_manual'],
                 $data['tipo'],
                 $data['ci'],
                 $data['nombre'],
-                $data['apellido']
+                $data['apellido'],
+                $data['fecha']
             ]);
             $idInsertado = $conexion->lastInsertId();
             return ['exito' => true,

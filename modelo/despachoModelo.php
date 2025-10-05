@@ -4,7 +4,17 @@ class Despacho{
        // MOSTRAR LISTA DE SOLICITUDES DE DESPACHO:
     public static function buscarLista (){
         $conexion = DB::conectar();
-        $consulta = "SELECT * FROM despacho WHERE estado != 'Inhabilitado' ORDER BY fecha DESC";
+        $consulta = "
+                SELECT 
+                    d.*, 
+                    dd.asunto, dd.creador,
+                    df.fecha, df.fecha_modificacion, df.visto
+                FROM despacho d
+                LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                WHERE d.invalido = 0
+                ORDER BY df.fecha DESC
+            ";
         $busqueda = $conexion->prepare($consulta);
         $busqueda->execute();
         $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
@@ -90,17 +100,54 @@ class Despacho{
 
             // ✅ 3. Insertar solicitud de ayuda
             $stmt = $db->prepare("
-                INSERT INTO despacho (id_manual, ci, asunto , estado, fecha, creador) VALUES 
-                (:id_manual, :ci, :asunto, :estado, :fecha, :creador)");
-
+                INSERT INTO despacho (
+                    id_manual, ci, estado, invalido
+                ) VALUES (
+                    :id_manual, :ci, :estado, :invalido
+                )
+            ");
             $stmt->execute([
                 ':id_manual' => $data['id_manual'],
                 ':ci' => $data['ci'],
-                ':asunto' => $data['asunto'],
                 ':estado' => 'En Revisión 1/2',
-                ':fecha' => $data['fecha'],
+                ':invalido' => 0
+            ]);
+
+            $id_despacho = $db->lastInsertId(); // Obtener el ID generado
+            
+            // Asunto y creador
+
+            $stmt = $db->prepare("
+                INSERT INTO despacho_descripcion (
+                    id_despacho, asunto, creador
+                ) VALUES (
+                    :id_despacho, :asunto, :creador
+                )
+            ");
+            $stmt->execute([
+                ':id_despacho' => $id_despacho,
+                ':asunto' => $data['asunto'],
                 ':creador' => $nombrePromotor
             ]);
+
+            // Fechas, y visto
+
+            $stmt = $db->prepare("
+                INSERT INTO despacho_fecha (
+                    id_despacho, fecha, fecha_modificacion, visto
+                ) VALUES (
+                    :id_despacho, :fecha, :fecha_modificacion, :visto
+                )
+            ");
+            $stmt->execute([
+                ':id_despacho' => $id_despacho,
+                ':fecha' => $data['fecha'],
+                ':fecha_modificacion' => $data['fecha'],
+                ':visto' => 0
+            ]);
+
+
+
 
             // ✅ 4. Verificar si el solicitante ya existe
             $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = :ci");

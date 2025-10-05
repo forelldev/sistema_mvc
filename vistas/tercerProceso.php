@@ -27,6 +27,8 @@
                 <th>Cédula</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
+                <th>Fecha</th>
+                <th>Hora</th>
                 <th>Ver Documento</th>
             </tr>
             <?php foreach ($datos as $fila): ?>
@@ -35,6 +37,8 @@
                 <td><?= htmlspecialchars($fila['ci']) ?></td>
                 <td><?= htmlspecialchars($fila['nombre']) ?></td>
                 <td><?= htmlspecialchars($fila['apellido']) ?></td>
+                <td><?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></td>
+                <td><?= htmlspecialchars(date('H:i:s', strtotime($fila['fecha'])))?></td>
                 <td>
                     <button class="generar-word"
                             data-tipo="<?= htmlspecialchars($fila['tipo']) ?>"
