@@ -41,8 +41,8 @@
                                 <?php foreach ($notificaciones as $noti): ?>
                                     <li class="notificacion-item">
                                         <strong><?= ucfirst($tipo) ?>:</strong>
-                                        <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc'] ?>">
-                                            <?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
+                                        <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc'] ?? $noti['id_despacho'] ?>">
+                                            <?= htmlspecialchars($noti['descripcion'] ?? $noti['asunto']) ?><br>
                                             <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
                                             <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span>
                                         </a>

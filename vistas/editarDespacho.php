@@ -28,7 +28,7 @@
                 <label for="asunto">Asunto:</label>
                 <input type="text" id="asunto" name="asunto" value="<?= htmlspecialchars($datos['asunto'] ?? '') ?>" placeholder="Ejem: Ayuda para silla de ruedas" required>
             </div>
-            <input type="hidden" name="id_doc" value="<?= htmlspecialchars($datos['id_doc'] ?? '') ?>">
+            <input type="hidden" name="id_despacho" value="<?= htmlspecialchars($datos['id_despacho'] ?? '') ?>">
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-save"></i> Guardar cambios</button>
         </form>
     </main>

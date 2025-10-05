@@ -12,7 +12,18 @@ require_once 'conexiondb.php';
             case 2:
                 $estado = ['En Proceso 2/3'];
                 // Consulta adicional para solicitud_despacho
-                $consulta2 = "SELECT * FROM despacho_fecha WHERE visto = 0 ORDER BY fecha DESC";
+                $consulta2 = "
+                        SELECT 
+                            d.*, 
+                            dd.asunto, dd.creador,
+                            df.fecha, df.fecha_modificacion, df.visto
+                        FROM despacho d
+                        LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                        LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                        WHERE df.visto = 0
+                        AND d.invalido = 0
+                        ORDER BY df.fecha DESC
+                    ";
                 $busqueda2 = $conexion->prepare($consulta2);
                 $busqueda2->execute();
                 $resultadoDespacho = $busqueda2->fetchAll(PDO::FETCH_ASSOC);
@@ -121,8 +132,8 @@ require_once 'conexiondb.php';
     public static function marcar_vistaDespacho() {
     $conexion = DB::conectar();
 
-    $consulta1 = "UPDATE solicitud_ayuda SET visto = 1 WHERE visto = 0";
-    $consulta2 = "UPDATE despacho SET visto = 1 WHERE visto = 0";
+    $consulta1 = "UPDATE solicitud_ayuda_fecha SET visto = 1 WHERE visto = 0";
+    $consulta2 = "UPDATE despacho_fecha SET visto = 1 WHERE visto = 0";
 
     try {
         // Ejecutar primera consulta
