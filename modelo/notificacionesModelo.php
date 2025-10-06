@@ -1,94 +1,102 @@
 <?php
 require_once 'conexiondb.php';
   class Notificaciones {
-      public static function mostrarNotificaciones($rol) {
-        $conexion = DB::conectar();
-        $resultadoFinal = [];
-        switch ($rol) {
-            case 1:
-                // Este rol tendrá dos estados
-                $estado = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3'];
-                break;
-            case 2:
-                $estado = ['En Proceso 2/3'];
-                // Consulta adicional para solicitud_despacho
-                $consulta2 = "
-                        SELECT 
-                            d.*, 
-                            dd.asunto, dd.creador,
-                            df.fecha, df.fecha_modificacion, df.visto
-                        FROM despacho d
-                        LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
-                        LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
-                        WHERE df.visto = 0
-                        AND d.invalido = 0
-                        ORDER BY df.fecha DESC
-                    ";
-                $busqueda2 = $conexion->prepare($consulta2);
-                $busqueda2->execute();
-                $resultadoDespacho = $busqueda2->fetchAll(PDO::FETCH_ASSOC);
+    public static function mostrarNotificaciones($rol) {
+            $conexion = DB::conectar();
+            $resultadoFinal = [];
+
+            // Definir estados según el rol
+            switch ($rol) {
+                case 1:
+                    $estado = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3'];
+                    break;
+                case 2:
+                    $estado = ['En Proceso 2/3'];
+                    break;
+                case 3:
+                    $estado = ['En Proceso 3/3 (Sin entregar)'];
+                    break;
+                case 4:
+                    $estado = [
+                        'En espera del documento físico para ser procesado 0/3',
+                        'En Proceso 1/3',
+                        'En Proceso 2/3',
+                        'En Proceso 3/3',
+                        'Solicitud Finalizada (Ayuda Entregada)'
+                    ];
+                    break;
+                default:
+                    return [
+                        'exito' => false,
+                        'mensaje' => 'Rol no válido'
+                    ];
+            }
+
+            // Consulta de solicitud de ayuda con detalles
+            if (!empty($estado)) {
+                $placeholders = implode(',', array_fill(0, count($estado), '?'));
+                $consultaAyuda = "
+                    SELECT 
+                        sa.*, 
+                        saf.fecha, saf.fecha_modificacion, saf.visto,
+                        sc.correo_enviado,
+                        cat.tipo_ayuda, cat.categoria,
+                        des.descripcion, des.promotor, des.remitente, des.observaciones
+                    FROM solicitud_ayuda sa
+                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                    LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
+                    LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
+                    LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
+                    WHERE saf.visto = 0 AND sa.estado IN ($placeholders)
+                    AND sa.invalido = 0
+                    ORDER BY saf.fecha DESC
+                ";
+                $busquedaAyuda = $conexion->prepare($consultaAyuda);
+                $busquedaAyuda->execute($estado);
+                $resultadoAyuda = $busquedaAyuda->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($resultadoAyuda) {
+                    $resultadoFinal['ayuda'] = $resultadoAyuda;
+                }
+            }
+
+            // Consulta de despacho solo para rol 2
+            if ($rol == 2) {
+                $consultaDespacho = "
+                    SELECT 
+                        d.*, 
+                        dd.asunto, dd.creador,
+                        df.fecha, df.fecha_modificacion, df.visto
+                    FROM despacho d
+                    LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                    LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                    WHERE df.visto = 0
+                    AND d.invalido = 0
+                    ORDER BY df.fecha DESC
+                ";
+                $busquedaDespacho = $conexion->prepare($consultaDespacho);
+                $busquedaDespacho->execute();
+                $resultadoDespacho = $busquedaDespacho->fetchAll(PDO::FETCH_ASSOC);
+
                 if ($resultadoDespacho) {
                     $resultadoFinal['despacho'] = $resultadoDespacho;
                 }
-                break;
-            case 3:
-                $estado = ['En Proceso 3/3 (Sin entregar)'];
-                break;
-            case 4:
-                // Este rol tendrá todos los estados menos la de solicitud despacho
-                $estado = [
-                    'En espera del documento físico para ser procesado 0/3',
-                    'En Proceso 1/3',
-                    'En Proceso 2/3',
-                    'En Proceso 3/3',
-                    'Solicitud Finalizada (Ayuda Entregada)'
+            }
+
+            // Respuesta final
+            if (!empty($resultadoFinal)) {
+                return [
+                    'exito' => true,
+                    'datos' => $resultadoFinal
                 ];
-                break;
-            default:
+            } else {
                 return [
                     'exito' => false,
-                    'mensaje' => 'Rol no válido'
+                    'mensaje' => 'No se encontraron notificaciones'
                 ];
+            }
         }
 
-        // Construir consulta dinámica según cantidad de estados
-        if (is_array($estado)) {
-            $placeholders = implode(',', array_fill(0, count($estado), '?'));
-            $consulta = "SELECT saf.* 
-                        FROM solicitud_ayuda_fecha saf
-                        INNER JOIN solicitud_ayuda sa ON saf.id_doc = sa.id_doc
-                        WHERE saf.visto = 0 AND sa.estado IN ($placeholders)
-                        ORDER BY saf.fecha DESC";
-            $busqueda = $conexion->prepare($consulta);
-            $busqueda->execute($estado);
-        } else {
-            $consulta = "SELECT saf.* 
-                        FROM solicitud_ayuda_fecha saf
-                        INNER JOIN solicitud_ayuda sa ON saf.id_doc = sa.id_doc
-                        WHERE saf.visto = 0 AND sa.estado = ?
-                        ORDER BY saf.fecha DESC";
-            $busqueda = $conexion->prepare($consulta);
-            $busqueda->execute([$estado]);
-        }
-
-
-        $resultadoAyuda = $busqueda->fetchAll(PDO::FETCH_ASSOC);
-        if ($resultadoAyuda) {
-            $resultadoFinal['ayuda'] = $resultadoAyuda;
-        }
-
-        if (!empty($resultadoFinal)) {
-            return [
-                'exito' => true,
-                'datos' => $resultadoFinal
-            ];
-        } else {
-            return [
-                'exito' => false,
-                'mensaje' => 'No se encontraron notificaciones'
-            ];
-        }
-    }
 
     public static function mostrar_notis($id_doc){
         $conexion = DB::conectar();
