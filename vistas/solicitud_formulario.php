@@ -158,7 +158,8 @@
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="nivel_ingreso">Nivel de Ingresos:</label>
-                    <input type="text" id="nivel_ingreso" name="nivel_ingreso" placeholder="Ejem: 500 Bs" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= $datos_beneficiario['ingresos']['nivel_ingreso'] ?? '' ?>">
+                    <input type="text" id="nivel_ingreso" name="nivel_ingreso" placeholder="Ejem: 500 Bs" required value="<?= $datos_beneficiario['ingresos']['nivel_ingreso'] ?? ''  ?>" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                   
                 </div>
                 <div class="campo-formulario">
                     <label for="pension">¿Recibe Bonos?</label>

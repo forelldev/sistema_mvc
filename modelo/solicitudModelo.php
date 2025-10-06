@@ -22,12 +22,23 @@ class Solicitud{
         }
         // Construir placeholders dinámicos
         $placeholders = implode(',', array_fill(0, count($estados), '?'));
-        $consulta = "SELECT sa.* 
-                    FROM solicitud_ayuda sa
-                    INNER JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
-                    WHERE sa.estado IN ($placeholders) 
-                    AND sa.invalido != 1 
-                    ORDER BY saf.fecha DESC";
+        $consulta = "
+                SELECT 
+                    sa.*, 
+                    saf.fecha, saf.fecha_modificacion, saf.visto,
+                    sc.correo_enviado,
+                    cat.tipo_ayuda, cat.categoria,
+                    des.descripcion, des.promotor, des.remitente, des.observaciones
+                FROM solicitud_ayuda sa
+                INNER JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
+                LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
+                LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
+                WHERE sa.estado IN ($placeholders)
+                AND sa.invalido != 1
+                ORDER BY saf.fecha DESC
+            ";
+
         $busqueda = $conexion->prepare($consulta);
         $busqueda->execute($estados); // Pasar los valores como parámetros
         $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
@@ -72,8 +83,9 @@ public static function buscarCi($ci) {
             'info' => self::buscarUno($db, 'solicitantes_info', $id),
             'propiedad' => self::buscarUno($db, 'solicitantes_propiedad', $id),
             'trabajo' => self::buscarUno($db, 'solicitantes_trabajo', $id),
+            'ingresos' => self::buscarUno($db,'solicitantes_ingresos',$id),
             'patologia' => $patologias,
-            'cantidad' => $cantidadPatologias
+            'cantidad' => $cantidad
         ];
 
         return ['exito' => true, 'mostrar' => $datos];
@@ -115,12 +127,48 @@ public static function buscarCi($ci) {
                 'trabajo', 'nombre_insti',
                 'nivel_ingreso', 'pension', 'bono'
             ];
-
             foreach ($camposObligatorios as $campo) {
                 if (!isset($data[$campo]) || $data[$campo] === '') {
                     throw new Exception("Falta el campo obligatorio: $campo");
                 }
             }
+            $data['nombre'] = ucfirst($data['nombre']);
+            $data['apellido'] = ucfirst($data['apellido']);
+            $data['lugar_nacimiento'] = ucfirst($data['lugar_nacimiento']);
+            $data['profesion'] = ucfirst($data['profesion']);
+            $data['trabajo'] = ucfirst($data['trabajo']);
+            $data['direccion_trabajo'] = ucfirst($data['direccion_trabajo']);
+            $data['nombre_insti'] = ucfirst($data['nombre_insti']);
+            $data['direc_habita'] = ucfirst($data['direc_habita']);
+            $data['estruc_base'] = ucfirst($data['estruc_base']);
+            $data['apellido'] = ucfirst($data['apellido']);
+            $data['descripcion'] = ucfirst($data['descripcion']);
+            $data['remitente'] = ucfirst($data['remitente']);
+
+            if (!empty($data['observaciones'])) {
+                $data['observaciones'] = ucfirst($data['observaciones']);
+            }
+
+            if(isset($data['observaciones']) && $data['observaciones'] == ''){
+                $data['observaciones'] = 'Sin observaciones';
+            }
+
+            if(isset($data['observaciones_propiedad']) && $data['observaciones_propiedad'] == ''){
+                $data['observaciones_propiedad'] = 'Sin observaciones';
+            }
+
+            if (!empty($data['observaciones_propiedad'])) {
+                $data['observaciones_propiedad'] = ucfirst($data['observaciones_propiedad']);
+            }
+
+            if (!empty($data['patologias']) && is_array($data['patologias'])) {
+                foreach ($data['patologias'] as $i => $patologia) {
+                    if (!empty($patologia['nom_patologia']) && is_string($patologia['nom_patologia'])) {
+                        $data['patologias'][$i]['nom_patologia'] = ucfirst($patologia['nom_patologia']);
+                    }
+                }
+            }
+
 
             // ✅ 2. Obtener datos del promotor
             $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
@@ -190,7 +238,7 @@ public static function buscarCi($ci) {
             $stmt->execute([
                 ':id_doc' => $id_doc,
                 ':descripcion' => $data['descripcion'],
-                ':promotor' => $data['promotor'],
+                ':promotor' => $nombrePromotor,
                 ':remitente' => $data['remitente'],
                 ':observaciones' => $data['observaciones'] ?? null
             ]);
@@ -229,7 +277,7 @@ public static function buscarCi($ci) {
 
                 self::insertarSolicitante($db, $id_solicitante, $data);
             }
-            $idInsertado = $conexion->lastInsertId();
+            $idInsertado = $db->lastInsertId();
             $db->commit();
             return ['exito' => true,
                     'id_doc' => $idInsertado

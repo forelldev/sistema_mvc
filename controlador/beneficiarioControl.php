@@ -5,7 +5,6 @@ Class BeneficiarioControl {
     if (isset($_GET['ci']) && !empty($_GET['ci'])) {
         $ci = $_GET['ci'];
         $resultado = BeneficiarioModelo::muestra($ci);
-
         if ($resultado['exito']) {
             $beneficiario = $resultado['datos'];
         } else {

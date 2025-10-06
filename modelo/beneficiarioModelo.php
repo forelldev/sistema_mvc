@@ -1,36 +1,68 @@
 <?php 
 require_once 'conexiondb.php';
 class BeneficiarioModelo{
+
     public static function muestra($ci) {
-    $conexion = DB::conectar();
+        $conexion = DB::conectar();
 
-    try {
-        $stmt = $conexion->prepare("
-            SELECT * FROM solicitantes 
-            WHERE ci = :ci
-        ");
-        $stmt->execute(['ci' => $ci]);
-        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            // Consulta principal: trae todos los datos relacionados excepto patologías
+            $stmt = $conexion->prepare("
+                SELECT 
+                    s.*, 
+                    c.comunidad, c.direc_habita, c.estruc_base,
+                    co.profesion, co.nivel_instruc,
+                    e.codigo_patria, e.serial_patria,
+                    i.fecha_nacimiento, i.lugar_nacimiento, i.edad, i.estado_civil, i.telefono,
+                    ing.nivel_ingreso, ing.pension, ing.bono,
+                    pr.propiedad, pr.propiedad_est, pr.observaciones_propiedad,
+                    t.trabajo, t.direccion_trabajo, t.trabaja_public, t.nombre_insti
+                FROM solicitantes s
+                LEFT JOIN solicitantes_comunidad c ON s.id_solicitante = c.id_solicitante
+                LEFT JOIN solicitantes_conocimiento co ON s.id_solicitante = co.id_solicitante
+                LEFT JOIN solicitantes_extra e ON s.id_solicitante = e.id_solicitante
+                LEFT JOIN solicitantes_info i ON s.id_solicitante = i.id_solicitante
+                LEFT JOIN solicitantes_ingresos ing ON s.id_solicitante = ing.id_solicitante
+                LEFT JOIN solicitantes_propiedad pr ON s.id_solicitante = pr.id_solicitante
+                LEFT JOIN solicitantes_trabajo t ON s.id_solicitante = t.id_solicitante
+                WHERE s.ci = :ci
+            ");
+            $stmt->execute(['ci' => $ci]);
+            $datos = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($resultado) {
-            return [
-                'exito' => true,
-                'datos' => $resultado
-            ];
-        } else {
+            if ($datos) {
+                // Obtener las patologías relacionadas con el id_solicitante
+                $stmt2 = $conexion->prepare("
+                    SELECT tip_patologia, nom_patologia
+                    FROM solicitantes_patologia
+                    WHERE id_solicitante = :id_solicitante
+                ");
+                $stmt2->execute(['id_solicitante' => $datos['id_solicitante']]);
+                $patologias = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+                // Añadir las patologías al array principal
+                $datos['patologias'] = $patologias;
+
+                return [
+                    'exito' => true,
+                    'datos' => $datos
+                ];
+            } else {
+                return [
+                    'exito' => false,
+                    'mensaje' => 'No se encontró ningún solicitante con esa CI.'
+                ];
+            }
+        } catch (Exception $e) {
+            error_log("Error al buscar solicitante por CI: " . $e->getMessage());
             return [
                 'exito' => false,
-                'mensaje' => 'No se encontró ningún solicitante con esa CI.'
+                'error' => $e->getMessage()
             ];
         }
-    } catch (Exception $e) {
-        error_log("Error al buscar solicitante por CI: " . $e->getMessage());
-        return [
-            'exito' => false,
-            'error' => $e->getMessage()
-        ];
     }
-    }
+
+
 
     public static function lista() {
         try {

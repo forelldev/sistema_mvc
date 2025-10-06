@@ -11,7 +11,7 @@
 </head>
 <body class="solicitud-body">
     <header class="header">
-    <div class="titulo-header">Buscar solicitudes</div>
+    <div class="titulo-header">Verificar si el beneficiario ya está registrado</div>
     <div class="header-right">
       <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
       <a href="<?= BASE_URL ?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
