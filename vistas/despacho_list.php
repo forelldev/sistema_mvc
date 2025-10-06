@@ -45,7 +45,7 @@
                             <div><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
                         </div>
                         <div class="solicitud-actions">
-                            <a href="<?= BASE_URL.'/beneficiario_infoDespacho'?>" class="aprobar-btn">Ver Información del beneficiario</a>
+                            <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
                             <?php if($estado == 'En Revisión 1/2' || $estado == 'Solicitud Finalizada (Ayuda Entregada)'){ ?>
                             <a href="<?= BASE_URL.'/editarDespacho?id_despacho='.$fila['id_despacho']  ?>" class="aprobar-btn">Editar</a>
                             <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="rechazar-btn">Inhabilitar</a>

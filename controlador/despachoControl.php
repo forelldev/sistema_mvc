@@ -65,8 +65,8 @@
         }
 
         public static function procesar(){
-        if(isset($_GET['id_doc'])){
-            $id_doc = $_GET['id_doc'];
+        if(isset($_GET['id_despacho'])){
+            $id_despacho = $_GET['id_despacho'];
             $estado = $_GET['estado'];
             switch($estado){
                 case 'En Revisión 1/2':
@@ -84,7 +84,7 @@
                 default:
                     $msj = 'Ocurrió un error!';
             }
-            if(Procesar::despacho($id_doc,$estado_new)){
+            if(Procesar::despacho($id_despacho,$estado_new)){
                 header('Location: '.BASE_URL.'/despacho_list');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');

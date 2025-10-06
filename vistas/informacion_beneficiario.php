@@ -13,7 +13,12 @@
 <body class="solicitud-body">
     <div class="info-beneficiario-card">
         <h2><i class="fa fa-user"></i> Información del Beneficiario</h2>
+        <?php if($_SESSION['id_rol'] == 2){?>
+            <a href="<?= BASE_URL ?>/main" class="volver-btn"><i class="fa fa-arrow-left"></i> Volver</a>
+        <?php } else{ ?>
         <a href="<?= BASE_URL ?>/beneficiarios_lista" class="volver-btn"><i class="fa fa-arrow-left"></i> Volver</a>
+        <?php } ?>
+        
         <?php if (isset($beneficiario)): ?>
             <table class="info-beneficiario-table">
                 <tr>

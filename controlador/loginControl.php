@@ -63,12 +63,13 @@ class LoginControl {
             $id = $_SESSION['id_sesion'];
             UserModel::registrarSalida($id,$fecha_salida);
             UserModel::logOut($ci);
-            session_unset();      // Elimina variables de sesión
-            session_destroy();    // Destruye la sesión
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_unset();      // Elimina variables de sesión
+                session_destroy();    // Destruye la sesión
+            }
             header('Location: '.BASE_URL.'/');
             exit;
         }
-
     }
 public function validarSesionAjax() {
     header('Content-Type: application/json');
