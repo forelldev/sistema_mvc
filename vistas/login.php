@@ -12,7 +12,7 @@
     <section class="login-container">
         <img src="assets/body.png" alt="Logo">
         <h1>Bienvenido</h1>
-    <form action="<?= BASE_URL?>/login" method="POST">
+    <form action="<?= BASE_PATH ?>/login" method="POST">
             <div class="input-group">
             <i class="fa fa-id-card"></i>
             <input type="text" name="ci" required placeholder="CI" autocomplete="off">
@@ -38,6 +38,6 @@
     <?php if (isset($_GET['msj'])): ?> mostrarMensaje("<?= htmlspecialchars($_GET['msj']) ?>", "info", 6500);
     <?php endif; ?>
 </script>
-<script src="<?= BASE_URL ?>/vistas/js/sesionReload.js"></script>
+<script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/contra.js"></script>
 </html>

@@ -3,6 +3,7 @@ require_once 'modelo/loginModel.php';
 require_once 'modelo/notificacionesModelo.php';
 class LoginControl {
     public function ingresar() {
+        // Verifica si la sesión ya está iniciada antes de llamar a session_start
         $ci = $_POST['ci'] ?? null;
         $clave = $_POST['clave'] ?? null;
         $respuesta = UserModel::verificarCredenciales($ci, $clave);
