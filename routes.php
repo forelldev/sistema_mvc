@@ -53,5 +53,9 @@ Router::get('/estadisticas','EstadisticasControl@estadisticas');
 Router::get('/constancias','ConstanciasControl@mostrar');
 Router::get('/registro_constancia','ConstanciasControl@registro_constancia');
 Router::post('/registrar_constancia','ConstanciasControl@registrar_constancia');
-Router::get('/felicidades_constancia','ConstanciasControl@felicidades_constancia'); 
+Router::get('/felicidades_constancia','ConstanciasControl@felicidades_constancia');
+Router::get('/recuperacion_clave','LoginControl@recuperacion_clave');
+Router::post('/recuperar_clave','LoginControl@recuperar_clave');
+Router::post('/nueva_clave','LoginControl@nueva_clave');
+Router::post('/actualizar_clave','LoginControl@actualizar_clave');
 ?>

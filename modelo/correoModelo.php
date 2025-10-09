@@ -17,7 +17,7 @@ class Correo {
             $mail->SMTPSecure = 'tls';
             $mail->Port       = 587;
 
-            $mail->setFrom('correosoficial23@gmail.com', 'Correos Notificaciones');
+            $mail->setFrom(getenv('GMAIL_USER'), 'Correos Notificaciones');
             $mail->addAddress($correo, $nombre);
 
             $mail->isHTML(true);
@@ -40,6 +40,13 @@ class Correo {
     public static function correoRenovado($correo, $nombre) {
         $asunto = 'Su solicitud ha sido renovada. Se darán 5 días más para su solicitud.';
         $mensaje = 'Estamos haciendo lo posible por su solicitud. Ha sido renovada y se le avisará en los próximos 5 días.';
+        self::configurarMailer($correo, $nombre, $asunto, $mensaje);
+        return true;
+    }
+
+    public static function correoClave($correo,$nombre,$codigo){
+        $asunto = 'Su código para el cambio de contraseña es...';
+        $mensaje = 'Su código para su cambio de contraseña es: '.$codigo;
         self::configurarMailer($correo, $nombre, $asunto, $mensaje);
         return true;
     }

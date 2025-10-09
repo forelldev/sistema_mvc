@@ -200,5 +200,72 @@ public function validarSesionAjax() {
             $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
             require_once 'vistas/main.php';
         }
+
+        public static function recuperacion_clave(){
+            require_once 'vistas/recuperacion_clave.php';
+        }
+
+        public static function recuperar_clave(){
+            if (isset($_POST['correo'])) {
+                $correo = $_POST['correo'];
+                $resultado = UserModel::verificar_correo($correo);
+                if ($resultado && $resultado['existe']) {
+                    $_SESSION['ci_recuperacion'] = $resultado['ci_recuperacion']; // Guardar la CI si quieres usarla después
+                    $generar_codigo = UserModel::generar_codigo($_SESSION['ci_recuperacion']);
+                    if(isset($generar_codigo['retorno']) && $generar_codigo['retorno'] == 'retorno'){
+                        $msj = $generar_codigo['msj'];
+                        require_once 'vistas/recuperar_clave.php';
+                    }
+                    else if($generar_codigo['success']){
+                        $msj = $generar_codigo['msj'];
+                        require_once 'vistas/recuperar_clave.php';
+                    }
+                    else{
+                        $msj = $generar_codigo['msj'] ?? 'Error desconocido.';
+                        require_once 'vistas/recuperacion_clave.php';
+                    }
+                } else {
+                    $msj = 'Este correo no existe en ninguna cuenta!';
+                    require_once 'vistas/recuperacion_clave.php';
+                }
+            }
+        }
+
+
+        public static function nueva_clave(){
+            if(isset($_POST['codigo'])){
+                $codigo = $_POST['codigo'];
+                $resultado = UserModel::verificar_codigo($codigo,$_SESSION['ci_recuperacion']);
+                    if($resultado['success']){
+                        require_once 'vistas/nueva_clave.php';
+                    }
+                    else if(isset($resultado['reset']) && $resultado['reset'] == 'reset'){
+                        unset($_SESSION['ci_recuperacion']);
+                        $msj = $resultado['msj'];
+                        header('Location: '.BASE_URL.'/?msj='.$msj);
+                    }
+                    else{
+                        $msj = $resultado['msj'];
+                        require_once 'vistas/recuperar_clave.php';
+                    }
+            }
+            }
+        
+
+        public static function actualizar_clave(){
+            if(isset($_POST['clave_nueva']) && isset($_POST['confirmar_clave'])){
+                $clave_nueva = $_POST['clave_nueva'];
+                $confirmar_clave = $_POST['confirmar_clave'];
+                if($clave_nueva === $confirmar_clave){
+                    UserModel::cambiar_clave($clave_nueva,$_SESSION['ci_recuperacion']);
+                    unset($_SESSION['ci_recuperacion']);
+                    require_once 'vistas/felicidades_clave.php';
+                }
+                else{
+                    $msj = 'Las contraseñas no coinciden, vuelve a intentarlo';
+                    require_once 'vistas/nueva_clave.php';
+                }
+            }
+        }
     }
 ?>

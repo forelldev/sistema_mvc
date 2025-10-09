@@ -26,6 +26,7 @@
         </div>
         <button type="submit" class="login-btn">Iniciar Sesión</button>
     </form>
+    <a href="recuperacion_clave">Recuperación de Cuenta</a>
     </section>
     <div class="footer">
     Desarrollado por: Carlos Soteldo, David Felipe, Luis Lucena, Stefanni Legon, Manuel Rosales, Carlos Serradas
