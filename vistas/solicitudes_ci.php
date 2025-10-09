@@ -51,6 +51,7 @@
     <form action="solicitudes_ci" method="POST">
         <input type="submit" value="Registrar Solicitud">
         <input type="hidden" name="ci" value="<?= $ci ?>">
+        <input type="hidden" name="categoria" value="<?= $categoria ?>">
     </form>
     <a href="<?=BASE_URL?>/">Volver (No registrar)</a>
 </body>

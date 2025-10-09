@@ -18,8 +18,8 @@
     </select>
 
     <form action="<?= BASE_URL ?>/registrar_solicitud_urgencia" method="POST" class="form-inhabilitado">
-        <input type="text" name="nombre" placeholder="Nombre del Paciente" required>
-        <input type="text" name="ci" placeholder="Cédula" required>
+        <input type="text" name="nombre" placeholder="Nombre del Paciente" value="<?= $datos_beneficiario['solicitante']['nombre'] ?? '' ?>"  required>
+        <input type="text" name="ci" placeholder="Cédula" required value="<?= $datos_beneficiario['solicitante']['ci'] ?? '' ?>" >
         <input type="hidden" name="beneficio">
         <input type="hidden" name="categoria" value="Laboratorio">
         <input type="hidden" name="tipo_ayuda" value="Otros">
@@ -27,8 +27,8 @@
     </form>
 
     <form action="<?= BASE_URL ?>/registrar_solicitud_urgencia" method="POST" class="form-inhabilitado">
-        <input type="text" name="nombre" placeholder="Nombre del Paciente" required>
-        <input type="text" name="ci" placeholder="Cédula" required>
+        <input type="text" name="nombre" placeholder="Nombre del Paciente" required value="<?= $datos_beneficiario['solicitante']['nombre'] ?? '' ?>">
+        <input type="text" name="ci" placeholder="Cédula" required value="<?= $datos_beneficiario['solicitante']['ci'] ?? '' ?>">
         <input type="hidden" name="beneficio">
         <input type="hidden" name="categoria" value="Laboratorio">
         <input type="hidden" name="tipo_ayuda" value="Otros">
@@ -36,8 +36,8 @@
     </form>
 
     <form action="<?= BASE_URL ?>/registrar_solicitud_urgencia" method="POST" class="form-inhabilitado">
-        <input type="text" name="nombre" placeholder="Nombre del Paciente" required>
-        <input type="text" name="ci" placeholder="Cédula" required>
+        <input type="text" name="nombre" placeholder="Nombre del Paciente" required value="<?= $datos_beneficiario['solicitante']['nombre'] ?? '' ?>">
+        <input type="text" name="ci" placeholder="Cédula" required value="<?= $datos_beneficiario['solicitante']['ci'] ?? '' ?>">
         <label for="">Seleccione en caso de ser más de un examen: </label>
         <input type="checkbox" name="beneficio[]" id="" value="Hematología Completa">
         <input type="checkbox" name="beneficio[]" id="" value="Glicemia">

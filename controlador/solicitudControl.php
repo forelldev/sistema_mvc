@@ -50,6 +50,11 @@ class SolicitudControl {
                     extract($data); // crea $data_exists, $datos_beneficiario, etc.
                     require_once 'vistas/solicitud_formulario.php';
                 }
+                else{
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                    require_once 'vistas/solicitudes_urgencia.php';
+                }
                 
             }
         }
@@ -58,9 +63,16 @@ class SolicitudControl {
     public static function solicitudes_ci(){
         if(isset($_POST['ci'])){
             $ci = $_POST['ci'];
-            $data = self::obtenerDatosBeneficiario($ci);
-            extract($data); // crea $data_exists, $datos_beneficiario, etc.
-            require_once 'vistas/solicitud_formulario.php';
+            if($categoria == 'Economico' || $categoria == 'Ayudas Tecnicas'){
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                    require_once 'vistas/solicitud_formulario.php';
+                }
+            else{
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                    require_once 'vistas/solicitudes_urgencia.php';
+                }
         }
     }
 
@@ -300,6 +312,10 @@ class SolicitudControl {
         echo "No está llegando el POST correctamente.";
     }
 }
+
+    public static function registrar_solicitud_urgencia(){
+        
+    }
 
 
 }

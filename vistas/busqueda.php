@@ -29,7 +29,7 @@
                 <option value="Medicamentos">Medicamentos</option>
                 <option value="Laboratorio">Laboratorio(Ecos, Radiografías, etc...)</option>
                 <option value="Ayudas Tecnicas">Ayudas Técnicas</option>
-                <option value="Enseres">Enseres</option>
+                <!-- <option value="Enseres">Enseres</option> -->
                 <option value="Economico">Económico</option>
             </select>
             </div>

@@ -59,4 +59,5 @@ Router::post('/recuperar_clave','LoginControl@recuperar_clave');
 Router::post('/nueva_clave','LoginControl@nueva_clave');
 Router::post('/actualizar_clave','LoginControl@actualizar_clave');
 Router::post('/solicitudes_ci','SolicitudControl@solicitudes_ci');
+Router::post('/registrar_solicitud_urgencia','SolicitudControl@registrar_solicitud_urgencia');
 ?>
