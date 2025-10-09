@@ -24,6 +24,14 @@
             <div class="campo-user">
             <label for="ci">Cédula de Identidad</label>
             <input type="text" name="ci" placeholder="Ingrese su CI" class="input-ci" required>
+            <label for="categoria">Categoría:</label>
+            <select name="categoria" id="categoria">
+                <option value="Medicamentos">Medicamentos</option>
+                <option value="Laboratorio">Laboratorio(Ecos, Radiografías, etc...)</option>
+                <option value="Ayudas Tecnicas">Ayudas Técnicas</option>
+                <option value="Enseres">Enseres</option>
+                <option value="Economico">Económico</option>
+            </select>
             </div>
             <button type="submit" value="Buscar" class="boton-enviar-ayuda"><i class="fa fa-search"></i>Buscar</button>
         </form>

@@ -35,14 +35,34 @@ class SolicitudControl {
     }
 
     public static function buscar() {
-    $ci = $_POST['ci'] ?? null;
-    if ($ci) {
-        $data = self::obtenerDatosBeneficiario($ci);
-        extract($data); // crea $data_exists, $datos_beneficiario, etc.
-        require_once 'vistas/solicitud_formulario.php';
+        if(isset($_POST['ci'])){
+            $ci = $_POST['ci'];
+            $categoria = $_POST['categoria'];
+            $res = Solicitud::verificar_solicitudes($ci);
+            if($res['exito']){
+                $msj = 'Se han encontrado solicitudes anteriores de esta persona';
+                $datos = $res['datos'];
+                require_once 'vistas/solicitudes_ci.php';
+            }
+            else{
+                if($categoria == 'Economico' || $categoria == 'Ayudas Tecnicas'){
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                    require_once 'vistas/solicitud_formulario.php';
+                }
+                
+            }
+        }
     }
-}
 
+    public static function solicitudes_ci(){
+        if(isset($_POST['ci'])){
+            $ci = $_POST['ci'];
+            $data = self::obtenerDatosBeneficiario($ci);
+            extract($data); // crea $data_exists, $datos_beneficiario, etc.
+            require_once 'vistas/solicitud_formulario.php';
+        }
+    }
 
     private static function obtenerDatosBeneficiario($ci) {
         $data = [

@@ -792,6 +792,59 @@ public static function buscarCi($ci) {
             }
         }
 
+        public static function verificar_solicitudes($ci){
+            try {
+                $conexion = DB::conectar();
+                $consulta = "
+                        SELECT 
+                            sa.id_doc,
+                            sa.id_manual,
+                            sa.ci,
+                            sa.estado,
+                            sa.invalido,
+
+                            sai.razon,
+                            sac.correo_enviado,
+                            sc.tipo_ayuda,
+                            sc.categoria,
+                            sd.descripcion,
+                            sd.promotor,
+                            sd.remitente,
+                            sd.observaciones,
+                            saf.fecha,
+                            saf.fecha_modificacion,
+                            saf.visto
+                        FROM solicitud_ayuda sa
+                        LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                        LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                        LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                        LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                        LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                        WHERE sa.ci = :ci
+                        ";
+                $cons = $conexion->prepare($consulta);
+                $cons->bindParam(':ci', $ci);
+                $cons->execute();
+                $datos = $cons->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!empty($datos)) {
+                    return [
+                        'exito' => true,
+                        'datos' => $datos
+                    ];
+            } else {
+                return [
+                    'exito' => false
+                ];
+            }
+            } catch (PDOException $e) {
+                return [
+                    'exito' => false,
+                    'error' => 'Error al consultar solicitudes: ' . $e->getMessage()
+                ];
+            }
+        }
+
 }
 
 ?>
