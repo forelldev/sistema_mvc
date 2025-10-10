@@ -845,6 +845,10 @@ public static function buscarCi($ci) {
             }
         }
 
+        public static function registrar_urgencia(){
+            
+        }
+
 }
 
 ?>

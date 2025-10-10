@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-10-2025 a las 16:04:04
+-- Tiempo de generación: 10-10-2025 a las 03:32:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -66,7 +66,7 @@ CREATE TABLE `despacho` (
 --
 
 INSERT INTO `despacho` (`id_despacho`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
-(1, 55832, 3215, 'En Revisión 1/2', 0);
+(1, 55832, 3215, 'En Proceso 2/2 (Sin entregar)', 0);
 
 -- --------------------------------------------------------
 
@@ -186,7 +186,12 @@ INSERT INTO `reportes_acciones` (`id`, `id_doc`, `fecha`, `accion`, `ci`) VALUES
 (44, 2, '2025-09-23 15:56:53', 'Reinició el proceso de la solicitud.', 3434),
 (45, 2, '2025-09-25 12:43:35', 'Recibió documento físico, y aprobó para su procedimiento.', 3434),
 (46, 4, '2025-10-03 18:12:16', 'Creó una nueva constancia.', 3434),
-(47, 13, '2025-10-06 09:35:21', 'Creó una nueva solicitud de ayuda.', 3434);
+(47, 13, '2025-10-06 09:35:21', 'Creó una nueva solicitud de ayuda.', 3434),
+(48, 3, '2025-10-06 10:18:42', 'Recibió documento físico, y aprobó para su procedimiento.', 3434),
+(49, 3, '2025-10-06 10:18:55', 'Envió la solicitud a despacho.', 3434),
+(50, 3, '2025-10-06 10:19:07', 'Envió la solicitud a administración.', 3434),
+(51, 3, '2025-10-06 10:19:19', 'Confirmó que se entregó la ayuda.', 3434),
+(52, 3, '2025-10-06 10:19:32', 'Reinició el proceso de la solicitud.', 3434);
 
 -- --------------------------------------------------------
 
@@ -253,8 +258,28 @@ INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VA
 (45, 3434, '2025-10-03 15:50:16', '2025-10-04 09:20:06'),
 (46, 3434, '2025-10-04 09:20:14', '2025-10-05 10:53:54'),
 (47, 3434, '2025-10-05 10:54:01', '2025-10-05 15:38:56'),
-(48, 123, '2025-10-05 15:39:29', '0000-00-00 00:00:00'),
-(49, 3434, '2025-10-06 07:51:39', '0000-00-00 00:00:00');
+(48, 123, '2025-10-05 15:39:29', '2025-10-06 10:38:56'),
+(49, 3434, '2025-10-06 07:51:39', '2025-10-06 10:38:11'),
+(50, 123, '2025-10-06 10:39:04', '2025-10-06 10:57:21'),
+(51, 123, '2025-10-06 11:03:07', '2025-10-06 11:03:13'),
+(52, 123, '2025-10-06 11:03:25', '2025-10-06 11:03:32'),
+(53, 3434, '2025-10-07 07:30:03', '2025-10-07 07:30:12'),
+(54, 3434, '2025-10-07 07:30:19', '2025-10-07 07:30:50'),
+(55, 3434, '2025-10-08 11:29:02', '2025-10-08 11:50:51'),
+(56, 123, '2025-10-08 11:42:04', '2025-10-08 11:56:37'),
+(57, 123, '2025-10-08 11:54:59', '2025-10-08 11:55:08'),
+(58, 123, '2025-10-08 11:55:19', '2025-10-08 11:55:28'),
+(59, 3434, '2025-10-08 11:56:18', '2025-10-08 11:59:47'),
+(60, 3434, '2025-10-08 12:06:51', '2025-10-08 12:31:01'),
+(61, 3434, '2025-10-08 12:31:09', '2025-10-08 12:31:19'),
+(62, 3434, '2025-10-08 12:41:09', '2025-10-08 14:06:08'),
+(63, 3434, '2025-10-08 14:06:16', '2025-10-08 14:06:23'),
+(64, 3434, '2025-10-08 14:07:25', '2025-10-08 14:07:33'),
+(65, 3434, '2025-10-09 15:25:54', '2025-10-09 15:26:01'),
+(66, 3434, '2025-10-09 15:31:41', '2025-10-09 15:31:51'),
+(67, 3434, '2025-10-09 15:35:50', '2025-10-09 15:38:49'),
+(68, 123, '2025-10-09 15:39:01', '2025-10-09 15:39:08'),
+(69, 3434, '2025-10-09 15:39:19', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -528,7 +553,7 @@ CREATE TABLE `solicitud_ayuda_fecha` (
 --
 
 INSERT INTO `solicitud_ayuda_fecha` (`id`, `id_doc`, `fecha`, `fecha_modificacion`, `visto`) VALUES
-(2, 3, '2025-10-06 09:35:19', '2025-10-06 09:35:19', 0);
+(2, 3, '2025-10-06 09:35:19', '2025-10-06 10:19:32', 0);
 
 -- --------------------------------------------------------
 
@@ -587,6 +612,18 @@ INSERT INTO `solicitud_descripcion` (`id`, `id_doc`, `descripcion`, `promotor`, 
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `solicitud_laboratorio`
+--
+
+CREATE TABLE `solicitud_laboratorio` (
+  `id` int(11) NOT NULL,
+  `id_doc` int(11) NOT NULL,
+  `examen` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -603,9 +640,9 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`ci`, `clave`, `id_rol`, `sesion`) VALUES
 (34, '$2y$10$B3B3.eLTtqT.iJcPnh/m4.uSJ7M7j3tKvcLZii.D3B9BI5lgp2CwW', 1, 'False'),
-(123, '$2y$10$EUbg2UC5PG3DD2IUBrCf7OrQE.8AYST9kKAPP5MqmTU.9feSrr6Cm', 2, 'True'),
+(123, '$2y$10$EUbg2UC5PG3DD2IUBrCf7OrQE.8AYST9kKAPP5MqmTU.9feSrr6Cm', 2, 'False'),
 (321, '$2y$10$b7GW4RMYoXkT7w35iXmYWuL3faGW5px.ZEi7bk4sMZZPzEwQcnjKK', 3, 'False'),
-(3434, '$2y$10$RNNLpe0hPJaIRhYcIHlgk.q.tIz8.YQFuFOrDZbP5YotTJ8IPV22e', 4, 'True');
+(3434, '$2y$10$aaqOa8LN3ZdV7hviTWx7eufhAGPgvqZDWxgXmuUElh6iWfbKqTRXm', 4, 'True');
 
 -- --------------------------------------------------------
 
@@ -617,18 +654,32 @@ CREATE TABLE `usuarios_info` (
   `id` int(11) NOT NULL,
   `ci` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL,
-  `apellido` varchar(255) NOT NULL
+  `apellido` varchar(255) NOT NULL,
+  `correo` varchar(75) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios_info`
 --
 
-INSERT INTO `usuarios_info` (`id`, `ci`, `nombre`, `apellido`) VALUES
-(2, 3434, 'Admin', 'Supremo'),
-(5, 123, 'pepe', 'gonzalez'),
-(6, 34, 'promotor', 'socio'),
-(7, 321, 'administracion', 'gonzalez');
+INSERT INTO `usuarios_info` (`id`, `ci`, `nombre`, `apellido`, `correo`) VALUES
+(2, 3434, 'Admin', 'Supremo', 'forell.music@gmail.com'),
+(5, 123, 'pepe', 'gonzalez', ''),
+(6, 34, 'promotor', 'socio', ''),
+(7, 321, 'administracion', 'gonzalez', '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios_recuperacion`
+--
+
+CREATE TABLE `usuarios_recuperacion` (
+  `id` int(20) NOT NULL,
+  `ci` int(30) NOT NULL,
+  `codigo` int(40) NOT NULL,
+  `intentos` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Índices para tablas volcadas
@@ -791,6 +842,12 @@ ALTER TABLE `solicitud_descripcion`
   ADD KEY `fk_descripcion_doc` (`id_doc`);
 
 --
+-- Indices de la tabla `solicitud_laboratorio`
+--
+ALTER TABLE `solicitud_laboratorio`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -803,6 +860,12 @@ ALTER TABLE `usuarios`
 ALTER TABLE `usuarios_info`
   ADD PRIMARY KEY (`id`),
   ADD KEY `ci` (`ci`);
+
+--
+-- Indices de la tabla `usuarios_recuperacion`
+--
+ALTER TABLE `usuarios_recuperacion`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -842,13 +905,13 @@ ALTER TABLE `despacho_invalido`
 -- AUTO_INCREMENT de la tabla `reportes_acciones`
 --
 ALTER TABLE `reportes_acciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_entradas`
 --
 ALTER TABLE `reportes_entradas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -947,10 +1010,22 @@ ALTER TABLE `solicitud_descripcion`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de la tabla `solicitud_laboratorio`
+--
+ALTER TABLE `solicitud_laboratorio`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios_info`
 --
 ALTER TABLE `usuarios_info`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios_recuperacion`
+--
+ALTER TABLE `usuarios_recuperacion`
+  MODIFY `id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restricciones para tablas volcadas

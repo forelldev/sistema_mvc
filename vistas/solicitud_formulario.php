@@ -236,10 +236,11 @@
                 <div class="campo-formulario">
                     <label for="categoria">Categoría</label>
                     <select name="categoria" id="categoria">
-                        <option value="Ayudas técnicas">Ayudas técnicas</option>
-                        <option value="Medicamentos">Medicamentos</option>
+                        <option value="Ayudas Tecnicas" <?= ($categoria ?? '') == 'Ayudas Tecnicas' ? 'selected' : '' ?>>Ayudas Técnicas</option>
+                        <!-- <option value="Medicamentos">Medicamentos</option>
                         <option value="Laboratorio">Laboratorio</option>
-                        <option value="Enseres">Enseres</option>
+                        <option value="Enseres">Enseres</option> -->
+                        <option value="Economica" <?= ($categoria ?? '') == 'Economico' ? 'selected' : '' ?>>Económica</option>
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
