@@ -37,7 +37,6 @@ class SolicitudControl {
     public static function buscar() {
         if(isset($_POST['ci'])){
             $ci = $_POST['ci'];
-            $categoria = $_POST['categoria'];
             $res = Solicitud::verificar_solicitudes($ci);
             if($res['exito']){
                 $msj = 'Se han encontrado solicitudes anteriores de esta persona';
@@ -45,17 +44,9 @@ class SolicitudControl {
                 require_once 'vistas/solicitudes_ci.php';
             }
             else{
-                if($categoria == 'Economico' || $categoria == 'Ayudas Tecnicas'){
-                    $data = self::obtenerDatosBeneficiario($ci);
-                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                    require_once 'vistas/solicitud_formulario.php';
-                }
-                else{
-                    $data = self::obtenerDatosBeneficiario($ci);
-                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                    require_once 'vistas/solicitudes_urgencia.php';
-                }
-                
+                $data = self::obtenerDatosBeneficiario($ci);
+                extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                require_once 'vistas/solicitud_formulario.php';
             }
         }
     }
@@ -63,60 +54,12 @@ class SolicitudControl {
     public static function solicitudes_ci(){
         if(isset($_POST['ci'])){
             $ci = $_POST['ci'];
-            $categoria = $_POST['categoria'];
-            if($categoria == 'Economico' || $categoria == 'Ayudas Tecnicas'){
-                    $data = self::obtenerDatosBeneficiario($ci);
-                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                    require_once 'vistas/solicitud_formulario.php';
-                }
-            else{
-                    $data = self::obtenerDatosBeneficiario($ci);
-                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                    require_once 'vistas/solicitudes_urgencia.php';
-                }
+            $data = self::obtenerDatosBeneficiario($ci);
+            extract($data); // crea $data_exists, $datos_beneficiario, etc.
+            require_once 'vistas/solicitud_formulario.php';
         }
     }
-
-    public static function registrar_solicitud_urgencia(){
-        if(isset($_POST['categoria'])){
-            $categoria = $_POST['categoria'];
-            switch($categoria){
-                case 'Laboratorio':
-                        $res = Solicitud::registrar_urgencia($ci,$nombre,$categoria);
-                        if($res['exito']){
-                            header("Location: ".BASE_URL."/felicidades");
-                        }
-                        else{
-                            $msj = "Error al registrar la solicitud: " . $resultado['error'];
-                            require_once 'vistas/solicitudes_urgencia.php';
-                        }
-                    break;
-                case 'Medicamentos':
-                        $res = Solicitud::registrar_urgencia($ci,$nombre,$categoria);
-                        if($res['exito']){
-                            header("Location: ".BASE_URL."/felicidades");
-                        }
-                        else{
-                            $msj = "Error al registrar la solicitud: " . $resultado['error'];
-                            require_once 'vistas/solicitudes_urgencia.php';
-                        }
-                    break;
-                case 'Laboratorio2':
-                        $res = Solicitud::registrar_urgencia($ci,$nombre,$categoria);
-                        if($res['exito']){
-                            header("Location: ".BASE_URL."/felicidades");
-                        }
-                        else{
-                            $msj = "Error al registrar la solicitud: " . $resultado['error'];
-                            require_once 'vistas/solicitudes_urgencia.php';
-                        }
-                    break;
-            }
-        }
-    }
-
-
-
+    
     private static function obtenerDatosBeneficiario($ci) {
         $data = [
             'data_exists' => false,

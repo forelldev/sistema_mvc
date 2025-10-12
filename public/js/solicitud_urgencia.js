@@ -1,28 +1,50 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form_inhabilitado = document.querySelectorAll(".form-inhabilitado");
-    const categoria_valor = document.getElementById("categoria_valor");
+const tipoAyudaSelect = document.getElementById('tipo_ayuda');
+const subcategoriaContainer = document.getElementById('subcategoria_container');
+const subcategoriaSelect = document.getElementById('subcategoria');
+const campoExamen = document.getElementById('campo_examen');
 
-    // Ocultar todos los formularios al inicio
-    form_inhabilitado.forEach(form => {
-        form.style.display = 'none';
-    });
+const renderSubcategoria = (valor) => {
+  campoExamen.innerHTML = '';
+  campoExamen.style.display = 'none';
 
-    // Escuchar cambios en el select
-    categoria_valor.addEventListener('change', () => {
-        const valor = categoria_valor.value.trim();
+  if (valor === 'Ecosonograma' || valor === 'Eco-Doppler') {
+    campoExamen.innerHTML = `<input type="hidden" name="examen[]" value="${valor}">`;
+    campoExamen.style.display = 'block';
+  } else if (valor === 'Exámenes de Laboratorio') {
+    campoExamen.innerHTML = `
+      <label>Seleccione uno o más exámenes:</label><br>
+      <label><input type="checkbox" name="examen[]" value="Hematología Completa"> Hematología Completa</label><br>
+      <label><input type="checkbox" name="examen[]" value="Glicemia"> Glicemia</label><br>
+      <label><input type="checkbox" name="examen[]" value="Orina"> Orina</label><br>
+      <label><input type="checkbox" name="examen[]" value="Heces"> Heces</label><br>
+    `;
+    campoExamen.style.display = 'block';
+  }
+};
 
-        // Ocultar todos los formularios antes de mostrar el correcto
-        form_inhabilitado.forEach(form => {
-            form.style.display = 'none';
-        });
+tipoAyudaSelect.addEventListener('change', (e) => {
+  const valor = e.target.value;
 
-        // Mostrar el formulario correspondiente
-        if (valor === "Ecosonograma" || valor === "Eco-Doppler") {
-            document.getElementById("form_laboratorio").style.display = 'block';
-        } else if (valor === "Medicamentos") {
-            document.getElementById("form_medicamentos").style.display = 'block';
-        } else if (valor !== "") {
-            document.getElementById("form_laboratorio_group").style.display = 'block';
-        }
-    });
+  // Ocultar todo por defecto
+  subcategoriaContainer.style.display = 'none';
+  campoExamen.innerHTML = '';
+  campoExamen.style.display = 'none';
+
+  if (valor === 'Laboratorio') {
+    subcategoriaContainer.style.display = 'block';
+  }
 });
+
+subcategoriaSelect.addEventListener('change', (e) => {
+  renderSubcategoria(e.target.value);
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (tipoAyudaSelect.value === 'Laboratorio') {
+    subcategoriaContainer.style.display = 'block';
+    if (subcategoriaSelect.value) {
+      renderSubcategoria(subcategoriaSelect.value);
+    }
+  }
+});
+

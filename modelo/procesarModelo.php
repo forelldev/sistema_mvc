@@ -70,6 +70,74 @@ public static function solicitud($id_doc, $estado) {
     }
 }
 
+    public static function desarrollo($id_des, $estado) {
+        try {
+            $conexion = DB::conectar();
+            date_default_timezone_set('America/Caracas');
+            $fecha = date('Y-m-d H:i:s');
+
+            // Actualizar estado en solicitud_desarrollo
+            $stmt = $conexion->prepare("
+                UPDATE solicitud_desarrollo 
+                SET estado = ? 
+                WHERE id_des = ?
+            ");
+            $stmt->execute([$estado, $id_des]);
+
+            // Actualizar visto y fecha_modificacion en solicitud_desarrollo_fecha
+            $stmtFecha = $conexion->prepare("
+                UPDATE solicitud_desarrollo_fecha 
+                SET visto = ?, fecha_modificacion = ? 
+                WHERE id_des = ?
+            ");
+            $stmtFecha->execute([0, $fecha, $id_des]);
+
+            // Obtener correo_enviado desde solicitud_desarrollo_correo y ci desde solicitud_desarrollo
+            $stmt2 = $conexion->prepare("
+                SELECT sd.ci, sdc.correo_enviado
+                FROM solicitud_desarrollo sd
+                LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                WHERE sd.id_des = ?
+            ");
+            $stmt2->execute([$id_des]);
+            $fila = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+            // Si existe el registro y correo_enviado es distinto de 0, enviar correo y reiniciar
+            if ($fila && $fila['correo_enviado'] != 0 && !empty($fila['ci'])) {
+                $ci = $fila['ci'];
+
+                // Obtener nombre y correo del solicitante
+                $stmt3 = $conexion->prepare("
+                    SELECT nombre, correo FROM solicitantes 
+                    WHERE ci = ?
+                ");
+                $stmt3->execute([$ci]);
+                $info = $stmt3->fetch(PDO::FETCH_ASSOC);
+
+                if ($info) {
+                    $nombre = $info['nombre'];
+                    $correo = $info['correo'];
+
+                    // Enviar correo de renovación
+                    Correo::correoRenovado($correo, $nombre);
+
+                    // Reiniciar correo_enviado en solicitud_desarrollo_correo
+                    $stmt4 = $conexion->prepare("
+                        UPDATE solicitud_desarrollo_correo 
+                        SET correo_enviado = 0 
+                        WHERE id_des = ?
+                    ");
+                    $stmt4->execute([$id_des]);
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            error_log("Error al actualizar solicitud desarrollo: " . $e->getMessage());
+            return false;
+        }
+    }
+
 
 
     public static function inhabilitar($id_doc, $invalido, $razon) {

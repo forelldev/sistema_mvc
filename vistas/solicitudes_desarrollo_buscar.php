@@ -14,12 +14,11 @@
     <div class="titulo-header">Verificar si el beneficiario ya está registrado</div>
     <div class="header-right">
       <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
-      <a href="<?= BASE_URL ?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+      <a href="<?= BASE_URL ?>/solicitudes_desarrollo"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
     </div>
   </header>
 <main>
-    <?php if($_SESSION['id_rol'] !== 2){?>
-        <form action="<?=BASE_URL?>/formulario" method="POST" class="registro-card form-user" autocomplete="off">
+        <form action="<?=BASE_URL?>/formulario_desarrollo" method="POST" class="registro-card form-user" autocomplete="off">
             <h2><i class="fa fa-search"></i> Buscar por CI</h2>
             <div class="campo-user">
             <label for="ci">Cédula de Identidad</label>
@@ -27,16 +26,6 @@
             </div>
             <button type="submit" value="Buscar" class="boton-enviar-ayuda"><i class="fa fa-search"></i>Buscar</button>
         </form>
-    <?php  } else {?>
-        <form action="<?=BASE_URL?>/buscar_cidespacho" method="POST" class="registro-card form-user" autocomplete="off">
-            <h2><i class="fa fa-search"></i> Buscar por CI</h2>
-            <div class="campo-user">
-            <label for="ci">Cédula de Identidad</label>
-            <input type="text" name="ci" placeholder="Ingrese su CI" class="input-ci" required>
-            </div>
-            <button type="submit" value="Buscar" class="boton-enviar-ayuda"><i class="fa fa-search"></i>Buscar</button>
-        </form>
-    <?php  } ?>
 </main>
 </body>
 <script>

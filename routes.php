@@ -59,5 +59,11 @@ Router::post('/recuperar_clave','LoginControl@recuperar_clave');
 Router::post('/nueva_clave','LoginControl@nueva_clave');
 Router::post('/actualizar_clave','LoginControl@actualizar_clave');
 Router::post('/solicitudes_ci','SolicitudControl@solicitudes_ci');
-Router::post('/registrar_solicitud_urgencia','SolicitudControl@registrar_solicitud_urgencia');
+Router::get('/solicitudes_desarrollo','DesarrolloControl@lista');
+Router::get('/buscar_desarrollo','DesarrolloControl@buscar_desarrollo');
+Router::post('/formulario_desarrollo','DesarrolloControl@formulario_desarrollo');
+Router::post('/enviar_formulario_desarrollo','DesarrolloControl@enviar_formulario_desarrollo');
+Router::get('/felicidades_desarrollo','DesarrolloControl@felicidades_desarrollo');
+Router::get('/procesarDesarrollo','DesarrolloControl@procesar');
+Router::post('/solicitudes_ciDesarrollo','DesarrolloControl@registrar');
 ?>

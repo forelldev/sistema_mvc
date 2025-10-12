@@ -103,6 +103,97 @@ public static function buscarCi($ci) {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function registrar_urgencia($data) {
+    $db = DB::conectar();
+    $db->beginTransaction();
+
+    try {
+        // Verificar si el id_manual ya existe
+        $checkStmt = $db->prepare("SELECT COUNT(*) FROM solicitud_desarrollo WHERE id_manual = :id_manual");
+        $checkStmt->execute([':id_manual' => $data['id_manual']]);
+        $exists = $checkStmt->fetchColumn();
+        if ($exists > 0) {
+            throw new Exception("❌ El número de documento ya está registrado.");
+        }
+
+        // Validar campos obligatorios
+        $camposObligatorios = [
+            'id_manual', 'ci', 'descripcion', 'fecha',
+            'categoria', 'ci_user',
+            'nombre', 'apellido', 'correo'
+        ];
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || trim($data[$campo]) === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
+            }
+        }
+
+        // Insertar en solicitud_desarrollo
+        $insertDesarrollo = $db->prepare("INSERT INTO solicitud_desarrollo 
+            (id_manual, ci, estado, invalido) 
+            VALUES (:id_manual, :ci, 'Pendiente', 0)");
+        $insertDesarrollo->execute([
+            ':id_manual' => $data['id_manual'],
+            ':ci' => $data['ci']
+        ]);
+        $id_des = $db->lastInsertId();
+
+        // Insertar en solicitud_desarrollo_info
+        $insertInfo = $db->prepare("INSERT INTO solicitud_desarrollo_info 
+            (id_des, descripcion, nombre, apellido) 
+            VALUES (:id_des, :descripcion, :nombre, :apellido)");
+        $insertInfo->execute([
+            ':id_des' => $id_des,
+            ':descripcion' => $data['descripcion'],
+            ':nombre' => $data['nombre'],
+            ':apellido' => $data['apellido']
+        ]);
+
+        // Insertar en solicitud_desarrollo_tipo
+        $insertTipo = $db->prepare("INSERT INTO solicitud_desarrollo_tipo 
+            (id_des, categoria) 
+            VALUES (:id_des, :categoria)");
+        $insertTipo->execute([
+            ':id_des' => $id_des,
+            ':categoria' => $data['categoria']
+        ]);
+
+        // Insertar en solicitud_laboratorio si hay examen
+        if (!empty($data['examen'])) {
+            $examenes = is_array($data['examen']) ? $data['examen'] : [$data['examen']];
+            $insertLab = $db->prepare("INSERT INTO solicitud_laboratorio 
+                (id_des, examen) 
+                VALUES (:id_des, :examen)");
+            foreach ($examenes as $examen) {
+                $insertLab->execute([
+                    ':id_des' => $id_des,
+                    ':examen' => $examen
+                ]);
+            }
+        }
+
+        // Insertar en solicitud_desarrollo_fecha
+        $insertFecha = $db->prepare("INSERT INTO solicitud_desarrollo_fecha 
+            (id_des, fecha, fecha_modificacion, visto) 
+            VALUES (:id_des, :fecha, :fecha_modificacion, 0)");
+        $insertFecha->execute([
+            ':id_des' => $id_des,
+            ':fecha' => $data['fecha'],
+            ':fecha_modificacion' => $data['fecha']
+        ]);
+
+        $db->commit();
+        return ['exito' => true, 'id_des' => $id_des];
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log("Error al registrar solicitud: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+
+
+
     // PROCESAR FORMULARIO UNA VEZ ENVIADO:
     public static function enviarForm($data) {
         $db = DB::conectar();
@@ -844,11 +935,6 @@ public static function buscarCi($ci) {
                 ];
             }
         }
-
-        public static function registrar_urgencia(){
-            
-        }
-
 }
 
 ?>

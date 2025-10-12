@@ -88,6 +88,9 @@
         </button>
         <div class="dropdown-menu" id="menuDropdown">
             <a href="<?= BASE_URL ?>/solicitudes_list"><i class="fas fa-folder-open"></i> Solicitudes de Ayuda</a>
+            <?php if ($_SESSION['id_rol'] == 4 || $_SESSION['id_rol'] == 1 ) { ?>
+                <a href="<?= BASE_URL ?>/solicitudes_desarrollo"><i class="fas fa-folder-open"></i> Solicitudes de Desarrollo Social</a>
+            <?php } ?>
             <?php if ($_SESSION['id_rol'] == 2) { ?>
                 <a href="<?= BASE_URL ?>/despacho_list"><i class="fas fa-folder-open"></i> Solicitudes Despacho</a>
             <?php } ?>

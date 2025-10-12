@@ -15,25 +15,27 @@
                             <span class="solicitud-estado"
                                 <?php
                                     $estado = htmlspecialchars($fila['estado'] ?? '');
-                                    if ($estado == 'En espera del documento físico para ser procesado 0/3') echo 'pendiente';
-                                    else if ($estado == 'En Proceso 1/3') echo 'activo1';
-                                    else if ($estado == 'En Proceso 2/3') echo 'activo2';
-                                    else if ($estado == 'En Proceso 3/3 (Sin entregar)') echo 'activo3';
-                                    else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'finalizada';
+                                    if ($estado == 'En espera del documento físico para ser procesado 0/2') echo 'pendiente';
+                                    else if ($estado == 'En Proceso 1/2') echo 'activo1';
+                                    else if ($estado == 'En Proceso 2/2 (Sin entregar)') echo 'activo2';
+                                    else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'activo3';
                                     else if ($estado == 'Documento inválido') echo 'invalido';
-                                ?>">
+                                ?>>
                                 <?= $estado ?>
                             </span>
                             <div><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?></div>
                         </div>
                         <div class="solicitud-info">
                             <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
-                            <div><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda']) ?></div>
-                            <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
-                            <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
-                            <div><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
-                            <div><strong>Remitente:</strong> <?= htmlspecialchars($fila['remitente'] ?? '') ?></div>
-                            <div><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></div>
+                        <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
+                        <?php if ($fila['categoria'] === 'Laboratorio'): ?>
+                            <div><strong>Exámenes:</strong> <?= $fila['examenes'] ?></div>
+                        <?php endif; ?>
+                        <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
+                        <div><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
+                        <div><strong>Remitente:</strong> 
+                        <?= htmlspecialchars(($fila['remitente_nombre'] ?? '') . ' ' . ($fila['remitente_apellido'] ?? '')) ?>
+                        </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -48,7 +50,7 @@
                 </div>
             <?php endif; ?>
         </section>
-    <form action="solicitudes_ci" method="POST">
+    <form action="solicitudes_ciDesarrollo" method="POST">
         <input type="submit" value="Registrar Solicitud">
         <input type="hidden" name="ci" value="<?= $ci ?>">
     </form>

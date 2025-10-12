@@ -1,53 +1,84 @@
 <?php 
-    require_once 'modelo/despachoModelo.php';
-    require_once 'modelo/procesarModelo.php';
-    class DespachoControl{
-        public static function despacho_list(){
-            $resultado = Despacho::buscarLista();
+require_once 'modelo/DesarrolloModelo.php';
+require_once 'modelo/procesarModelo.php';
+class DesarrolloControl {
+    public static function lista (){
+        $resultado = Desarrollo::mostrar_lista();
+        $notificaciones = Desarrollo::notificaciones();
+        $notificacion = $notificaciones['exito'] ? $notificaciones['datos'] : [];
+        // Agrupar notificaciones por categoría
+        $notificacionAgrupada = [];
+        foreach ($notificacion as $item) {
+            $tipo = $item['categoria'] ?? 'general';
+            $notificacionAgrupada[$tipo][] = $item;
+        }
             if($resultado['exito']){
                 $datos = $resultado['datos'];
                 $acciones = [
-                    'En Revisión 1/2' => 'Enviar a Administración',
+                    'En espera del documento físico para ser procesado 0/2' => 'Aprobar para su procedimiento',
+                    'En Proceso 1/2' => 'Aprobar Ayuda',
                     'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
                     'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
                 ];
-
             }
-            require_once 'vistas/despacho_list.php';
+            require_once 'vistas/solicitudes_desarrollo.php';
         }
 
-    public static function buscar() {
+    public static function buscar_desarrollo(){
+        require_once 'vistas/solicitudes_desarrollo_buscar.php';
+    }
+    public static function formulario_desarrollo() {
         $ci = $_POST['ci'] ?? null;
         if ($ci) {
+            $res = Desarrollo::verificar_solicitudes($ci);
+            if($res['exito']){
+                $msj = 'Se han encontrado solicitudes anteriores de esta persona';
+                $datos = $res['datos'];
+                require_once 'vistas/solicitud_desarrollo_encontrada.php';
+            }
+            else{
+                $data = self::obtenerDatosBeneficiario($ci);
+                extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                // Verificar si el solicitante existe para bloquear edición
+                $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
+                require_once 'vistas/solicitudes_desarrollo_formulario.php';
+            }
+        }
+    }
+
+    public static function registrar(){
+        $ci = $_POST['ci'] ?? null;
+        if($ci){
+            $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-
-            require_once 'vistas/despacho_formulario.php';
+            $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
+            require_once 'vistas/solicitudes_desarrollo_formulario.php';
         }
-}
+    }
+
     private static function obtenerDatosBeneficiario($ci) {
         $data = [
             'datos_beneficiario' => null
         ];
 
-        $resultado = Despacho::buscarCi($ci);
+        $resultado = Desarrollo::cargar_datos_solicitantes($ci);
         if ($resultado['exito']) {
             $data['datos_beneficiario'] = $resultado['mostrar'];
         }
-
         return $data;
     }
 
-    public static function enviarFormulario() {
+    public static function enviar_formulario_desarrollo() {
             date_default_timezone_set('America/Caracas');
             $_POST['fecha'] = date('Y-m-d H:i:s');
             $_POST['ci_user'] = $_SESSION['ci'];
-            $resultado = Despacho::enviarForm($_POST);
+            $resultado = Desarrollo::enviar_formulario($_POST);
             if ($resultado['exito']) {
-                header('Location: ' . BASE_URL . '/felicidades');
-                date_default_timezone_set('America/Caracas');
-                $fecha = date('Y-m-d H:i:s');
-                $accion = 'Registró solicitud de despacho';
+                header('Location: ' . BASE_URL . '/felicidades_desarrollo');
+                $fecha = $_POST['fecha'];
+                $accion = 'Registró solicitud en Desarrollo Social';
+                $id_doc = $resultado['id_des'];
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             } else {
@@ -60,35 +91,45 @@
                     $data = self::obtenerDatosBeneficiario($ci);
                     extract($data);
                 }
-                require_once 'vistas/despacho_formulario.php';
+                // Verificar si el solicitante existe para bloquear edición
+                $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
+                require_once 'vistas/solicitudes_desarrollo_formulario.php';
             }
         }
 
+        public static function felicidades_desarrollo(){
+            require_once 'vistas/felicidades_desarrollo.php';
+        }
+
         public static function procesar(){
-        if(isset($_GET['id_despacho'])){
-            $id_despacho = $_GET['id_despacho'];
+        if(isset($_GET['id_des'])){
+            $id_des = $_GET['id_des'];
             $estado = $_GET['estado'];
             switch($estado){
-                case 'En Revisión 1/2':
+                case 'En espera del documento físico para ser procesado 0/2':
+                    $estado_new = 'En Proceso 1/2';
+                    $accion = 'Aprobó la solicitud para su procedimiento (Desarrollo Social)';
+                    break;
+                case 'En Proceso 1/2':
                     $estado_new = 'En Proceso 2/2 (Sin entregar)';
-                    $accion = 'Envió la solicitud a Administración. (Despacho)';
+                    $accion = 'Envió la solicitud a Administración. (Desarrollo Social)';
                     break;
                 case 'En Proceso 2/2 (Sin entregar)':
                     $estado_new = 'Solicitud Finalizada (Ayuda Entregada)';
-                    $accion = 'Confirmó que se entregó la ayuda. (Despacho)';
+                    $accion = 'Confirmó que se entregó la ayuda. (Desarrollo Social)';
                     break;
                 case 'Solicitud Finalizada (Ayuda Entregada)':
-                    $estado_new = 'En Revisión 1/2';
-                    $accion = 'Reinició la solicitud. (Despacho)';
+                    $estado_new = 'En Proceso 1/2';
+                    $accion = 'Reinició la solicitud. (Desarrollo Social)';
                     break;
                 default:
                     $msj = 'Ocurrió un error!';
             }
-            if(Procesar::despacho($id_despacho,$estado_new)){
-                header('Location: '.BASE_URL.'/despacho_list');
+            if(Procesar::desarrollo($id_des,$estado_new)){
+                header('Location: '.BASE_URL.'/solicitudes_desarrollo');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
             else{
@@ -184,6 +225,5 @@
                 $msj = "Error" . $resultado['error'];
             }
     }
-        
-    }
+}
 ?>
