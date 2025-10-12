@@ -18,7 +18,7 @@
             <a href="<?=BASE_URL?>/buscar_desarrollo"><button class="principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
         <?php } ?>
         <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
-            <a href="<?=BASE_URL?>/desarrollo_inhabilitados"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>
+            <a href="<?=BASE_URL?>/desarrollo_invalidos"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>
         <?php } ?>
       <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
       
@@ -119,16 +119,17 @@
                         <div><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?></div>
                     </div>
                     <div class="solicitud-info">
-                        <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
+                        <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion'] ?? '') ?></div>
                         <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
                         <?php if ($fila['categoria'] === 'Laboratorio'): ?>
-                            <div><strong>Exámenes:</strong> <?= $fila['examenes'] ?></div>
+                            <div><strong>Exámenes:</strong> <?= htmlspecialchars($fila['examenes'] ?? '') ?></div>
                         <?php endif; ?>
                         <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
                         <div><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
                         <div><strong>Remitente:</strong> 
                         <?= htmlspecialchars(($fila['remitente_nombre'] ?? '') . ' ' . ($fila['remitente_apellido'] ?? '')) ?>
                         </div>
+                        <div><strong>Promotor Social:</strong> <?= htmlspecialchars($fila['creador'] ?? '')?></div>
 
                     </div>
                     <div class="solicitud-actions">

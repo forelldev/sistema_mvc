@@ -384,6 +384,175 @@ class Desarrollo {
     }
 }
 
+    public static function mostrar_inhabilitados() {
+        try {
+            $conexion = DB::conectar();
+            $consulta = "
+                SELECT 
+                    sd.id_des,
+                    sd.id_manual,
+                    sd.ci,
+                    sd.estado,
+                    sd.invalido,
+
+                    sdi.descripcion,
+                    sdi.creador,
+                    sdt.categoria,
+                    GROUP_CONCAT(sl.examen SEPARATOR ', ') AS examenes,
+                    sdf.fecha,
+                    sdf.fecha_modificacion,
+                    sdf.visto,
+
+                    sdi2.razon AS razon_invalidez,
+                    sol.nombre AS remitente_nombre,
+                    sol.apellido AS remitente_apellido
+
+                FROM solicitud_desarrollo sd
+                LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                LEFT JOIN solicitud_desarrollo_laboratorio sl ON sd.id_des = sl.id_des
+                LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                LEFT JOIN solicitud_desarrollo_invalido sdi2 ON sd.id_des = sdi2.id_des
+                LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+
+                WHERE sd.invalido = 1
+                GROUP BY sd.id_des
+                ORDER BY sdf.fecha DESC
+            ";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->execute();
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($resultado) {
+                return [
+                    'exito' => true,
+                    'datos' => $resultado
+                ];
+            } else {
+                return [
+                    'exito' => false,
+                    'mensaje' => 'No se encontraron solicitudes inhabilitadas'
+                ];
+            }
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => 'Error al consultar solicitudes inhabilitadas: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public static function edicion_vista($id_des) {
+        $conexion = DB::conectar();
+
+        try {
+            $stmt = $conexion->prepare("
+                SELECT 
+                    sd.*, 
+                    sdf.fecha, sdf.fecha_modificacion, sdf.visto,
+                    sdc.correo_enviado,
+                    sdt.categoria,
+                    sdi.descripcion, sdi.creador,
+                    GROUP_CONCAT(sl.examen SEPARATOR ', ') AS examenes,
+                    sdinv.razon AS razon_invalidez
+                FROM solicitud_desarrollo sd
+                LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                LEFT JOIN solicitud_desarrollo_laboratorio sl ON sd.id_des = sl.id_des
+                LEFT JOIN solicitud_desarrollo_invalido sdinv ON sd.id_des = sdinv.id_des
+                WHERE sd.id_des = ?
+                GROUP BY sd.id_des
+            ");
+            $stmt->execute([$id_des]);
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($resultado) {
+                return [
+                    'exito' => true,
+                    'datos' => $resultado
+                ];
+            } else {
+                return [
+                    'exito' => false,
+                    'mensaje' => 'No se encontró la solicitud.'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("Error al obtener solicitud de desarrollo: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+
+    public static function editar($data) {
+    $conexion = DB::conectar();
+
+    try {
+        $conexion->beginTransaction();
+
+        $camposObligatorios = [
+            'id_des', 'id_manual', 'ci', 'descripcion','categoria'
+        ];
+
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || $data[$campo] === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
+            }
+        }
+
+        // Actualizar solicitud_desarrollo
+        $stmt1 = $conexion->prepare("
+            UPDATE solicitud_desarrollo 
+            SET id_manual = ?, ci = ? 
+            WHERE id_des = ?
+        ");
+        $stmt1->execute([
+            $data['id_manual'],
+            $data['ci'],
+            $data['id_des']
+        ]);
+
+        // Actualizar solicitud_desarrollo_info
+        $stmt2 = $conexion->prepare("
+            UPDATE solicitud_desarrollo_info 
+            SET descripcion = ?
+            WHERE id_des = ?
+        ");
+        $stmt2->execute([
+            $data['descripcion'],
+            $data['id_des']
+        ]);
+
+        // Actualizar solicitud_desarrollo_tipo
+        $stmt3 = $conexion->prepare("
+            UPDATE solicitud_desarrollo_tipo 
+            SET categoria = ? 
+            WHERE id_des = ?
+        ");
+        $stmt3->execute([
+            $data['categoria'],
+            $data['id_des']
+        ]);
+
+        $conexion->commit();
+        return ['exito' => true];
+
+    } catch (Exception $e) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+        error_log("Error al editar solicitud de desarrollo: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+
+
     
 }
 

@@ -78,8 +78,8 @@ class DesarrolloControl {
                 header('Location: ' . BASE_URL . '/felicidades_desarrollo');
                 $fecha = $_POST['fecha'];
                 $accion = 'Registró solicitud en Desarrollo Social';
-                $id_doc = $resultado['id_des'];
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                $id_des = $resultado['id_des'];
+                Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             } else {
                 $msj = "Error al registrar la solicitud: " . $resultado['error'];
@@ -139,26 +139,27 @@ class DesarrolloControl {
         else{
             $msj = 'Faltan parámetros en la solicitud';
         }
-        require_once 'vistas/despacho_list.php';
+        require_once 'vistas/solicitudes_desarrollo.php';
         }
 
-    public static function inhabilitar(){
-        if(isset($_GET['id_doc'])){
-            $id_doc = $_GET['id_doc'];
+    public static function inhabilitar_vista(){
+        if(isset($_GET['id_des'])){
+            $id_des = $_GET['id_des'];
         }
-        require_once 'vistas/inhabilitar.php';
+        require_once 'vistas/solicitud_desarrollo_inhabilitar.php';
     }
-    public static function inhabilitar_solicitud(){
-        if(isset($_POST['id_doc'])){
-            $estado = 'Inhabilitado';
-            $id_doc = $_POST['id_doc'];
+
+    public static function inhabilitar(){
+        if(isset($_POST['id_des'])){
+            $invalido = 1;
+            $id_des = $_POST['id_des'];
             $razon = $_POST['razon'];
-            if(Procesar::inhabilitarDespacho($id_doc,$estado,$razon)){
-                header('Location: '.BASE_URL.'/inhabilitados_despacho');
+            if(Procesar::inhabilitarDesarrollo($id_des,$invalido,$razon)){
+                header('Location: '.BASE_URL.'/desarrollo_invalidos');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Inhabilitó la solicitud razón: '.$razon;
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
             else{
@@ -168,24 +169,22 @@ class DesarrolloControl {
     }
 
     public static function inhabilitados_lista(){
-        $resultado = Procesar::inhabilitados_listaDespacho();
+        $resultado = Desarrollo::mostrar_inhabilitados();
         if($resultado['exito']){
             $datos = $resultado['datos'];
         }
-        require_once 'vistas/inhabilitados_despacho.php';
+        require_once 'vistas/solicitud_desarrollo_invalidos.php';
     }
 
     public static function habilitar(){
-        if(isset($_GET['id_doc'])){
-            $estado = 'En Revisión 1/2';
-            $id_doc = $_GET['id_doc'];
-            $razon = '';
-            if(Procesar::habilitar_solicitudDespacho($id_doc,$estado,$razon)){
-                header('Location: '.BASE_URL.'/despacho_list');
+        if(isset($_GET['id_des'])){
+            $id_des = $_GET['id_des'];
+            if(Procesar::habilitar_desarrollo($id_des)){
+                header('Location: '.BASE_URL.'/solicitudes_desarrollo');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Habilitó la solicitud';
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
             else{
@@ -195,34 +194,42 @@ class DesarrolloControl {
     }
 
     public static function editar(){
-        if(isset($_GET['id_doc'])){
-            $id_doc = $_GET['id_doc'];
-            $resultado = Procesar::edit_vistaDespacho($id_doc);
+        if(isset($_GET['id_des'])){
+            $id_des = $_GET['id_des'];
+            $resultado = Desarrollo::edicion_vista($id_des);
             if($resultado){
                 $datos = $resultado['datos'];
             }
             else{
-                $msj = 'Ocurrió un  en el precesamiento del id_doc';
+                $msj = 'Ocurrió un  en el precesamiento del id_des';
             }
         }
-        require_once 'vistas/editarDespacho.php';
+        require_once 'vistas/solicitudes_desarrollo_editar.php';
     }
 
     public static function editar_solicitud(){
         date_default_timezone_set('America/Caracas');
-        $direccion = 'despacho_list';
         $_POST['fecha'] = date('Y-m-d H:i:s');
         $_POST['ci_user'] = $_SESSION['ci'];
-        $resultado = Procesar::editar_consultaDespacho($_POST);
+        $id_des = $_POST['id_des'];
+        $resultado = Desarrollo::editar($_POST);
             if($resultado['exito']){
-                header('Location: '.BASE_URL.'/'.$direccion);
+                header('Location: '.BASE_URL.'/solicitudes_desarrollo');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Editó la solicitud de Despacho';
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                $accion = 'Editó la solicitud de Desarrollo Social';
+                Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
             }
             else{
                 $msj = "Error" . $resultado['error'];
+                $id_des = $_POST['id_des'] ?? null;
+                if($id_des){
+                    $resultado = Desarrollo::edicion_vista($id_des);
+                    if($resultado){
+                        $datos=$resultado['datos'];
+                    }
+                }
+                require_once 'vistas/solicitudes_desarrollo_editar.php';
             }
     }
 }

@@ -66,4 +66,10 @@ Router::post('/enviar_formulario_desarrollo','DesarrolloControl@enviar_formulari
 Router::get('/felicidades_desarrollo','DesarrolloControl@felicidades_desarrollo');
 Router::get('/procesarDesarrollo','DesarrolloControl@procesar');
 Router::post('/solicitudes_ciDesarrollo','DesarrolloControl@registrar');
+Router::get('/inhabilitarDesarrollo','DesarrolloControl@inhabilitar_vista');
+Router::post('/inhabilitar_desarrollo','DesarrolloControl@inhabilitar');
+Router::get('/desarrollo_invalidos','DesarrolloControl@inhabilitados_lista');
+Router::get('/habilitarDesarrollo','DesarrolloControl@habilitar');
+Router::get('/editarDesarrollo','DesarrolloControl@editar');
+Router::post('/editar_desarrollo','DesarrolloControl@editar_solicitud');
 ?>

@@ -138,6 +138,75 @@ public static function solicitud($id_doc, $estado) {
         }
     }
 
+    public static function inhabilitarDesarrollo($id_des, $invalido, $razon) {
+        try {
+            $conexion = DB::conectar();
+
+            // Actualizar el campo invalido en solicitud_desarrollo
+            $stmt = $conexion->prepare("
+                UPDATE solicitud_desarrollo 
+                SET invalido = ? 
+                WHERE id_des = ?
+            ");
+            $stmt->execute([$invalido, $id_des]);
+
+            // Verificar si ya existe una entrada en solicitud_desarrollo_invalido
+            $stmtCheck = $conexion->prepare("
+                SELECT COUNT(*) FROM solicitud_desarrollo_invalido 
+                WHERE id_des = ?
+            ");
+            $stmtCheck->execute([$id_des]);
+            $existe = $stmtCheck->fetchColumn();
+
+            if ($existe) {
+                // Si existe, actualizar la razón
+                $stmtUpdate = $conexion->prepare("
+                    UPDATE solicitud_desarrollo_invalido 
+                    SET razon = ? 
+                    WHERE id_des = ?
+                ");
+                $stmtUpdate->execute([$razon, $id_des]);
+            } else {
+                // Si no existe, insertar nueva razón
+                $stmtInsert = $conexion->prepare("
+                    INSERT INTO solicitud_desarrollo_invalido (id_des, razon) 
+                    VALUES (?, ?)
+                ");
+                $stmtInsert->execute([$id_des, $razon]);
+            }
+
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error al inhabilitar solicitud de desarrollo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function habilitar_desarrollo($id_des) {
+        try {
+            $conexion = DB::conectar();
+
+            // Marcar la solicitud como válida
+            $stmt = $conexion->prepare("
+                UPDATE solicitud_desarrollo 
+                SET invalido = 0 
+                WHERE id_des = ?
+            ");
+            $stmt->execute([$id_des]);
+
+            // Eliminar la razón de invalidez si existe
+            $stmtDelete = $conexion->prepare("
+                DELETE FROM solicitud_desarrollo_invalido 
+                WHERE id_des = ?
+            ");
+            $stmtDelete->execute([$id_des]);
+
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error al habilitar solicitud de desarrollo: " . $e->getMessage());
+            return false;
+        }
+    }
 
 
     public static function inhabilitar($id_doc, $invalido, $razon) {

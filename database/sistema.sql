@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-10-2025 a las 03:32:12
+-- Tiempo de generación: 12-10-2025 a las 23:03:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -191,7 +191,13 @@ INSERT INTO `reportes_acciones` (`id`, `id_doc`, `fecha`, `accion`, `ci`) VALUES
 (49, 3, '2025-10-06 10:18:55', 'Envió la solicitud a despacho.', 3434),
 (50, 3, '2025-10-06 10:19:07', 'Envió la solicitud a administración.', 3434),
 (51, 3, '2025-10-06 10:19:19', 'Confirmó que se entregó la ayuda.', 3434),
-(52, 3, '2025-10-06 10:19:32', 'Reinició el proceso de la solicitud.', 3434);
+(52, 3, '2025-10-06 10:19:32', 'Reinició el proceso de la solicitud.', 3434),
+(53, 13, '2025-10-12 16:32:03', 'Registró solicitud en Desarrollo Social', 3434),
+(54, 13, '2025-10-12 16:39:18', 'Aprobó la solicitud para su procedimiento (Desarrollo Social)', 3434),
+(55, 13, '2025-10-12 16:40:23', 'Envió la solicitud a Administración. (Desarrollo Social)', 3434),
+(56, 13, '2025-10-12 16:40:35', 'Confirmó que se entregó la ayuda. (Desarrollo Social)', 3434),
+(57, 13, '2025-10-12 16:40:47', 'Reinició la solicitud. (Desarrollo Social)', 3434),
+(58, 14, '2025-10-12 17:02:00', 'Registró solicitud en Desarrollo Social', 3434);
 
 -- --------------------------------------------------------
 
@@ -279,7 +285,10 @@ INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VA
 (66, 3434, '2025-10-09 15:31:41', '2025-10-09 15:31:51'),
 (67, 3434, '2025-10-09 15:35:50', '2025-10-09 15:38:49'),
 (68, 123, '2025-10-09 15:39:01', '2025-10-09 15:39:08'),
-(69, 3434, '2025-10-09 15:39:19', '0000-00-00 00:00:00');
+(69, 3434, '2025-10-09 15:39:19', '2025-10-10 15:33:19'),
+(70, 3434, '2025-10-10 15:33:27', '2025-10-12 08:35:27'),
+(71, 3434, '2025-10-12 08:35:36', '2025-10-12 12:09:25'),
+(72, 3434, '2025-10-12 12:09:37', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -590,6 +599,149 @@ INSERT INTO `solicitud_categoria` (`id`, `id_doc`, `tipo_ayuda`, `categoria`) VA
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `solicitud_desarrollo`
+--
+
+CREATE TABLE `solicitud_desarrollo` (
+  `id_des` int(11) NOT NULL,
+  `id_manual` varchar(50) DEFAULT NULL,
+  `ci` int(50) DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  `invalido` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo`
+--
+
+INSERT INTO `solicitud_desarrollo` (`id_des`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
+(13, '232321212', 3215, 'En Proceso 1/2', 0),
+(14, '2424123123', 3215, 'En espera del documento físico para ser procesado 0/2', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_desarrollo_correo`
+--
+
+CREATE TABLE `solicitud_desarrollo_correo` (
+  `id` int(11) NOT NULL,
+  `id_des` int(11) NOT NULL,
+  `correo_enviado` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_correo`
+--
+
+INSERT INTO `solicitud_desarrollo_correo` (`id`, `id_des`, `correo_enviado`) VALUES
+(5, 13, 0),
+(6, 14, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_desarrollo_fecha`
+--
+
+CREATE TABLE `solicitud_desarrollo_fecha` (
+  `id` int(11) NOT NULL,
+  `id_des` int(11) DEFAULT NULL,
+  `fecha` date DEFAULT NULL,
+  `fecha_modificacion` date DEFAULT NULL,
+  `visto` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_fecha`
+--
+
+INSERT INTO `solicitud_desarrollo_fecha` (`id`, `id_des`, `fecha`, `fecha_modificacion`, `visto`) VALUES
+(11, 13, '2025-10-12', '2025-10-12', 0),
+(12, 14, '2025-10-12', '2025-10-12', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_desarrollo_info`
+--
+
+CREATE TABLE `solicitud_desarrollo_info` (
+  `id` int(11) NOT NULL,
+  `id_des` int(11) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `creador` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_info`
+--
+
+INSERT INTO `solicitud_desarrollo_info` (`id`, `id_des`, `descripcion`, `creador`) VALUES
+(12, 13, 'para probar procedimientos', 'Admin Supremo'),
+(13, 14, 'Tiene sudado el estómago', 'Admin Supremo');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_desarrollo_invalido`
+--
+
+CREATE TABLE `solicitud_desarrollo_invalido` (
+  `id` int(11) NOT NULL,
+  `id_des` int(11) DEFAULT NULL,
+  `razon` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_desarrollo_laboratorio`
+--
+
+CREATE TABLE `solicitud_desarrollo_laboratorio` (
+  `id` int(11) NOT NULL,
+  `id_des` int(11) DEFAULT NULL,
+  `examen` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_laboratorio`
+--
+
+INSERT INTO `solicitud_desarrollo_laboratorio` (`id`, `id_des`, `examen`) VALUES
+(11, 13, 'Hematología Completa'),
+(12, 13, 'Glicemia'),
+(13, 13, 'Orina'),
+(14, 13, 'Heces'),
+(15, 14, 'Hematología Completa'),
+(16, 14, 'Glicemia'),
+(17, 14, 'Orina'),
+(18, 14, 'Heces');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `solicitud_desarrollo_tipo`
+--
+
+CREATE TABLE `solicitud_desarrollo_tipo` (
+  `id` int(11) NOT NULL,
+  `id_des` int(11) DEFAULT NULL,
+  `categoria` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_tipo`
+--
+
+INSERT INTO `solicitud_desarrollo_tipo` (`id`, `id_des`, `categoria`) VALUES
+(12, 13, 'Laboratorio'),
+(13, 14, 'Laboratorio');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `solicitud_descripcion`
 --
 
@@ -608,18 +760,6 @@ CREATE TABLE `solicitud_descripcion` (
 
 INSERT INTO `solicitud_descripcion` (`id`, `id_doc`, `descripcion`, `promotor`, `remitente`, `observaciones`) VALUES
 (2, 3, 'Ayuda para miopia', 'Admin Supremo', 'Pedro pelaez', '');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `solicitud_laboratorio`
---
-
-CREATE TABLE `solicitud_laboratorio` (
-  `id` int(11) NOT NULL,
-  `id_doc` int(11) NOT NULL,
-  `examen` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -835,17 +975,59 @@ ALTER TABLE `solicitud_categoria`
   ADD KEY `fk_categoria_doc` (`id_doc`);
 
 --
+-- Indices de la tabla `solicitud_desarrollo`
+--
+ALTER TABLE `solicitud_desarrollo`
+  ADD PRIMARY KEY (`id_des`);
+
+--
+-- Indices de la tabla `solicitud_desarrollo_correo`
+--
+ALTER TABLE `solicitud_desarrollo_correo`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_des` (`id_des`);
+
+--
+-- Indices de la tabla `solicitud_desarrollo_fecha`
+--
+ALTER TABLE `solicitud_desarrollo_fecha`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_des` (`id_des`);
+
+--
+-- Indices de la tabla `solicitud_desarrollo_info`
+--
+ALTER TABLE `solicitud_desarrollo_info`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_des` (`id_des`);
+
+--
+-- Indices de la tabla `solicitud_desarrollo_invalido`
+--
+ALTER TABLE `solicitud_desarrollo_invalido`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_des` (`id_des`);
+
+--
+-- Indices de la tabla `solicitud_desarrollo_laboratorio`
+--
+ALTER TABLE `solicitud_desarrollo_laboratorio`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_des` (`id_des`);
+
+--
+-- Indices de la tabla `solicitud_desarrollo_tipo`
+--
+ALTER TABLE `solicitud_desarrollo_tipo`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_des` (`id_des`);
+
+--
 -- Indices de la tabla `solicitud_descripcion`
 --
 ALTER TABLE `solicitud_descripcion`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_descripcion_doc` (`id_doc`);
-
---
--- Indices de la tabla `solicitud_laboratorio`
---
-ALTER TABLE `solicitud_laboratorio`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -905,13 +1087,13 @@ ALTER TABLE `despacho_invalido`
 -- AUTO_INCREMENT de la tabla `reportes_acciones`
 --
 ALTER TABLE `reportes_acciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_entradas`
 --
 ALTER TABLE `reportes_entradas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1004,16 +1186,52 @@ ALTER TABLE `solicitud_categoria`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo`
+--
+ALTER TABLE `solicitud_desarrollo`
+  MODIFY `id_des` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo_correo`
+--
+ALTER TABLE `solicitud_desarrollo_correo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo_fecha`
+--
+ALTER TABLE `solicitud_desarrollo_fecha`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo_info`
+--
+ALTER TABLE `solicitud_desarrollo_info`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo_invalido`
+--
+ALTER TABLE `solicitud_desarrollo_invalido`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo_laboratorio`
+--
+ALTER TABLE `solicitud_desarrollo_laboratorio`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT de la tabla `solicitud_desarrollo_tipo`
+--
+ALTER TABLE `solicitud_desarrollo_tipo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
 -- AUTO_INCREMENT de la tabla `solicitud_descripcion`
 --
 ALTER TABLE `solicitud_descripcion`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `solicitud_laboratorio`
---
-ALTER TABLE `solicitud_laboratorio`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios_info`
@@ -1120,6 +1338,42 @@ ALTER TABLE `solicitud_ayuda_invalido`
 --
 ALTER TABLE `solicitud_categoria`
   ADD CONSTRAINT `fk_categoria_doc` FOREIGN KEY (`id_doc`) REFERENCES `solicitud_ayuda` (`id_doc`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitud_desarrollo_correo`
+--
+ALTER TABLE `solicitud_desarrollo_correo`
+  ADD CONSTRAINT `solicitud_desarrollo_correo_ibfk_1` FOREIGN KEY (`id_des`) REFERENCES `solicitud_desarrollo` (`id_des`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitud_desarrollo_fecha`
+--
+ALTER TABLE `solicitud_desarrollo_fecha`
+  ADD CONSTRAINT `solicitud_desarrollo_fecha_ibfk_1` FOREIGN KEY (`id_des`) REFERENCES `solicitud_desarrollo` (`id_des`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitud_desarrollo_info`
+--
+ALTER TABLE `solicitud_desarrollo_info`
+  ADD CONSTRAINT `solicitud_desarrollo_info_ibfk_1` FOREIGN KEY (`id_des`) REFERENCES `solicitud_desarrollo` (`id_des`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitud_desarrollo_invalido`
+--
+ALTER TABLE `solicitud_desarrollo_invalido`
+  ADD CONSTRAINT `solicitud_desarrollo_invalido_ibfk_1` FOREIGN KEY (`id_des`) REFERENCES `solicitud_desarrollo` (`id_des`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitud_desarrollo_laboratorio`
+--
+ALTER TABLE `solicitud_desarrollo_laboratorio`
+  ADD CONSTRAINT `solicitud_desarrollo_laboratorio_ibfk_1` FOREIGN KEY (`id_des`) REFERENCES `solicitud_desarrollo` (`id_des`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `solicitud_desarrollo_tipo`
+--
+ALTER TABLE `solicitud_desarrollo_tipo`
+  ADD CONSTRAINT `solicitud_desarrollo_tipo_ibfk_1` FOREIGN KEY (`id_des`) REFERENCES `solicitud_desarrollo` (`id_des`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `solicitud_descripcion`
