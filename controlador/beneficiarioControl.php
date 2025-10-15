@@ -56,5 +56,45 @@ Class BeneficiarioControl {
         require_once 'vistas/felicidades_beneficiario.php';
     }
 
+    public static function buscar_beneficiario(){
+         if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+            $res = BeneficiarioModelo::busqueda_beneficiario($_POST);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = "Ocurrió un error".$res['error'];
+            }
+        }
+        else{
+            $msj = 'Hubo error pasando datos';
+        }
+        require_once 'vistas/beneficiario_list.php';
+    }
+
+    public static function solicitudes_beneficiario(){
+        if(isset($_GET['ci'])){
+            $acciones = [
+            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+            'En Proceso 1/3' => 'Enviar a despacho',
+            'En Proceso 2/3' => 'Enviar a Administración',
+            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+            ];
+            $ci = $_GET['ci'];
+            $res = BeneficiarioModelo::mostrar_solicitudes($ci);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+        }
+        else{
+            $msj = 'Error al recibir "CI"';
+        }
+        require_once 'vistas/beneficiario_solicitudes.php';
+    }
+
 }
 ?>

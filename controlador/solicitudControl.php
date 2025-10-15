@@ -4,19 +4,8 @@ require_once 'modelo/procesarModelo.php';
 class SolicitudControl {
     public static function lista(){
         $resultado = Solicitud::buscarLista();
-        $medicamentos = Solicitud::notiMedicamentos();
-        $id_rol = $_SESSION['id_rol'];
-
         $datos = $resultado['exito'] ? $resultado['datos'] : [];
-        $notificacion = $medicamentos['exito'] ? $medicamentos['datos'] : [];
-
         // Agrupar notificaciones por categoría
-        $notificacionAgrupada = [];
-        foreach ($notificacion as $item) {
-            $tipo = $item['categoria'] ?? 'general';
-            $notificacionAgrupada[$tipo][] = $item;
-        }
-
         $acciones = [
             'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
             'En Proceso 1/3' => 'Enviar a despacho',
@@ -56,7 +45,12 @@ class SolicitudControl {
             $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
+
             require_once 'vistas/solicitud_formulario.php';
+        }
+        else{
+            $data_exists = false;
+            $datos_beneficiario = [];
         }
     }
     
@@ -119,9 +113,11 @@ class SolicitudControl {
                     extract($data);
                 }
             }
+
             require_once 'vistas/solicitud_formulario.php';
         }
         else{
+
             $msj = "Solicitud inválida. No se recibieron datos. (Método POST)";
             require_once 'vistas/solicitud_formulario.php';
         }
@@ -187,14 +183,18 @@ class SolicitudControl {
         if(isset($_GET['id_doc'])){
             $id_doc = $_GET['id_doc'];
         }
+        else{
+            $msj = 'Ocurrió un error';
+        }
         require_once 'vistas/inhabilitar.php';
     }
+
     public static function inhabilitar_solicitud(){
         if(isset($_POST['id_doc'])){
             $invalido = 1;
             $id_doc = $_POST['id_doc'];
             $razon = $_POST['razon'];
-            if(Procesar::inhabilitar($id_doc,$estado,$razon)){
+            if(Procesar::inhabilitar($id_doc,$invalido,$razon)){
                 header('Location: '.BASE_URL.'/inhabilitados_lista');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
@@ -239,11 +239,11 @@ class SolicitudControl {
         if(isset($_GET['id_doc'])){
             $id_doc = $_GET['id_doc'];
             $resultado = Procesar::edit_vista($id_doc);
-            if($resultado){
+            if($resultado['exito']){
                 $datos = $resultado['datos'];
             }
             else{
-                $msj = 'Ocurrió un  en el precesamiento del id_doc';
+                $msj = 'Ocurrió un error: '.$resultado['error'];
             }
         }
         require_once 'vistas/editar.php';
@@ -254,21 +254,32 @@ class SolicitudControl {
         $direccion = 'solicitudes_list';
         $_POST['fecha'] = date('Y-m-d H:i:s');
         $_POST['ci_user'] = $_SESSION['ci'];
+        $_POST['id_doc'] = $_SESSION['id_doc'];
         $resultado = Procesar::editar_consulta($_POST);
             if($resultado['exito']){
-                header('Location: '.BASE_URL.'/'.$direccion);
-                date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Editó la solicitud';
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                Procesar::registrarReporte($_SESSION['id_doc'],$fecha,$accion,$_SESSION['ci']);
+                unset($_SESSION['id_doc']);
+                header('Location: '.BASE_URL.'/'.$direccion);
+                exit;
             }
             else{
-                echo $resultado['error'];
+                $msj = 'Ocurrió un error: '.$resultado['error'];
+                unset($_SESSION['id_doc']);
+                require_once 'vistas/editar.php';
             }
     }
 
   public static function filtrar(){
     $resultado = Solicitud::filtrar_solicitud($_GET['filtro'] ?? '');
+    $acciones = [
+            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+            'En Proceso 1/3' => 'Enviar a despacho',
+            'En Proceso 2/3' => 'Enviar a Administración',
+            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+        ];
     if ($resultado['exito']) {
         $datos = $resultado['datos'];
         require_once 'vistas/solicitudes_list.php';
@@ -288,6 +299,13 @@ class SolicitudControl {
             $fecha_inicio = $_POST['fecha_inicio'];
             $fecha_final = $_POST['fecha_final'];
             $estado = $_POST['estado'];
+            $acciones = [
+            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+            'En Proceso 1/3' => 'Enviar a despacho',
+            'En Proceso 2/3' => 'Enviar a Administración',
+            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+        ];
             require_once 'vistas/solicitudes_list.php';
         } else {
             echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];

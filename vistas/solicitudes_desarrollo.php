@@ -66,7 +66,7 @@
     <main>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
     <section class="filtros-card">
-        <form class="filtros-form" action="filtrar_fecha" method="POST">
+        <form class="filtros-form" action="filtrar_fechaDesarrollo" method="POST">
             <label>
                 Desde
                 <input type="date" name="fecha_inicio" value="<?php echo isset($fecha_inicio) ? $fecha_inicio : ''; ?>">
@@ -94,7 +94,7 @@
     <nav class="filtros-categorias">
         <a href="<?= BASE_URL ?>/filtrar?filtro=recientes" class="filtro-btn" name="recientes"><i class="fa fa-clock"></i> Más recientes</a>
         <a href="<?= BASE_URL ?>/filtrar?filtro=antiguos" class="filtro-btn" name="antiguos"><i class="fa fa-clock"></i> Más antiguos</a>
-        <a href="<?= BASE_URL ?>/filtrar?filtro=urgentes" class="filtro-btn" name="urgentes"><i class="fa fa-exclamation-circle"></i> Más urgentes</a>
+        <!-- <a href="/filtrar?filtro=urgentes" class="filtro-btn" name="urgentes"><i class="fa fa-exclamation-circle"></i> Más urgentes</a> -->
         <a href="<?= BASE_URL ?>/filtrar?filtro=medicinas" class="filtro-btn" name="medicinas"><i class="fa fa-medkit"></i> Medicinas</a>
         <a href="<?= BASE_URL ?>/filtrar?filtro=ayuda_tecnica" class="filtro-btn" name="ayudas técnicas"><i class="fa fa-wheelchair"></i> Ayudas técnicas</a>
         <a href="<?= BASE_URL ?>/filtrar?filtro=laboratorio" class="filtro-btn" name="laboratorio"><i class="fa fa-flask"></i> Laboratorio</a>

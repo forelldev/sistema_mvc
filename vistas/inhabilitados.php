@@ -32,13 +32,13 @@
                             <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
                             <div><strong>Tipo de Ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda']) ?></div>
                             <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
-                            <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
+                            <div><strong>Número de documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
                             <div><strong>Cédula del Beneficiario:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
-                            <div><strong>Remitente:</strong> <?= htmlspecialchars($fila['remitente'] ?? '') ?></div>
+                            <div><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></div>
                             <div><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></div>
                         </div>
                         <div class="solicitud-actions">
-                            <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
+                            <a href="<?= BASE_URL.'/informacion_beneficiario?ci='.$fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
                             <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc']  ?>" class="aprobar-btn">Editar</a>
                             <a href="<?= BASE_URL.'/habilitar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Habilitar</a>
                         </div>

@@ -285,22 +285,26 @@ public static function solicitud($id_doc, $estado) {
 
             try {
                 $consulta = "
-                    SELECT 
-                        sa.*, 
-                        saf.fecha, saf.fecha_modificacion, saf.visto,
-                        sc.correo_enviado,
-                        cat.tipo_ayuda, cat.categoria,
-                        des.descripcion, des.promotor, des.remitente, des.observaciones,
-                        inv.razon
-                    FROM solicitud_ayuda sa
-                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
-                    LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
-                    LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
-                    LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
-                    LEFT JOIN solicitud_ayuda_invalido inv ON sa.id_doc = inv.id_doc
-                    WHERE sa.invalido = 1
-                    ORDER BY saf.fecha DESC
-                ";
+                            SELECT 
+                                sa.*, 
+                                saf.fecha, saf.fecha_modificacion, saf.visto,
+                                sc.correo_enviado,
+                                cat.tipo_ayuda, cat.categoria,
+                                des.descripcion, des.promotor, des.observaciones,
+                                inv.razon,
+                                sol.nombre AS nombre,
+                                sol.apellido AS apellido
+                            FROM solicitud_ayuda sa
+                            LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                            LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
+                            LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
+                            LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
+                            LEFT JOIN solicitud_ayuda_invalido inv ON sa.id_doc = inv.id_doc
+                            LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+                            WHERE sa.invalido = 1
+                            ORDER BY saf.fecha DESC
+                        ";
+
 
                 $busqueda = $conexion->prepare($consulta);
                 $busqueda->execute();
@@ -337,14 +341,16 @@ public static function solicitud($id_doc, $estado) {
                         saf.fecha, saf.fecha_modificacion, saf.visto,
                         sc.correo_enviado,
                         cat.tipo_ayuda, cat.categoria,
-                        des.descripcion, des.promotor, des.remitente, des.observaciones,
-                        inv.razon
+                        des.descripcion, des.promotor, des.observaciones,
+                        inv.razon,
+                        sol.*
                     FROM solicitud_ayuda sa
                     LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
                     LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
                     LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
                     LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
                     LEFT JOIN solicitud_ayuda_invalido inv ON sa.id_doc = inv.id_doc
+                    LEFT JOIN solicitantes sol ON sa.ci = sol.ci
                     WHERE sa.id_doc = ?
                 ");
                 $stmt->execute([$id_doc]);
@@ -378,7 +384,7 @@ public static function solicitud($id_doc, $estado) {
                 $conexion->beginTransaction();
 
                 $camposObligatorios = [
-                    'id_doc', 'id_manual', 'ci', 'descripcion', 'promotor', 'remitente', 'observaciones', 'tipo_ayuda', 'categoria'
+                    'id_doc', 'id_manual', 'ci', 'descripcion','observaciones', 'tipo_ayuda', 'categoria'
                 ];
 
                 foreach ($camposObligatorios as $campo) {
@@ -402,13 +408,11 @@ public static function solicitud($id_doc, $estado) {
                 // Actualizar solicitud_descripcion
                 $stmt2 = $conexion->prepare("
                     UPDATE solicitud_descripcion 
-                    SET descripcion = ?, promotor = ?, remitente = ?, observaciones = ? 
+                    SET descripcion = ?,observaciones = ? 
                     WHERE id_doc = ?
                 ");
                 $stmt2->execute([
                     $data['descripcion'],
-                    $data['promotor'],
-                    $data['remitente'],
                     $data['observaciones'],
                     $data['id_doc']
                 ]);

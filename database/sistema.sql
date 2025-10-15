@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-10-2025 a las 23:03:55
+-- Tiempo de generación: 15-10-2025 a las 16:51:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,6 +24,165 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `comunidades`
+--
+
+CREATE TABLE `comunidades` (
+  `id` int(11) NOT NULL,
+  `comunidad` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `comunidades`
+--
+
+INSERT INTO `comunidades` (`id`, `comunidad`) VALUES
+(1, 'PALMICHAL'),
+(2, 'LA ENSENADA'),
+(3, 'CUJISAL'),
+(4, 'EL CARDON'),
+(5, 'AGUA AZUL'),
+(6, 'ESPARRAMADERO'),
+(7, 'CAJA DE AGUA'),
+(8, 'PRODUCTORES DE CAMPO ALEGRE'),
+(9, 'VILLAS DE YARA'),
+(10, 'RENACER DE UN PUEBLO'),
+(11, 'EL PARAISO'),
+(12, 'DON ANTONIO'),
+(13, 'MOTOCROSS'),
+(14, 'ANA SUAREZ CENTRO'),
+(15, 'LA MAPORITA'),
+(16, 'EL JAGUEY'),
+(17, 'SABANA DE TIQUIRE'),
+(18, 'CERRO GRANDE'),
+(19, 'TACARIGUITA'),
+(20, 'REVOLUCION 106'),
+(21, 'SIEMPRE ADELANTE 107 SAN JOSE'),
+(22, 'MAIZANTA'),
+(23, 'CREANDO CONCIENCIA'),
+(24, 'UNIDAD Y ACCION'),
+(25, 'MONTAÑITA I'),
+(26, 'DANIEL CARIAS Y BANCO OBREROS'),
+(27, 'MONTAÑITA III'),
+(28, 'BARRIO BOLIVAR'),
+(29, 'LA REALIDAD'),
+(30, 'TEREPAIMA'),
+(31, 'COLINAS DE TEREPAIMA (VOLUNTAD Y ACCION)'),
+(32, 'BRISAS DE TEREPAIMA'),
+(33, 'CASERIO DE CAÑAVERAL'),
+(34, 'SOL BOLIVARIANO'),
+(35, 'EL SALTO'),
+(36, 'SABANA DE GUREMAL'),
+(37, 'QUEBRADA GRANDE'),
+(38, 'EL PLAYON'),
+(39, 'BRISAS DEL PEGON'),
+(40, 'ARENALES VIA EL SALTO'),
+(41, 'CAMBURITO SECTOR LA CRISPINERA'),
+(42, 'LA FLORIDA'),
+(43, 'MONTANITA II BICENTENARIO'),
+(44, 'II DE SEPTIEMBRE'),
+(45, 'MONTAÑITA INDIO COY ( LIRIOS DEL VALLE)'),
+(46, 'LA VICTORIA'),
+(47, 'YACURAL'),
+(48, 'TORBELLAN'),
+(49, 'ANIMAS'),
+(50, 'UVEDAL'),
+(51, 'DON NICOLA'),
+(52, 'EL SARURO'),
+(53, 'PUEBLO UNIDO'),
+(54, 'OVIDIO MARCHAN'),
+(55, 'AGUA VIVA'),
+(56, 'SAN ANTONIO LA TAPA'),
+(57, 'BRISAS DE LA TAPA'),
+(58, 'TAPA LA LUCHA'),
+(59, 'EL POR VENIR'),
+(60, 'FRANCISCA HERNANDEZ'),
+(61, 'FABRICIO SEQUERA/ LA MORA'),
+(62, 'RIVERA SANTA LUCIA'),
+(63, 'ALDEA LA PAZ'),
+(64, 'LA FUENTE'),
+(65, 'CANAAN CELESTIAL TIERRA DE DIOS'),
+(66, 'TOTUMILLO'),
+(67, 'SAN ROQUE'),
+(68, 'AMINTA ABREU'),
+(69, 'LA VAQUERA BARRIO AJURO'),
+(70, 'PIEDRA ARRIBA'),
+(71, 'PIEDRA CENTRO'),
+(72, 'SAN ANTONIO - LA PIEDRA'),
+(73, 'PUEBLO NUEVO'),
+(74, 'DON TEODORO'),
+(75, 'TEOLINDA PAEZ'),
+(76, 'SANTA EDUVIGE LOS RANCHOS'),
+(77, 'PAZ BOLIVARIANA'),
+(78, 'SOMOS TODOS'),
+(79, 'URBANIZACION ARAGUANEY'),
+(80, 'NUEVA ESPERANZA-CRISTO REY'),
+(81, 'LOS REVOLUCIONARIOS'),
+(82, 'VILLA OLIMPICA'),
+(83, 'RAFAEL RANGEL'),
+(84, 'SUEÑOS BOLIVARIANOS SABANITA 1'),
+(85, 'SECTOR LA VIRGEN'),
+(86, 'LA ROCA DE LA SALVACIÓN'),
+(87, 'URIBEQUE'),
+(88, 'URBANIZACION SIMON RODRIGUEZ III'),
+(89, 'URBANIZACION SIMON RODRIGUEZ I'),
+(90, 'SANTA INES'),
+(91, 'ALI PRIMERA PLATANALES'),
+(92, 'JUAN BERNARDO NAHACA'),
+(93, 'LA ORQUIDEA'),
+(94, 'SABANITA 4/ ALI PRIMERA'),
+(95, 'VILLA JARDIN'),
+(96, 'UNION BOLIVARIANA /BOLIVARIANA 1'),
+(97, 'TRICENTENARIA POPULAR'),
+(98, 'EL PINAL'),
+(99, 'EL POZON'),
+(100, 'LIMONCITO'),
+(101, 'EL CARMELERO'),
+(102, 'AGUA NEGRA'),
+(103, 'AGUA LINDA'),
+(104, 'ALBARICAL'),
+(105, 'LA PERDOMERA'),
+(106, 'LA HILERA'),
+(107, 'PEGON PASTOR GARCIA'),
+(108, 'TRICENTENARIA 1'),
+(109, 'TERMO YARACUY'),
+(110, 'ENCRUCIJADA'),
+(111, 'VALLES DE PEÑA'),
+(112, 'HATO VIEJO'),
+(113, 'CAMINO NUEVO'),
+(114, 'SAN RAFAEL'),
+(115, 'LOS TUBOS'),
+(116, 'LOS PATIECITOS'),
+(117, 'POTRERITO'),
+(118, 'CAÑADA TEMA'),
+(119, 'EL MILAGRO DE BARRIO AJURO I'),
+(120, 'BARRIO AJURO LAS 4R'),
+(121, 'SAN ANTONIO (LA REVOLUCION DE SAN ANTONIO )'),
+(122, 'EL VAPOR'),
+(123, 'ARENALES( VIA LAS VELAS)'),
+(124, 'AMIGO TRES CALLEJONES'),
+(125, 'GRANVEL'),
+(126, 'LAS VELAS CENTRO'),
+(127, '5 Y 7 CASAS'),
+(128, 'EL PALMAR'),
+(129, 'YUMARITO'),
+(130, 'SANTA BARBARA'),
+(131, 'SANTA LUCIA'),
+(132, 'LA CONCEPCION'),
+(133, 'PILCO MAYO'),
+(134, 'VILLAS SANTA LUCIA'),
+(135, 'TIAMA'),
+(136, 'LA BANDERA'),
+(137, 'JOSE GREGORIO AMAYA'),
+(138, 'LA TRILLA'),
+(139, 'TIERRA AMARILLA'),
+(140, 'EL CHIMBORAZO'),
+(141, 'LA RURAL SECTOR 102'),
+(142, 'EL JOBITO');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `constancias`
 --
 
@@ -36,16 +195,6 @@ CREATE TABLE `constancias` (
   `apellido` varchar(255) NOT NULL,
   `fecha` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `constancias`
---
-
-INSERT INTO `constancias` (`id`, `id_manual`, `tipo`, `ci`, `nombre`, `apellido`, `fecha`) VALUES
-(1, 2323, 'Constancia de Soltería', 1104, 'Pedro', 'Gonzalez', '0000-00-00 00:00:00'),
-(2, 23234, 'Fé de vida', 1104, 'pedro', 'gonzalez', '0000-00-00 00:00:00'),
-(3, 232344442, 'Asiento Permanente', 123, 'pedro', 'Gonzalez', '0000-00-00 00:00:00'),
-(4, 2147483647, 'Permisos de Mudanza', 123, 'Pedro', 'Gonzalez', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -61,13 +210,6 @@ CREATE TABLE `despacho` (
   `invalido` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `despacho`
---
-
-INSERT INTO `despacho` (`id_despacho`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
-(1, 55832, 3215, 'En Proceso 2/2 (Sin entregar)', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -80,13 +222,6 @@ CREATE TABLE `despacho_descripcion` (
   `asunto` varchar(255) NOT NULL,
   `creador` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `despacho_descripcion`
---
-
-INSERT INTO `despacho_descripcion` (`id`, `id_despacho`, `asunto`, `creador`) VALUES
-(1, 1, 'quiero cualto', 'pepe gonzalez');
 
 -- --------------------------------------------------------
 
@@ -101,13 +236,6 @@ CREATE TABLE `despacho_fecha` (
   `fecha_modificacion` datetime NOT NULL,
   `visto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `despacho_fecha`
---
-
-INSERT INTO `despacho_fecha` (`id`, `id_despacho`, `fecha`, `fecha_modificacion`, `visto`) VALUES
-(1, 1, '2025-10-05 15:40:11', '2025-10-05 15:40:11', 0);
 
 -- --------------------------------------------------------
 
@@ -197,7 +325,25 @@ INSERT INTO `reportes_acciones` (`id`, `id_doc`, `fecha`, `accion`, `ci`) VALUES
 (55, 13, '2025-10-12 16:40:23', 'Envió la solicitud a Administración. (Desarrollo Social)', 3434),
 (56, 13, '2025-10-12 16:40:35', 'Confirmó que se entregó la ayuda. (Desarrollo Social)', 3434),
 (57, 13, '2025-10-12 16:40:47', 'Reinició la solicitud. (Desarrollo Social)', 3434),
-(58, 14, '2025-10-12 17:02:00', 'Registró solicitud en Desarrollo Social', 3434);
+(58, 14, '2025-10-12 17:02:00', 'Registró solicitud en Desarrollo Social', 3434),
+(59, 13, '2025-10-12 18:46:47', 'Inhabilitó la solicitud razón: siempre estoy brishando', 3434),
+(60, 13, '2025-10-12 18:51:35', 'Habilitó la solicitud', 3434),
+(61, 13, '2025-10-12 18:53:29', 'Inhabilitó la solicitud razón: para probar algo', 3434),
+(62, 13, '2025-10-12 19:23:03', 'Editó la solicitud de Desarrollo Social', 3434),
+(63, 6, '2025-10-14 18:44:45', 'Creó una nueva solicitud de ayuda.', 3434),
+(64, 4, '2025-10-14 20:31:19', 'Inhabilitó la solicitud razón: porque quiero inhabilitarla y soy arrecho', 3434),
+(65, 4, '2025-10-14 20:34:37', 'Inhabilitó la solicitud razón: porque quiero ', 3434),
+(66, 4, '2025-10-14 20:38:49', 'Habilitó la solicitud', 3434),
+(67, 4, '2025-10-14 20:39:06', 'Inhabilitó la solicitud razón: de prueba 1', 3434),
+(68, 4, '2025-10-14 20:39:17', 'Habilitó la solicitud', 3434),
+(69, 7, '2025-10-14 21:01:54', 'Creó una nueva solicitud de ayuda.', 3434),
+(70, 15, '2025-10-14 21:22:29', 'Creó una nueva solicitud de ayuda.', 3434),
+(71, 6, '2025-10-15 09:17:28', 'Editó la solicitud', 3434),
+(72, 6, '2025-10-15 09:20:57', 'Inhabilitó la solicitud razón: razoncita', 3434),
+(73, 6, '2025-10-15 09:23:47', 'Editó la solicitud', 3434),
+(74, 6, '2025-10-15 09:24:08', 'Habilitó la solicitud', 3434),
+(75, 6, '2025-10-15 09:24:26', 'Inhabilitó la solicitud razón: pq si', 3434),
+(76, 6, '2025-10-15 09:24:38', 'Habilitó la solicitud', 3434);
 
 -- --------------------------------------------------------
 
@@ -288,7 +434,10 @@ INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VA
 (69, 3434, '2025-10-09 15:39:19', '2025-10-10 15:33:19'),
 (70, 3434, '2025-10-10 15:33:27', '2025-10-12 08:35:27'),
 (71, 3434, '2025-10-12 08:35:36', '2025-10-12 12:09:25'),
-(72, 3434, '2025-10-12 12:09:37', '0000-00-00 00:00:00');
+(72, 3434, '2025-10-12 12:09:37', '2025-10-13 09:54:00'),
+(73, 3434, '2025-10-13 09:54:06', '2025-10-14 18:14:03'),
+(74, 3434, '2025-10-14 18:21:47', '2025-10-14 21:23:53'),
+(75, 3434, '2025-10-15 08:18:45', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -332,7 +481,8 @@ CREATE TABLE `solicitantes` (
 --
 
 INSERT INTO `solicitantes` (`id_solicitante`, `ci`, `nombre`, `apellido`, `correo`, `fecha_creacion`) VALUES
-(6, 3215, 'Deprueba', 'Otravez', 'siknificado@gmail.com', '2025-10-04 12:48:12');
+(7, 3215, 'Jose', 'Gonzalez', 'forell.music@gmail.com', '2025-10-14 18:44:43'),
+(8, 30420669, 'Calucho', 'Gonzalez', 'carlossoteldo11@gmail.com', '2025-10-14 21:01:52');
 
 -- --------------------------------------------------------
 
@@ -353,7 +503,8 @@ CREATE TABLE `solicitantes_comunidad` (
 --
 
 INSERT INTO `solicitantes_comunidad` (`id`, `id_solicitante`, `comunidad`, `direc_habita`, `estruc_base`) VALUES
-(5, 6, 'plus', 'Cuarzo', 'Bueno estructura no hay');
+(6, 7, 'PALMICHAL', 'Carrera centro', 'Dominio'),
+(7, 8, 'JOSE GREGORIO AMAYA', '32-15', 'Pues por ahi');
 
 -- --------------------------------------------------------
 
@@ -373,7 +524,8 @@ CREATE TABLE `solicitantes_conocimiento` (
 --
 
 INSERT INTO `solicitantes_conocimiento` (`id`, `id_solicitante`, `profesion`, `nivel_instruc`) VALUES
-(5, 6, 'Ingeniero', 'Universidad');
+(6, 7, 'Ingeniero', 'Primaria'),
+(7, 8, 'Ingeniero en informática', 'Universidad');
 
 -- --------------------------------------------------------
 
@@ -393,7 +545,8 @@ CREATE TABLE `solicitantes_extra` (
 --
 
 INSERT INTO `solicitantes_extra` (`id`, `id_solicitante`, `codigo_patria`, `serial_patria`) VALUES
-(5, 6, '343434224424', '123123123123');
+(6, 7, '321423', '3213123'),
+(7, 8, '32131231', '232342235');
 
 -- --------------------------------------------------------
 
@@ -416,7 +569,8 @@ CREATE TABLE `solicitantes_info` (
 --
 
 INSERT INTO `solicitantes_info` (`id`, `id_solicitante`, `fecha_nacimiento`, `lugar_nacimiento`, `edad`, `estado_civil`, `telefono`) VALUES
-(6, 6, '2020-07-08', 'Karakas Yaracuy', 5, 'Soltero/a', '042458883343');
+(7, 7, '2025-10-01', 'Hospital rafael rangel', 0, 'Soltero/a', '042323'),
+(8, 8, '2003-04-11', 'San juan de los morros', 22, 'Soltero/a', '04245587628');
 
 -- --------------------------------------------------------
 
@@ -437,7 +591,8 @@ CREATE TABLE `solicitantes_ingresos` (
 --
 
 INSERT INTO `solicitantes_ingresos` (`id`, `id_solicitante`, `nivel_ingreso`, `pension`, `bono`) VALUES
-(5, 6, 23000, 'No', 'No');
+(6, 7, 300, 'Si', 'Si'),
+(7, 8, 344, 'No', 'No');
 
 -- --------------------------------------------------------
 
@@ -457,8 +612,8 @@ CREATE TABLE `solicitantes_patologia` (
 --
 
 INSERT INTO `solicitantes_patologia` (`id`, `id_solicitante`, `tip_patologia`, `nom_patologia`) VALUES
-(12, 6, 'Hereditarias', 'hipertnesion'),
-(13, 6, 'Congénitas', 'miopia');
+(14, 7, 'Hereditarias', 'hipertension'),
+(15, 7, 'Congénitas', 'miopia');
 
 -- --------------------------------------------------------
 
@@ -479,7 +634,8 @@ CREATE TABLE `solicitantes_propiedad` (
 --
 
 INSERT INTO `solicitantes_propiedad` (`id`, `id_solicitante`, `propiedad`, `propiedad_est`, `observaciones_propiedad`) VALUES
-(5, 6, 'Casa', 'Propia', '');
+(6, 7, 'Casa', 'Propia', 'Sin observaciones'),
+(7, 8, 'Apartamento', 'Prestada', 'Sin observaciones');
 
 -- --------------------------------------------------------
 
@@ -501,7 +657,8 @@ CREATE TABLE `solicitantes_trabajo` (
 --
 
 INSERT INTO `solicitantes_trabajo` (`id`, `id_solicitante`, `trabajo`, `direccion_trabajo`, `trabaja_public`, `nombre_insti`) VALUES
-(5, 6, 'No tiene', 'No', 'No', 'No');
+(6, 7, 'No tiene', 'No', 'No', 'No'),
+(7, 8, 'No tiene', 'No', 'No', 'No');
 
 -- --------------------------------------------------------
 
@@ -522,7 +679,9 @@ CREATE TABLE `solicitud_ayuda` (
 --
 
 INSERT INTO `solicitud_ayuda` (`id_doc`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
-(3, '232323', '3215', 'En espera del documento físico para ser procesado 0/3', 0);
+(4, '123123', '3215', 'En espera del documento físico para ser procesado 0/3', 0),
+(5, '32123', '30420669', 'En espera del documento físico para ser procesado 0/3', 0),
+(6, '23231', '3215', 'En espera del documento físico para ser procesado 0/3', 0);
 
 -- --------------------------------------------------------
 
@@ -541,7 +700,9 @@ CREATE TABLE `solicitud_ayuda_correo` (
 --
 
 INSERT INTO `solicitud_ayuda_correo` (`id`, `id_doc`, `correo_enviado`) VALUES
-(3, 3, 0);
+(4, 4, 0),
+(5, 5, 0),
+(6, 6, 0);
 
 -- --------------------------------------------------------
 
@@ -562,7 +723,9 @@ CREATE TABLE `solicitud_ayuda_fecha` (
 --
 
 INSERT INTO `solicitud_ayuda_fecha` (`id`, `id_doc`, `fecha`, `fecha_modificacion`, `visto`) VALUES
-(2, 3, '2025-10-06 09:35:19', '2025-10-06 10:19:32', 0);
+(3, 4, '2025-10-14 18:44:43', '2025-10-14 18:44:43', 1),
+(4, 5, '2025-10-14 21:01:52', '2025-10-14 21:01:52', 1),
+(5, 6, '2025-10-14 21:22:27', '2025-10-14 21:22:27', 1);
 
 -- --------------------------------------------------------
 
@@ -594,7 +757,9 @@ CREATE TABLE `solicitud_categoria` (
 --
 
 INSERT INTO `solicitud_categoria` (`id`, `id_doc`, `tipo_ayuda`, `categoria`) VALUES
-(3, 3, 'Silla de Ruedas', 'Ayudas técnicas');
+(4, 4, 'Otros', 'Otros'),
+(5, 5, 'Otros', 'Economica'),
+(6, 6, 'Otros', 'Ayudas técnicas');
 
 -- --------------------------------------------------------
 
@@ -610,14 +775,6 @@ CREATE TABLE `solicitud_desarrollo` (
   `invalido` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `solicitud_desarrollo`
---
-
-INSERT INTO `solicitud_desarrollo` (`id_des`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
-(13, '232321212', 3215, 'En Proceso 1/2', 0),
-(14, '2424123123', 3215, 'En espera del documento físico para ser procesado 0/2', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -629,14 +786,6 @@ CREATE TABLE `solicitud_desarrollo_correo` (
   `id_des` int(11) NOT NULL,
   `correo_enviado` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `solicitud_desarrollo_correo`
---
-
-INSERT INTO `solicitud_desarrollo_correo` (`id`, `id_des`, `correo_enviado`) VALUES
-(5, 13, 0),
-(6, 14, 0);
 
 -- --------------------------------------------------------
 
@@ -652,14 +801,6 @@ CREATE TABLE `solicitud_desarrollo_fecha` (
   `visto` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `solicitud_desarrollo_fecha`
---
-
-INSERT INTO `solicitud_desarrollo_fecha` (`id`, `id_des`, `fecha`, `fecha_modificacion`, `visto`) VALUES
-(11, 13, '2025-10-12', '2025-10-12', 0),
-(12, 14, '2025-10-12', '2025-10-12', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -672,14 +813,6 @@ CREATE TABLE `solicitud_desarrollo_info` (
   `descripcion` text DEFAULT NULL,
   `creador` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `solicitud_desarrollo_info`
---
-
-INSERT INTO `solicitud_desarrollo_info` (`id`, `id_des`, `descripcion`, `creador`) VALUES
-(12, 13, 'para probar procedimientos', 'Admin Supremo'),
-(13, 14, 'Tiene sudado el estómago', 'Admin Supremo');
 
 -- --------------------------------------------------------
 
@@ -705,20 +838,6 @@ CREATE TABLE `solicitud_desarrollo_laboratorio` (
   `examen` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `solicitud_desarrollo_laboratorio`
---
-
-INSERT INTO `solicitud_desarrollo_laboratorio` (`id`, `id_des`, `examen`) VALUES
-(11, 13, 'Hematología Completa'),
-(12, 13, 'Glicemia'),
-(13, 13, 'Orina'),
-(14, 13, 'Heces'),
-(15, 14, 'Hematología Completa'),
-(16, 14, 'Glicemia'),
-(17, 14, 'Orina'),
-(18, 14, 'Heces');
-
 -- --------------------------------------------------------
 
 --
@@ -731,14 +850,6 @@ CREATE TABLE `solicitud_desarrollo_tipo` (
   `categoria` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `solicitud_desarrollo_tipo`
---
-
-INSERT INTO `solicitud_desarrollo_tipo` (`id`, `id_des`, `categoria`) VALUES
-(12, 13, 'Laboratorio'),
-(13, 14, 'Laboratorio');
-
 -- --------------------------------------------------------
 
 --
@@ -750,7 +861,6 @@ CREATE TABLE `solicitud_descripcion` (
   `id_doc` int(11) NOT NULL,
   `descripcion` varchar(255) NOT NULL,
   `promotor` varchar(255) NOT NULL,
-  `remitente` varchar(255) NOT NULL,
   `observaciones` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -758,8 +868,10 @@ CREATE TABLE `solicitud_descripcion` (
 -- Volcado de datos para la tabla `solicitud_descripcion`
 --
 
-INSERT INTO `solicitud_descripcion` (`id`, `id_doc`, `descripcion`, `promotor`, `remitente`, `observaciones`) VALUES
-(2, 3, 'Ayuda para miopia', 'Admin Supremo', 'Pedro pelaez', '');
+INSERT INTO `solicitud_descripcion` (`id`, `id_doc`, `descripcion`, `promotor`, `observaciones`) VALUES
+(3, 4, 'Ayuda para economia', 'Admin Supremo', 'Sin observaciones'),
+(4, 5, 'Ayuda para mi', 'Admin Supremo', 'Sin observaciones'),
+(5, 6, 'Ayuda para sobrevolar', 'Admin Supremo', 'Sin observaciónn');
 
 -- --------------------------------------------------------
 
@@ -824,6 +936,12 @@ CREATE TABLE `usuarios_recuperacion` (
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `comunidades`
+--
+ALTER TABLE `comunidades`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `constancias`
@@ -1054,6 +1172,12 @@ ALTER TABLE `usuarios_recuperacion`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `comunidades`
+--
+ALTER TABLE `comunidades`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
+
+--
 -- AUTO_INCREMENT de la tabla `constancias`
 --
 ALTER TABLE `constancias`
@@ -1087,13 +1211,13 @@ ALTER TABLE `despacho_invalido`
 -- AUTO_INCREMENT de la tabla `reportes_acciones`
 --
 ALTER TABLE `reportes_acciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_entradas`
 --
 ALTER TABLE `reportes_entradas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1105,85 +1229,85 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `solicitantes`
 --
 ALTER TABLE `solicitantes`
-  MODIFY `id_solicitante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_solicitante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_comunidad`
 --
 ALTER TABLE `solicitantes_comunidad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_conocimiento`
 --
 ALTER TABLE `solicitantes_conocimiento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_extra`
 --
 ALTER TABLE `solicitantes_extra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_info`
 --
 ALTER TABLE `solicitantes_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_ingresos`
 --
 ALTER TABLE `solicitantes_ingresos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_patologia`
 --
 ALTER TABLE `solicitantes_patologia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_propiedad`
 --
 ALTER TABLE `solicitantes_propiedad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_trabajo`
 --
 ALTER TABLE `solicitantes_trabajo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda`
 --
 ALTER TABLE `solicitud_ayuda`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_correo`
 --
 ALTER TABLE `solicitud_ayuda_correo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_fecha`
 --
 ALTER TABLE `solicitud_ayuda_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_invalido`
 --
 ALTER TABLE `solicitud_ayuda_invalido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_categoria`
 --
 ALTER TABLE `solicitud_categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo`
@@ -1213,7 +1337,7 @@ ALTER TABLE `solicitud_desarrollo_info`
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_invalido`
 --
 ALTER TABLE `solicitud_desarrollo_invalido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_laboratorio`
@@ -1231,7 +1355,7 @@ ALTER TABLE `solicitud_desarrollo_tipo`
 -- AUTO_INCREMENT de la tabla `solicitud_descripcion`
 --
 ALTER TABLE `solicitud_descripcion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios_info`

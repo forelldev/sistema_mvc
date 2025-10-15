@@ -25,6 +25,13 @@
          <button class="notificaciones-btn" id="btn-notificaciones">
                 <i class="fas fa-bell"></i> Notificaciones de Urgencia
                 <?php
+                        $medicamentos = Solicitud::notiMedicamentos();
+                        $notificacion = $medicamentos['exito'] ? $medicamentos['datos'] : [];
+                        $notificacionAgrupada = [];
+                        foreach ($notificacion as $item) {
+                            $tipo = $item['categoria'] ?? 'general';
+                            $notificacionAgrupada[$tipo][] = $item;
+                        }
                     $total = 0;
                     foreach ($notificacionAgrupada as $grupo) {
                         // Si es un mensaje plano, no es un array de notificaciones
@@ -68,15 +75,16 @@
         <form class="filtros-form" action="filtrar_fecha" method="POST">
             <label>
                 Desde
-                <input type="date" name="fecha_inicio" value="<?php echo isset($fecha_inicio) ? $fecha_inicio : ''; ?>">
+                <input type="date" name="fecha_inicio" value="<?php echo isset($fecha_inicio) ? $fecha_inicio : ''; ?>" required>
             </label>
             <label>
                 Hasta
-                <input type="date" name="fecha_final" value="<?php echo isset($fecha_final) ? $fecha_final : ''; ?>">
+                <input type="date" name="fecha_final" value="<?php echo isset($fecha_final) ? $fecha_final : ''; ?>" required>
             </label>
             <label>
                 Seleccione un Estado:
-                <select name="estado">
+                <select name="estado" required>
+                    <option value="">Selecciona</option>
                     <option value="En espera del documento físico para ser procesado 0/3" <?= ($estado ?? '') == 'En espera del documento físico para ser procesado 0/3' ? 'selected' : '' ?>>En espera del documento físico para ser procesado 0/3</option>
                     <option value="En Proceso 1/3" <?= ($estado ?? '') == 'En Proceso 1/3' ? 'selected' : '' ?>>En Proceso 1/3</option>
                     <option value="En Proceso 2/3" <?= ($estado ?? '') == 'En Proceso 2/3' ? 'selected' : '' ?>>En Proceso 2/3</option>
@@ -93,10 +101,12 @@
     <nav class="filtros-categorias">
         <a href="<?= BASE_URL ?>/filtrar?filtro=recientes" class="filtro-btn" name="recientes"><i class="fa fa-clock"></i> Más recientes</a>
         <a href="<?= BASE_URL ?>/filtrar?filtro=antiguos" class="filtro-btn" name="antiguos"><i class="fa fa-clock"></i> Más antiguos</a>
-        <a href="<?= BASE_URL ?>/filtrar?filtro=urgentes" class="filtro-btn" name="urgentes"><i class="fa fa-exclamation-circle"></i> Más urgentes</a>
-        <a href="<?= BASE_URL ?>/filtrar?filtro=medicinas" class="filtro-btn" name="medicinas"><i class="fa fa-medkit"></i> Medicinas</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=otros" class="filtro-btn" name="antiguos"><i class="fa fa-clock"></i> Otros</a>
+        <a href="<?= BASE_URL ?>/filtrar?filtro=economica" class="filtro-btn" name="antiguos"><i class="fa fa-clock"></i>Económicas</a>
+        <!-- <a href="/filtrar?filtro=urgentes" class="filtro-btn" name="urgentes"><i class="fa fa-exclamation-circle"></i> Más urgentes</a> -->
+        <!-- <a href="/filtrar?filtro=medicinas" class="filtro-btn" name="medicinas"><i class="fa fa-medkit"></i> Medicinas</a> -->
         <a href="<?= BASE_URL ?>/filtrar?filtro=ayuda_tecnica" class="filtro-btn" name="ayudas técnicas"><i class="fa fa-wheelchair"></i> Ayudas técnicas</a>
-        <a href="<?= BASE_URL ?>/filtrar?filtro=laboratorio" class="filtro-btn" name="laboratorio"><i class="fa fa-flask"></i> Laboratorio</a>
+        <!-- <a href="/filtrar?filtro=laboratorio" class="filtro-btn" name="laboratorio"><i class="fa fa-flask"></i> Laboratorio</a> -->
         <a href="<?= BASE_URL ?>/filtrar?filtro=enseres" class="filtro-btn" name="enseres"><i class="fa fa-couch"></i> Enseres</a>
     </nav>
     <section class="solicitudes-lista">
@@ -122,9 +132,10 @@
                         <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
                         <div><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda']) ?></div>
                         <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
-                        <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
-                        <div><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
-                        <div><strong>Remitente:</strong> <?= htmlspecialchars($fila['remitente'] ?? '') ?></div>
+                        <div><strong>Número de documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
+                        <div><strong>Cédula del Beneficiario:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
+                        <div><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? ''))?></div>
+                        <div><strong>Promotor:</strong> <?= htmlspecialchars($fila['promotor'] ?? '') ?></div>
                         <div><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></div>
                     </div>
                     <div class="solicitud-actions">

@@ -49,6 +49,8 @@ Router::get('/beneficiarios_lista','BeneficiarioControl@beneficiarios_list');
 Router::get('/registro_beneficiario','BeneficiarioControl@registro_beneficiario');
 Router::post('/registrar_beneficiario','BeneficiarioControl@registrar_beneficiario');
 Router::get('/felicidades_beneficiario','BeneficiarioControl@felicidades_beneficiario');
+Router::post('/buscar_beneficiario','BeneficiarioControl@buscar_beneficiario');
+Router::get('/solicitudes_beneficiario','BeneficiarioControl@solicitudes_beneficiario');
 Router::get('/estadisticas','EstadisticasControl@estadisticas');
 Router::get('/constancias','ConstanciasControl@mostrar');
 Router::get('/registro_constancia','ConstanciasControl@registro_constancia');
@@ -72,4 +74,5 @@ Router::get('/desarrollo_invalidos','DesarrolloControl@inhabilitados_lista');
 Router::get('/habilitarDesarrollo','DesarrolloControl@habilitar');
 Router::get('/editarDesarrollo','DesarrolloControl@editar');
 Router::post('/editar_desarrollo','DesarrolloControl@editar_solicitud');
+
 ?>

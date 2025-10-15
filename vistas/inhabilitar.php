@@ -16,6 +16,7 @@
             <a href="<?= BASE_URL ?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
+    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
     <main>
         <?php if($_SESSION['id_rol'] !== 2){?>
             <form action="inhabilitar_solicitud" method="POST" class="registro-card form-user" autocomplete="off">
@@ -23,7 +24,7 @@
                 <input type="hidden" name="id_doc" value="<?= $id_doc ?? 'No hay ID' ?>">
                 <div class="campo-user">
                     <label for="razon">Razón por la cual será inhabilitada esta solicitud</label>
-                    <input type="text" name="razon" id="razon" placeholder="Razón por la cual será inhabilitada esta solicitud">
+                    <input type="text" name="razon" id="razon" placeholder="Razón por la cual será inhabilitada esta solicitud" required>
                 </div>
                 <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-check"></i> Aceptar</button>
             </form>
@@ -33,7 +34,7 @@
                 <input type="hidden" name="id_doc" value="<?= $id_doc ?? 'No hay ID' ?>">
                 <div class="campo-user">
                     <label for="razon">Razón por la cual será inhabilitada esta solicitud</label>
-                    <input type="text" name="razon" id="razon" placeholder="Razón por la cual será inhabilitada esta solicitud">
+                    <input type="text" name="razon" id="razon" placeholder="Razón por la cual será inhabilitada esta solicitud" required>
                 </div>
                 <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-check"></i> Aceptar</button>
             </form>

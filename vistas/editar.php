@@ -61,14 +61,17 @@
             </div>
             <div class="campo-user">
                 <label for="remitente">Remitente:</label>
-                <input type="text" id="remitente" name="remitente" placeholder="Ejem: María González" required value="<?= htmlspecialchars($datos['remitente'] ?? '') ?>">
+                <input type="text" id="remitente" name="remitente" placeholder="Ejem: María González" value="<?= htmlspecialchars(($datos['nombre'] ?? '') . ' ' . ($datos['apellido'] ?? '')) ?>" readonly>
+            </div>
+            <div class="campo-user">
+                <label for="promotor">Promotor:</label>
+                <input type="text" id="promotor" name="promotor" placeholder="Ejem: María González" value="<?= htmlspecialchars($datos['promotor'] ?? '') ?>" readonly>
             </div>
             <div class="campo-user">
                 <label for="observaciones">Observaciones:</label>
-                <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)" value="<?= htmlspecialchars($datos['observaciones'] ?? '') ?>">
+                <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)" value="<?= htmlspecialchars($datos['observaciones'] ?? '') ?>" required>
             </div>
-            <input type="hidden" name="id_doc" value="<?= htmlspecialchars($datos['id_doc'] ?? '') ?>">
-            <input type="hidden" name="promotor" value="<?= htmlspecialchars($datos['promotor'] ?? '') ?>">
+            <?php $_SESSION['id_doc'] = $datos['id_doc'] ?? '' ?>
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-save"></i> Guardar cambios</button>
         </form>
     </main>

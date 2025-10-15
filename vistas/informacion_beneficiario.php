@@ -25,11 +25,29 @@
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Cédula</th>
+                    <th>Télefono</th>
+                    <th>Comunidad</th>
+                    <th>Edad</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Estado Civil</th>
+                    <th>Trabajo</th>
+                    <th>Acción</th>
                 </tr>
                 <tr>
-                    <td><?= htmlspecialchars($beneficiario['nombre']) ?></td>
-                    <td><?= htmlspecialchars($beneficiario['apellido']) ?></td>
-                    <td><?= htmlspecialchars($beneficiario['ci']) ?></td>
+                    <td><?= htmlspecialchars($beneficiario['nombre']?? '' ) ?></td>
+                    <td><?= htmlspecialchars($beneficiario['apellido'] ?? '' )?></td>
+                    <td><?= htmlspecialchars($beneficiario['ci'] ?? '') ?></td>
+                    <td><?= htmlspecialchars($beneficiario['telefono'] ?? 'No tiene o aún no se ha registrado') ?></td>
+                    <td><?= htmlspecialchars($beneficiario['comunidad'] ?? 'Sin registrar') ?></td>
+                    <td><?= htmlspecialchars($beneficiario['edad'] ?? 'Sin registrar') ?></td>
+                    <td>
+                        <?= isset($beneficiario['fecha_nacimiento']) && trim($beneficiario['fecha_nacimiento']) !== '' 
+                                ? htmlspecialchars(date('d-m-Y', strtotime($beneficiario['fecha_nacimiento']))) 
+                                : 'Sin registrar' ?>
+                    </td>
+                    <td><?= htmlspecialchars($beneficiario['estado_civil'] ?? 'Sin registrar') ?></td>
+                    <td><?= htmlspecialchars($beneficiario['trabajo'] ?? 'Sin registrar') ?></td>
+                    <td><a href="<?= BASE_URL ?>/solicitudes_beneficiario?ci=<?= $beneficiario['ci']?>">Ver todas las solicitudes del beneficiario</a></td>
                 </tr>
             </table>
         <?php elseif (isset($error)): ?>

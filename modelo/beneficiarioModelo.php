@@ -220,6 +220,67 @@ class BeneficiarioModelo{
         $data['nombre_insti'] = isset($data['nombre_insti']) && trim($data['nombre_insti']) !== '' ? $data['nombre_insti'] : 'No';
     }
 
+    public static function busqueda_beneficiario($data){
+        try {
+            $conexion = DB::conectar();
+
+            // Sanitizar y preparar el término de búsqueda
+            $filtro = trim($data['filtro_busqueda']);
+            $filtro = "%$filtro%"; // Para búsqueda parcial con LIKE
+
+            // Preparar la consulta
+            $stmt = $conexion->prepare("
+                SELECT * FROM solicitantes 
+                WHERE nombre LIKE :filtro 
+                OR apellido LIKE :filtro 
+                OR ci LIKE :filtro
+                ORDER BY nombre ASC
+            ");
+
+            // Ejecutar con parámetro seguro
+            $stmt->execute([':filtro' => $filtro]);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return[
+                'exito' => true,
+                'datos' => $resultado
+            ];
+        } catch (Exception $e) {
+            // Manejo de error: puedes registrar o mostrar un mensaje
+            error_log("Error en búsqueda de beneficiario: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => 'Ocurrió un error al realizar la búsqueda. Intente nuevamente más tarde.'
+            ];
+        }
+    }
+
+    public static function mostrar_solicitudes($ci){
+        try{
+            $conexion = DB::conectar();
+            $stmt = $conexion->prepare("SELECT sa.*,sf.*,si.*,sc.*,sd.*,sol.* FROM solicitud_ayuda sa 
+            LEFT JOIN solicitud_ayuda_fecha sf ON sa.id_doc = sf.id_doc
+            LEFT JOIN solicitud_ayuda_invalido si ON sa.id_doc = si.id_doc
+            LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+            LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+            LEFT JOIN solicitantes sol ON sa.ci = sol.ci 
+            WHERE sa.ci = :ci");
+            $stmt->execute([':ci' => $ci]);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return [
+            'exito' => true,
+            'datos' => $resultado
+            ];
+        }
+        catch (Exception $e){
+            error_log("Error en mostrar las solicitudes del beneficiario: ".$e->getMessage());
+            return[
+                'exito' => false,
+                'error' => 'Ocurrió un error en mostrar la solicitud'
+            ];
+        }
+    }
+
+
 
 }
 ?>

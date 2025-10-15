@@ -41,7 +41,7 @@ require_once 'conexiondb.php';
                         saf.fecha, saf.fecha_modificacion, saf.visto,
                         sc.correo_enviado,
                         cat.tipo_ayuda, cat.categoria,
-                        des.descripcion, des.promotor, des.remitente, des.observaciones
+                        des.descripcion, des.promotor, des.observaciones
                     FROM solicitud_ayuda sa
                     LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
                     LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
@@ -98,26 +98,54 @@ require_once 'conexiondb.php';
         }
 
 
-    public static function mostrar_notis($id_doc){
-        $conexion = DB::conectar();
-        $consulta = "SELECT * FROM solicitud_ayuda WHERE id_doc = '$id_doc'";
-        $busqueda = $conexion->prepare($consulta);
-        $busqueda->execute();
-        $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
+   public static function mostrar_notis($id_doc) {
+        try {
+            $conexion = DB::conectar();
+
+            $consulta = "
+                SELECT 
+                    sa.*, 
+                    saf.fecha, saf.fecha_modificacion, saf.visto,
+                    sc.correo_enviado,
+                    cat.tipo_ayuda, cat.categoria,
+                    des.descripcion, des.promotor, des.observaciones,
+                    sol.nombre AS nombre,
+                    sol.apellido AS apellido
+                FROM solicitud_ayuda sa
+                LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
+                LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
+                LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
+                LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+                WHERE sa.id_doc = :id_doc
+            ";
+
+
+            $busqueda = $conexion->prepare($consulta);
+            $busqueda->bindParam(':id_doc', $id_doc, PDO::PARAM_STR);
+            $busqueda->execute();
+            $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
+
             if ($resultado) {
-                // Usuario encontrado, devolver datos
                 return [
                     'exito' => true,
                     'datos' => $resultado
                 ];
             } else {
-                // No se encontró el usuario
                 return [
                     'exito' => false,
-                    'mensaje' => 'Ocurrió un error realizando la búsqueda'
+                    'mensaje' => 'No se encontraron datos para el ID proporcionado.'
                 ];
             }
+        } catch (PDOException $e) {
+            error_log("Error en mostrar_notis: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'mensaje' => 'Error al realizar la búsqueda.'
+            ];
+        }
     }
+
 
     public static function marcar_vista() {
     $conexion = DB::conectar();

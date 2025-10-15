@@ -218,11 +218,11 @@
     font-size: 0.93em;
   }
 }
-.info-beneficiario-card {
+            .info-beneficiario-card {
             background: #fff;
             border-radius: 18px;
             box-shadow: 0 4px 24px rgba(48,82,255,0.09);
-            max-width: 500px;
+            max-width: 1200px;
             margin: 3rem auto 2rem auto;
             padding: 2.5rem 2rem;
             font-family: 'Montserrat', Arial, sans-serif;
