@@ -13,7 +13,7 @@
     <header class="header">
         <div class="titulo-header">Solicitudes internas de despacho</div>
         <div class="header-right">
-            <a href="<?=BASE_URL?>/busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+            <a href="<?=BASE_URL?>/despacho_busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
             <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
             <a href="<?=BASE_URL?>/inhabilitados_despacho"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas (Despacho)</button></a>
         </div>

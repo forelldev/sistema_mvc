@@ -60,6 +60,8 @@ public static function solicitud($id_doc, $estado) {
                     WHERE id_doc = ?
                 ");
                 $stmt4->execute([$id_doc]);
+                $stmt5 = $conexion->prepare("UPDATE solicitud_ayuda_fecha SET fecha_renovacion = ? WHERE id_des = ?");
+                $stmt5->execute([$fecha,$id_des]);
             }
         }
 
@@ -117,7 +119,6 @@ public static function solicitud($id_doc, $estado) {
                 if ($info) {
                     $nombre = $info['nombre'];
                     $correo = $info['correo'];
-
                     // Enviar correo de renovación
                     Correo::correoRenovado($correo, $nombre);
 
@@ -128,6 +129,8 @@ public static function solicitud($id_doc, $estado) {
                         WHERE id_des = ?
                     ");
                     $stmt4->execute([$id_des]);
+                    $stmt5 = $conexion->prepare("UPDATE solicitud_desarrollo_fecha SET fecha_renovacion = ? WHERE id_des = ?");
+                    $stmt5->execute([$fecha,$id_des]);
                 }
             }
 

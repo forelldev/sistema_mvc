@@ -236,6 +236,18 @@
             </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
+                    <label for="categoria">Categoría</label>
+                    <select name="categoria" id="categoria" required>
+                        <option value="">Seleccione</option>
+                        <option value="Ayudas Tecnicas" <?= ($categoria ?? '') == 'Ayudas Tecnicas' ? 'selected' : '' ?>>Ayudas Técnicas</option>
+                        <option value="Medicamentos" <?= ($categoria ?? '') == 'Medicamentos' ? 'selected' : '' ?>>Medicamentos</option>
+                        <option value="Laboratorio" <?= ($categoria ?? '') == 'Laboratorio' ? 'selected' : '' ?>>Laboratorio</option>
+                        <option value="Enseres" <?= ($categoria ?? '') == 'Enseres' ? 'selected' : '' ?>>Enseres</option>
+                        <option value="Economica" <?= ($categoria ?? '') == 'Economica' ? 'selected' : '' ?>>Económica</option>
+                        <option value="Otros" <?= ($categoria ?? '') == 'Otros' ? 'selected' : '' ?>>Otros</option>
+                    </select>
+                </div>
+                <div class="campo-formulario">
                     <label for="tipo_ayuda">Tipo de Ayuda:</label>
                     <select name="tipo_ayuda" id="tipo_ayuda" required>
                         <option value="">Seleccione</option>
@@ -250,18 +262,6 @@
                         <option value="Muletas (Niño)">Muletas (Niño)</option>
                         <option value="Collarín">Collarín</option>
                         <option value="Colchón Anti-escaras">Colchón Anti-escaras</option>
-                        <option value="Otros">Otros</option>
-                    </select>
-                </div>
-                <div class="campo-formulario">
-                    <label for="categoria">Categoría</label>
-                    <select name="categoria" id="categoria" required>
-                        <option value="">Seleccione</option>
-                        <option value="Ayudas Tecnicas" <?= ($categoria ?? '') == 'Ayudas Tecnicas' ? 'selected' : '' ?>>Ayudas Técnicas</option>
-                        <!-- <option value="Medicamentos">Medicamentos</option>
-                        <option value="Laboratorio">Laboratorio</option>
-                        <option value="Enseres">Enseres</option> -->
-                        <option value="Economica" <?= ($categoria ?? '') == 'Economico' ? 'selected' : '' ?>>Económica</option>
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
@@ -290,4 +290,5 @@
     const data_exists = "<?= $data_exists ? '1' : '0' ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/patologia.js"></script>
+<script src="<?= BASE_URL ?>/public/js/tipo_ayuda.js"></script>
 </html>

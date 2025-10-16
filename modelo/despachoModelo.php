@@ -7,8 +7,8 @@ class Despacho{
         $consulta = "
                 SELECT 
                     d.*, 
-                    dd.asunto, dd.creador,
-                    df.fecha, df.fecha_modificacion, df.visto
+                    dd.*,
+                    df.*
                 FROM despacho d
                 LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
                 LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
@@ -78,7 +78,7 @@ class Despacho{
             }
             // ✅ 1. Validar campos obligatorios
             $camposObligatorios = [
-                'id_manual', 'ci', 'asunto', 'fecha','nombre','apellido','telefono','direc_habita'
+                'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita'
             ];
 
             foreach ($camposObligatorios as $campo) {
@@ -115,18 +115,18 @@ class Despacho{
 
             $id_despacho = $db->lastInsertId(); // Obtener el ID generado
             
-            // Asunto y creador
+            // Descripcion y creador
 
             $stmt = $db->prepare("
                 INSERT INTO despacho_descripcion (
-                    id_despacho, asunto, creador
+                    id_despacho, descripcion, creador
                 ) VALUES (
-                    :id_despacho, :asunto, :creador
+                    :id_despacho, :descripcion, :creador
                 )
             ");
             $stmt->execute([
                 ':id_despacho' => $id_despacho,
-                ':asunto' => $data['asunto'],
+                ':descripcion' => $data['descripcion'],
                 ':creador' => $nombrePromotor
             ]);
 
@@ -134,7 +134,7 @@ class Despacho{
 
             $stmt = $db->prepare("
                 INSERT INTO despacho_fecha (
-                    id_despacho, fecha, fecha_modificacion, visto
+                    id_despacho, fecha, fecha_modificacion, fecha_renovacion visto
                 ) VALUES (
                     :id_despacho, :fecha, :fecha_modificacion, :visto
                 )
@@ -143,6 +143,7 @@ class Despacho{
                 ':id_despacho' => $id_despacho,
                 ':fecha' => $data['fecha'],
                 ':fecha_modificacion' => $data['fecha'],
+                ':fecha_renovacion' => $data['fecha'],
                 ':visto' => 0
             ]);
 

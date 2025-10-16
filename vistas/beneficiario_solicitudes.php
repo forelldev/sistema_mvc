@@ -1,3 +1,12 @@
+<?php 
+$acciones = [
+            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+            'En Proceso 1/3' => 'Enviar a despacho',
+            'En Proceso 2/3' => 'Enviar a Administración',
+            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+            ];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

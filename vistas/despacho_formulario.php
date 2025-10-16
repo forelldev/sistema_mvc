@@ -52,8 +52,8 @@
             </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
-                    <label for="asunto">Asunto:</label>
-                    <input type="text" id="asunto" name="asunto" required placeholder="Asunto">
+                    <label for="descripcion">Descripción:</label>
+                    <input type="text" id="descripcion" name="descripcion" required placeholder="Descripción de la Solicitud">
                 </div>
             </div>
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-paper-plane"></i> Enviar</button>

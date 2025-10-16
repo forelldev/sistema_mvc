@@ -14,12 +14,6 @@ class DesarrolloControl {
         }
             if($resultado['exito']){
                 $datos = $resultado['datos'];
-                $acciones = [
-                    'En espera del documento físico para ser procesado 0/2' => 'Aprobar para su procedimiento',
-                    'En Proceso 1/2' => 'Aprobar Ayuda',
-                    'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
-                    'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-                ];
             }
             require_once 'vistas/solicitudes_desarrollo.php';
         }
@@ -208,6 +202,7 @@ class DesarrolloControl {
     }
 
     public static function editar_solicitud(){
+        if(isset($_POST['id_des'])){
         date_default_timezone_set('America/Caracas');
         $_POST['fecha'] = date('Y-m-d H:i:s');
         $_POST['ci_user'] = $_SESSION['ci'];
@@ -230,7 +225,58 @@ class DesarrolloControl {
                     }
                 }
                 require_once 'vistas/solicitudes_desarrollo_editar.php';
+            }               
+        }
+        else{
+            $msj = 'Surgió un error obteniendo datos (POST)';
+        }
+    }
+
+    public static function filtrar_desarrollo(){
+        if(isset($_GET['filtro'])){
+            $filtro = $_GET['filtro'];
+            $res = Desarrollo::filtrar($filtro);
+            if($res['exito']){
+
             }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+        }
+        require_once 'vistas/solicitudes_desarrollo.php';
+    }
+
+    public static function filtrar_fecha_desarrollo(){
+        if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_final']) && isset($_POST['estado'])) {
+            $resultado = Desarrollo::fecha_filtro($_POST);
+                if ($resultado['exito']) {
+                    $datos = $resultado['datos'];
+                    $fecha_inicio = $_POST['fecha_inicio'];
+                    $fecha_final = $_POST['fecha_final'];
+                    $estado = $_POST['estado'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$resultado['error'];
+            }
+        }
+        else{
+            $msj = 'Ocurrió un error con el envío de datos (POST)';
+        }
+    }
+
+    public static function mostrar_noti_urgencia(){
+        if(isset($_GET['id_doc'])){
+            $id_doc = $_GET['id_doc'];
+            $res = Desarrollo::mostrar_urgencia($id_doc);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+
+        }
+        require_once 'vistas/solicitud_desarrollo_urgencia.php';
     }
 }
 ?>

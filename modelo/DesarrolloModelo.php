@@ -291,11 +291,12 @@ class Desarrollo {
             // Insertar en solicitud_fecha
             $insertFecha = $db->prepare("INSERT INTO solicitud_desarrollo_fecha 
                 (id_des, fecha, fecha_modificacion, visto) 
-                VALUES (:id_des, :fecha, :fecha_modificacion, 0)");
+                VALUES (:id_des, :fecha, :fecha_modificacion, :fecha_renovacion, 0)");
             $insertFecha->execute([
                 ':id_des' => $id_des,
                 ':fecha' => $data['fecha'],
-                ':fecha_modificacion' => $data['fecha']
+                ':fecha_modificacion' => $data['fecha'],
+                ':fecha_renovacion' => $data['fecha']
             ]);
 
             $insertCorreo = $db->prepare("INSERT INTO solicitud_desarrollo_correo (id_des,correo_enviado) VALUES (:id_des,0)");
@@ -491,70 +492,309 @@ class Desarrollo {
 
 
     public static function editar($data) {
-    $conexion = DB::conectar();
+        $conexion = DB::conectar();
 
-    try {
-        $conexion->beginTransaction();
+        try {
+            $conexion->beginTransaction();
 
-        $camposObligatorios = [
-            'id_des', 'id_manual', 'ci', 'descripcion','categoria'
-        ];
+            $camposObligatorios = [
+                'id_des', 'id_manual', 'ci', 'descripcion','categoria'
+            ];
 
-        foreach ($camposObligatorios as $campo) {
-            if (!isset($data[$campo]) || $data[$campo] === '') {
-                throw new Exception("Falta el campo obligatorio: $campo");
+            foreach ($camposObligatorios as $campo) {
+                if (!isset($data[$campo]) || $data[$campo] === '') {
+                    throw new Exception("Falta el campo obligatorio: $campo");
+                }
+            }
+
+            // Actualizar solicitud_desarrollo
+            $stmt1 = $conexion->prepare("
+                UPDATE solicitud_desarrollo 
+                SET id_manual = ?, ci = ? 
+                WHERE id_des = ?
+            ");
+            $stmt1->execute([
+                $data['id_manual'],
+                $data['ci'],
+                $data['id_des']
+            ]);
+
+            // Actualizar solicitud_desarrollo_info
+            $stmt2 = $conexion->prepare("
+                UPDATE solicitud_desarrollo_info 
+                SET descripcion = ?
+                WHERE id_des = ?
+            ");
+            $stmt2->execute([
+                $data['descripcion'],
+                $data['id_des']
+            ]);
+
+            // Actualizar solicitud_desarrollo_tipo
+            $stmt3 = $conexion->prepare("
+                UPDATE solicitud_desarrollo_tipo 
+                SET categoria = ? 
+                WHERE id_des = ?
+            ");
+            $stmt3->execute([
+                $data['categoria'],
+                $data['id_des']
+            ]);
+
+            $conexion->commit();
+            return ['exito' => true];
+
+        } catch (Exception $e) {
+            if ($conexion->inTransaction()) {
+                $conexion->rollBack();
+            }
+            error_log("Error al editar solicitud de desarrollo: " . $e->getMessage());
+            return ['exito' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    public static function filtrar($filtro){
+        try {
+            $conexion = DB::conectar();
+
+            $baseQuery = "
+                SELECT 
+                    sd.*, 
+                    sdf.fecha, sdf.fecha_modificacion, sdf.visto,
+                    sdc.correo_enviado,
+                    sdt.categoria,
+                    sdi.descripcion, sdi.creador,
+                    sdl.examen,
+                    sol.nombre AS nombre,
+                    sol.apellido AS apellido
+                FROM solicitud_desarrollo sd
+                LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                LEFT JOIN solicitud_desarrollo_laboratorio sdl ON sd.id_des = sdl.id_des
+                LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+                WHERE sd.invalido = 0
+            ";
+
+            $order = "DESC";
+            $categoria = null;
+
+            switch ($filtro) {
+                case "economica":
+                    $categoria = "Economica";
+                    break;
+                case "otros":
+                    $categoria = "Otros";
+                    break;
+                case "medicinas":
+                    $categoria = "Medicamentos";
+                    break;
+                case "laboratorio":
+                    $categoria = "Laboratorio";
+                    break;
+                case "ayuda_tecnica":
+                    $categoria = "Ayudas Técnicas";
+                    break;
+                case "enseres":
+                    $categoria = "Enseres";
+                    break;
+                case "urgentes":
+                    $categoria = "Urgentes";
+                    break;
+                case "antiguos":
+                    $order = "ASC";
+                    break;
+                case "recientes":
+                default:
+                    // No se modifica categoría ni orden (DESC por defecto)
+                    break;
+            }
+
+            if ($categoria !== null) {
+                $baseQuery .= " AND sdt.categoria = :categoria";
+            }
+
+            $baseQuery .= " ORDER BY sdf.fecha $order";
+
+            $stmt = $conexion->prepare($baseQuery);
+
+            if ($categoria !== null) {
+                $stmt->bindParam(':categoria', $categoria);
+            }
+
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $resultados;
+
+        } catch (PDOException $e) {
+            error_log("Error al filtrar solicitud_desarrollo: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public static function fecha_filtro($datos) {
+        $conexion = DB::conectar();
+        $fecha_inicio = $datos['fecha_inicio'];
+        $fecha_final = $datos['fecha_final'];
+        $estado = $datos['estado'];
+        try {
+            $stmt = $conexion->prepare("
+                    SELECT 
+                        sd.*, 
+                        sdf.fecha, sdf.fecha_modificacion, sdf.visto,
+                        sdc.correo_enviado,
+                        sdt.categoria,
+                        sdi.descripcion, sdi.creador,
+                        sdl.examen,
+                        sol.nombre AS nombre,
+                        sol.apellido AS apellido
+                    FROM solicitud_desarrollo sd
+                    LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                    LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                    LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                    LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                    LEFT JOIN solicitud_desarrollo_laboratorio sdl ON sd.id_des = sdl.id_des
+                    LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+                    WHERE DATE(sdf.fecha) >= :fecha_inicio
+                    AND DATE(sdf.fecha) <= :fecha_final 
+                    AND sd.estado = :estado
+                    AND sd.invalido = 0
+                    ORDER BY sdf.fecha DESC
+                ");
+
+            $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+            $stmt->bindParam(':fecha_final', $fecha_final);
+            $stmt->bindParam(':estado', $estado);
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'exito' => true,
+                'datos' => $resultados
+            ];
+        } catch (Exception $e) {
+            error_log("Error al filtrar solicitudes por fecha: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public static function notificacion_urgencia() {
+            $conexion = DB::conectar();
+            // $rol = $_SESSION['id_rol']; esta linea era para separar por roles, pero como esta función solo es de rol 1 y accesible solo para rol 1 y 4(que es el usuario master)
+            try {
+                    $stmt = $conexion->prepare("
+                        SELECT 
+                            sd.*, 
+                            sdf.*,
+                            sdc.correo_enviado,
+                            sdt.categoria,
+                            sdi.*
+                        FROM solicitud_desarrollo sd
+                        LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                        LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                        LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                        LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                        WHERE sdt.categoria IN ('Medicamentos', 'Laboratorio')
+                        AND sd.invalido = 0
+                        AND sdf.fecha_renovacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                        ORDER BY 
+                            CASE sdt.categoria
+                                WHEN 'Medicamentos' THEN 0
+                                WHEN 'Laboratorio' THEN 1
+                                ELSE 2
+                            END,
+                            sdf.fecha ASC
+                    ");
+                $stmt->execute();
+                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($resultados as $fila) {
+                    if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
+                        $ci = $fila['ci'];
+                        $stmtSolicitante = $conexion->prepare("
+                            SELECT nombre, correo FROM solicitantes WHERE ci = :ci
+                        ");
+                        $stmtSolicitante->execute(['ci' => $ci]);
+                        $solicitante = $stmtSolicitante->fetch(PDO::FETCH_ASSOC);
+
+                        if ($solicitante) {
+                            $correo = $solicitante['correo'];
+                            $nombre = $solicitante['nombre'];
+
+                            $enviado = Correo::correoVencido($correo, $nombre);
+
+                            if ($enviado) {
+                                $stmtUpdate = $conexion->prepare("
+                                    UPDATE solicitud_desarrollo_correo 
+                                    SET correo_enviado = 1 
+                                    WHERE id_des = :id_des
+                                ");
+                                $stmtUpdate->execute(['id_des' => $fila['id_des']]);
+                            }
+                        }
+                    }
+                }
+                return [
+                    'exito' => true,
+                    'datos' => $resultados
+                ];
+            } catch (Exception $e) {
+                error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
+                return [
+                    'exito' => false,
+                    'error' => $e->getMessage()
+                ];
             }
         }
 
-        // Actualizar solicitud_desarrollo
-        $stmt1 = $conexion->prepare("
-            UPDATE solicitud_desarrollo 
-            SET id_manual = ?, ci = ? 
-            WHERE id_des = ?
-        ");
-        $stmt1->execute([
-            $data['id_manual'],
-            $data['ci'],
-            $data['id_des']
-        ]);
+      public static function mostrar_urgencia($id_des){
+            try {
+                $conexion = DB::conectar();
 
-        // Actualizar solicitud_desarrollo_info
-        $stmt2 = $conexion->prepare("
-            UPDATE solicitud_desarrollo_info 
-            SET descripcion = ?
-            WHERE id_des = ?
-        ");
-        $stmt2->execute([
-            $data['descripcion'],
-            $data['id_des']
-        ]);
+                $sql = "
+                    SELECT 
+                        sd.*,
+                        sdi.*,
+                        sdt.*,
+                        GROUP_CONCAT(sl.examen SEPARATOR ', ') AS examenes,
+                        sdf.*,
+                        s.nombre AS nombre,
+                        s.apellido AS apellido
+                    FROM solicitud_desarrollo sd
+                    LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                    LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                    LEFT JOIN solicitud_desarrollo_laboratorio sl ON sd.id_des = sl.id_des
+                    LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                    LEFT JOIN solicitantes s ON sd.ci = s.ci
+                    WHERE sd.id_des = :id_des
+                    GROUP BY sd.id_des
+                ";
 
-        // Actualizar solicitud_desarrollo_tipo
-        $stmt3 = $conexion->prepare("
-            UPDATE solicitud_desarrollo_tipo 
-            SET categoria = ? 
-            WHERE id_des = ?
-        ");
-        $stmt3->execute([
-            $data['categoria'],
-            $data['id_des']
-        ]);
+                $stmt = $conexion->prepare($sql);
+                $stmt->bindParam(':id_des', $id_des);
+                $stmt->execute();
+                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $conexion->commit();
-        return ['exito' => true];
-
-    } catch (Exception $e) {
-        if ($conexion->inTransaction()) {
-            $conexion->rollBack();
+                return [
+                    'exito' => true,
+                    'datos' => $resultados
+                ];
+            } catch (Exception $e) {
+                error_log("Error al mostrar la solicitud urgente: " . $e->getMessage());
+                return [
+                    'exito' => false,
+                    'error' => $e->getMessage()
+                ];
+            }
         }
-        error_log("Error al editar solicitud de desarrollo: " . $e->getMessage());
-        return ['exito' => false, 'error' => $e->getMessage()];
-    }
+
 }
 
-
-    
-}
 
 
 

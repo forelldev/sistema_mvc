@@ -18,10 +18,13 @@
     </div>
   </header>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
-    <form action="<?= BASE_URL?>/buscar_beneficiario"  class="filtros-card" method="POST">
-        <input type="search" name="filtro_busqueda" placeholder="Búsqueda de beneficiarios" required value=<?= htmlspecialchars($_POST['filtro_busqueda'] ?? '') ?>>
-        <input type="submit" value="Buscar" class="filtro-btn">
-    </form>
+    <section class="filtros-card"> 
+        <h2>Búsqueda Rápida:</h2>
+        <form action="<?= BASE_URL?>/buscar_beneficiario"  method="POST" autocomplete="off">
+            <input type="search" name="filtro_busqueda" placeholder="Búsqueda de beneficiarios" required value=<?= htmlspecialchars($_POST['filtro_busqueda'] ?? '') ?>>
+            <input type="submit" value="Buscar" class="filtro-btn">
+        </form>
+    </section>
     <!-- En caso de que exista la busqueda a través de get osea que ingresó a una pues se le pone boton de exportar en word o pdf, en caso de que no pues no existe este botón -->
      <main class="auditoria-main">
     <section class="auditoria-tabla-card">

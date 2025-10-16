@@ -6,14 +6,6 @@ class SolicitudControl {
         $resultado = Solicitud::buscarLista();
         $datos = $resultado['exito'] ? $resultado['datos'] : [];
         // Agrupar notificaciones por categoría
-        $acciones = [
-            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
-            'En Proceso 1/3' => 'Enviar a despacho',
-            'En Proceso 2/3' => 'Enviar a Administración',
-            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
-            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-        ];
-
         require_once 'vistas/solicitudes_list.php';
     }
 
@@ -272,23 +264,21 @@ class SolicitudControl {
     }
 
   public static function filtrar(){
+    if(isset($_GET['filtro'])){
     $resultado = Solicitud::filtrar_solicitud($_GET['filtro'] ?? '');
-    $acciones = [
-            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
-            'En Proceso 1/3' => 'Enviar a despacho',
-            'En Proceso 2/3' => 'Enviar a Administración',
-            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
-            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-        ];
     if ($resultado['exito']) {
         $datos = $resultado['datos'];
-        require_once 'vistas/solicitudes_list.php';
     } else {
         // Puedes redirigir, mostrar un mensaje, o cargar una vista de error
-        echo "Error al filtrar solicitudes: " . $resultado['error'];
+        $msj = "Error al filtrar solicitudes: " . $resultado['error'];
         // Alternativamente:
         // require_once 'vistas/error.php';
     }
+    }
+    else{
+        $msj = 'Ocurrió un error al recibir el get';
+    }
+    require_once 'vistas/solicitudes_list.php';
 }
 
     public static function filtrar_fecha() {
@@ -299,21 +289,15 @@ class SolicitudControl {
             $fecha_inicio = $_POST['fecha_inicio'];
             $fecha_final = $_POST['fecha_final'];
             $estado = $_POST['estado'];
-            $acciones = [
-            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
-            'En Proceso 1/3' => 'Enviar a despacho',
-            'En Proceso 2/3' => 'Enviar a Administración',
-            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
-            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-        ];
-            require_once 'vistas/solicitudes_list.php';
         } else {
-            echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+            $msj = "Error al filtrar solicitudes por fecha: " . $resultado['error'];
         }
     } else {
-        echo "No está llegando el POST correctamente.";
+        $msj = "No está llegando el POST correctamente.";
+
+        }
+        require_once 'vistas/solicitudes_list.php';
     }
-}
 
     
 

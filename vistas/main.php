@@ -22,14 +22,11 @@
                     <?php
                     $total = 0;
                     foreach ($datos as $grupo) {
-                        // Si es un mensaje plano, no es un array de notificaciones
-                        if (isset($grupo['mensaje'])) {
-                            continue;
+                        if (isset($grupo['datos']) && is_array($grupo['datos'])) {
+                            $total += count($grupo['datos']);
                         }
-                        $total += count($grupo);
                     }
                     ?>
-
                     <?php if ($total > 0): ?>
                         <span class="badge"><?= $total ?></span>
                     <?php endif; ?>
@@ -37,18 +34,18 @@
                 <div id="barra-notificaciones" class="barra-notificaciones oculto">
                     <ul id="lista-notificaciones" class="notificaciones-lista">
                         <?php if ($total > 0): ?>
-                            <?php foreach ($datos as $tipo => $notificaciones): ?>
-                                <?php foreach ($notificaciones as $noti): ?>
-                                    <li class="notificacion-item">
-                                        <strong><?= ucfirst($tipo) ?>:</strong>
-                                        <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc'] ?? $noti['id_despacho'] ?>">
-                                            <?= htmlspecialchars($noti['descripcion'] ?? $noti['asunto']) ?><br>
-                                            <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
-                                            <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
+                            <?php foreach ($datos as $tipo => $grupo): ?>
+                            <?php foreach ($grupo['datos'] as $noti): ?>
+                                <li class="notificacion-item">
+                                    <strong><?= ucfirst($tipo) ?>:</strong>
+                                    <a href="<?= BASE_URL ?>/noti?id_doc=<?= htmlspecialchars($noti['id_doc']) ?>&tabla=<?= urlencode($grupo['tabla']) ?>&id_name=<?= urlencode($grupo['id_name']) ?>">
+                                        <?= htmlspecialchars($noti['descripcion']) ?><br>
+                                        <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
+                                        <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span>
+                                    </a>
+                                </li>
                             <?php endforeach; ?>
+                        <?php endforeach; ?>
                             <a href="<?= $_SESSION['id_rol'] == 2 ? 'marcar_vistasDespacho' : 'marcar_vistas' ?>">Marcar todas como vistas</a>
                         <?php else: ?>
                             <li class="notificacion-item">No hay notificaciones nuevas.</li>
@@ -91,7 +88,7 @@
             <?php if ($_SESSION['id_rol'] == 4 || $_SESSION['id_rol'] == 1 ) { ?>
                 <a href="<?= BASE_URL ?>/solicitudes_desarrollo"><i class="fas fa-folder-open"></i> Solicitudes de Desarrollo Social</a>
             <?php } ?>
-            <?php if ($_SESSION['id_rol'] == 2) { ?>
+            <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4) { ?>
                 <a href="<?= BASE_URL ?>/despacho_list"><i class="fas fa-folder-open"></i> Solicitudes Despacho</a>
             <?php } ?>
         </div>
@@ -119,6 +116,7 @@
     
     <main>
         <section class="main-content">
+            <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
             <div class="card desc-section">
                 <h1>Descripción del Programa</h1>
                 <p>

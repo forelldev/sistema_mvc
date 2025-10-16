@@ -29,8 +29,8 @@
     <a href="recuperacion_clave">Recuperación de Cuenta</a>
     </section>
     <div class="footer">
-    Desarrollado por: Carlos Soteldo, David Felipe, Luis Lucena, Stefanni Legon, Manuel Rosales, Carlos Serradas
-  </div>
+        Desarrollado por: Carlos Soteldo, David Felipe, Luis Lucena, Stefanni Legon, Manuel Rosales, Carlos Serradas
+    </div>
 </body>
 <!-- Copiar y pegar para los mensajes de error, se puede cambiar el "error" por "info" -->
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>

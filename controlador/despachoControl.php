@@ -184,6 +184,10 @@
                 $msj = "Error" . $resultado['error'];
             }
     }
+
+    public static function despacho_busqueda(){
+        require_once 'vistas/despacho_busqueda.php';
+    }
         
     }
 ?>
