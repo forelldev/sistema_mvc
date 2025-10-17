@@ -45,8 +45,6 @@ class LoginControl {
         $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
         if ($notificaciones['exito']) {
             $datos = $notificaciones['datos'] ?? [];
-        } else {
-            $msj = $notificaciones['mensaje'] ?? 'Error al cargar notificaciones';
         }
 
         // Notificaciones de despacho y master (solo rol 2 y 4)
@@ -64,6 +62,10 @@ class LoginControl {
                 $datos['desarrollo'] = $notificaciones_desarrollo['datos']['desarrollo'];
             }
         }
+
+        // if(!$notificaciones['exito'] && !$notificaciones_despacho['exito'] && !$notificaciones_desarrollo['exito']){
+        //     $msj = 'No se encontraron notificaciones';
+        // }
         // Pasar los datos a la vista
         require_once 'vistas/main.php';
     }

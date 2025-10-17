@@ -1,3 +1,4 @@
+
 function mostrarMensaje(mensaje, tipo = 'info', duracion = 3000) {
     // Elimina mensaje anterior si existe
     const anterior = document.querySelector('.mensaje-flotante');

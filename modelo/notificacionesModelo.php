@@ -95,11 +95,13 @@ require_once 'conexiondb.php';
             $consultaDespacho = "
                 SELECT 
                     d.*, 
-                    dd.*, 
-                    df.*
+                    di.*, 
+                    df.*,
+                    dc.*
                 FROM despacho d
-                LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
                 LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
                 WHERE df.visto = 0
                 AND d.invalido = 0
                 ORDER BY df.fecha DESC

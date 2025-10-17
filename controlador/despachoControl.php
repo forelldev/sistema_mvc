@@ -6,12 +6,6 @@
             $resultado = Despacho::buscarLista();
             if($resultado['exito']){
                 $datos = $resultado['datos'];
-                $acciones = [
-                    'En Revisión 1/2' => 'Enviar a Administración',
-                    'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
-                    'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-                ];
-
             }
             require_once 'vistas/despacho_list.php';
         }
@@ -44,7 +38,7 @@
             $_POST['ci_user'] = $_SESSION['ci'];
             $resultado = Despacho::enviarForm($_POST);
             if ($resultado['exito']) {
-                header('Location: ' . BASE_URL . '/felicidades');
+                header('Location: ' . BASE_URL . '/felicidades_despacho');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Registró solicitud de despacho';

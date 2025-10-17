@@ -1,3 +1,10 @@
+<?php 
+$acciones = [
+                    'En Revisión 1/2' => 'Enviar a Administración',
+                    'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
+                    'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+                ];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -39,10 +46,14 @@
                             <div><strong>Fecha de creación:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></div>
                         </div>
                         <div class="solicitud-info">
-                            <div><strong>Asunto:</strong> <?= htmlspecialchars($fila['asunto']) ?></div>
+                            <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
                             <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
                             <div><strong>Cédula de Identidad:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
+                            <div><strong>Prioridad:</strong> <?= htmlspecialchars($fila['prioridad'] ?? '') ?></div>
+                            <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
+                            <div><strong>Tipo de Ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda'] ?? '') ?></div>
                             <div><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
+                            <div><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? ''))?></div>
                         </div>
                         <div class="solicitud-actions">
                             <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>

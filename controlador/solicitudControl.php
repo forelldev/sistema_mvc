@@ -25,9 +25,18 @@ class SolicitudControl {
                 require_once 'vistas/solicitudes_ci.php';
             }
             else{
-                $data = self::obtenerDatosBeneficiario($ci);
-                extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                require_once 'vistas/solicitud_formulario.php';
+                $resultado = Solicitud::verificar_solicitante($ci);
+                if($resultado['exito']){
+                    $msj = 'Registra al Solicitante';
+                    require_once 'vistas/solicitud_formulario.php';
+                }
+                else{
+                    $msj = 'El solicitante ya está registrado!';
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                    require_once 'vistas/solicitud_formulario_cargado.php';
+                }
+                
             }
         }
     }
@@ -37,12 +46,12 @@ class SolicitudControl {
             $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-
-            require_once 'vistas/solicitud_formulario.php';
+            $msj = 'El solicitante ya está registrado!';
+            require_once 'vistas/solicitud_formulario_cargado.php';
         }
         else{
-            $data_exists = false;
-            $datos_beneficiario = [];
+            $msj = 'Ocurrió un error o el Solicitante no existe';
+            require_once 'vistas/solicitud_formulario.php';
         }
     }
     

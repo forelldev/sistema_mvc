@@ -7,11 +7,15 @@ class Despacho{
         $consulta = "
                 SELECT 
                     d.*, 
-                    dd.*,
-                    df.*
+                    di.*,
+                    df.*,
+                    dc.*,
+                    sol.*
                 FROM despacho d
-                LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
                 LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                LEFT JOIN solicitantes sol ON d.ci = sol.ci
                 WHERE d.invalido = 0
                 ORDER BY df.fecha DESC
             ";
@@ -69,6 +73,9 @@ class Despacho{
         $db = DB::conectar();
         $db->beginTransaction();
         try {
+            if (empty($data['prioridad'])) {
+                $data['prioridad'] = 'Baja';
+            }
             // Verificar si el id_manual ya existe
             $checkStmt = $db->prepare("SELECT COUNT(*) FROM despacho WHERE id_manual = :id_manual");
             $checkStmt->execute([':id_manual' => $data['id_manual']]);
@@ -78,7 +85,7 @@ class Despacho{
             }
             // ✅ 1. Validar campos obligatorios
             $camposObligatorios = [
-                'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita'
+                'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita','tipo_ayuda','categoria','prioridad'
             ];
 
             foreach ($camposObligatorios as $campo) {
@@ -118,7 +125,7 @@ class Despacho{
             // Descripcion y creador
 
             $stmt = $db->prepare("
-                INSERT INTO despacho_descripcion (
+                INSERT INTO despacho_info (
                     id_despacho, descripcion, creador
                 ) VALUES (
                     :id_despacho, :descripcion, :creador
@@ -134,9 +141,9 @@ class Despacho{
 
             $stmt = $db->prepare("
                 INSERT INTO despacho_fecha (
-                    id_despacho, fecha, fecha_modificacion, fecha_renovacion visto
+                    id_despacho, fecha, fecha_modificacion, fecha_renovacion, visto
                 ) VALUES (
-                    :id_despacho, :fecha, :fecha_modificacion, :visto
+                    :id_despacho, :fecha, :fecha_modificacion,:fecha_renovacion, :visto
                 )
             ");
             $stmt->execute([
@@ -145,6 +152,20 @@ class Despacho{
                 ':fecha_modificacion' => $data['fecha'],
                 ':fecha_renovacion' => $data['fecha'],
                 ':visto' => 0
+            ]);
+
+            $stmt = $db->prepare("
+                INSERT INTO despacho_categoria (
+                    id_despacho, categoria, tipo_ayuda, prioridad
+                ) VALUES (
+                    :id_despacho, :categoria, :tipo_ayuda, :prioridad
+                )
+            ");
+            $stmt->execute([
+                ':id_despacho' => $id_despacho,
+                ':categoria' => $data['categoria'],
+                ':tipo_ayuda' => $data['tipo_ayuda'],
+                ':prioridad' => $data['prioridad']
             ]);
 
 

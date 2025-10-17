@@ -25,10 +25,10 @@ class Solicitud{
         $consulta = "
                 SELECT 
                     sa.*, 
-                    saf.fecha, saf.fecha_modificacion, saf.visto,
-                    sc.correo_enviado,
-                    cat.tipo_ayuda, cat.categoria,
-                    des.descripcion, des.promotor,des.observaciones,
+                    saf.*,
+                    sc.*,
+                    cat.*,
+                    des.*,
                     sol.nombre AS nombre,
                     sol.apellido AS apellido
                 FROM solicitud_ayuda sa
@@ -105,97 +105,6 @@ public static function buscarCi($ci) {
         $stmt->execute([$id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public static function registrar_urgencia($data) {
-    $db = DB::conectar();
-    $db->beginTransaction();
-
-    try {
-        // Verificar si el id_manual ya existe
-        $checkStmt = $db->prepare("SELECT COUNT(*) FROM solicitud_desarrollo WHERE id_manual = :id_manual");
-        $checkStmt->execute([':id_manual' => $data['id_manual']]);
-        $exists = $checkStmt->fetchColumn();
-        if ($exists > 0) {
-            throw new Exception("❌ El número de documento ya está registrado.");
-        }
-
-        // Validar campos obligatorios
-        $camposObligatorios = [
-            'id_manual', 'ci', 'descripcion', 'fecha',
-            'categoria', 'ci_user',
-            'nombre', 'apellido', 'correo'
-        ];
-        foreach ($camposObligatorios as $campo) {
-            if (!isset($data[$campo]) || trim($data[$campo]) === '') {
-                throw new Exception("Falta el campo obligatorio: $campo");
-            }
-        }
-
-        // Insertar en solicitud_desarrollo
-        $insertDesarrollo = $db->prepare("INSERT INTO solicitud_desarrollo 
-            (id_manual, ci, estado, invalido) 
-            VALUES (:id_manual, :ci, 'Pendiente', 0)");
-        $insertDesarrollo->execute([
-            ':id_manual' => $data['id_manual'],
-            ':ci' => $data['ci']
-        ]);
-        $id_des = $db->lastInsertId();
-
-        // Insertar en solicitud_desarrollo_info
-        $insertInfo = $db->prepare("INSERT INTO solicitud_desarrollo_info 
-            (id_des, descripcion, nombre, apellido) 
-            VALUES (:id_des, :descripcion, :nombre, :apellido)");
-        $insertInfo->execute([
-            ':id_des' => $id_des,
-            ':descripcion' => $data['descripcion'],
-            ':nombre' => $data['nombre'],
-            ':apellido' => $data['apellido']
-        ]);
-
-        // Insertar en solicitud_desarrollo_tipo
-        $insertTipo = $db->prepare("INSERT INTO solicitud_desarrollo_tipo 
-            (id_des, categoria) 
-            VALUES (:id_des, :categoria)");
-        $insertTipo->execute([
-            ':id_des' => $id_des,
-            ':categoria' => $data['categoria']
-        ]);
-
-        // Insertar en solicitud_laboratorio si hay examen
-        if (!empty($data['examen'])) {
-            $examenes = is_array($data['examen']) ? $data['examen'] : [$data['examen']];
-            $insertLab = $db->prepare("INSERT INTO solicitud_laboratorio 
-                (id_des, examen) 
-                VALUES (:id_des, :examen)");
-            foreach ($examenes as $examen) {
-                $insertLab->execute([
-                    ':id_des' => $id_des,
-                    ':examen' => $examen
-                ]);
-            }
-        }
-
-        // Insertar en solicitud_desarrollo_fecha
-        $insertFecha = $db->prepare("INSERT INTO solicitud_desarrollo_fecha 
-            (id_des, fecha, fecha_modificacion, visto) 
-            VALUES (:id_des, :fecha, :fecha_modificacion, 0)");
-        $insertFecha->execute([
-            ':id_des' => $id_des,
-            ':fecha' => $data['fecha'],
-            ':fecha_modificacion' => $data['fecha']
-        ]);
-
-        $db->commit();
-        return ['exito' => true, 'id_des' => $id_des];
-
-    } catch (Exception $e) {
-        $db->rollBack();
-        error_log("Error al registrar solicitud: " . $e->getMessage());
-        return ['exito' => false, 'error' => $e->getMessage()];
-    }
-}
-
-
 
     // PROCESAR FORMULARIO UNA VEZ ENVIADO:
     public static function enviarForm($data) {
@@ -591,10 +500,10 @@ public static function buscarCi($ci) {
             $baseQuery = "
                 SELECT 
                     sa.*, 
-                    saf.fecha, saf.fecha_modificacion, saf.visto,
-                    sac.correo_enviado,
-                    sc.tipo_ayuda, sc.categoria,
-                    sd.descripcion, sd.promotor, sd.observaciones,
+                    saf.*,
+                    sac.*,
+                    sc.*,
+                    sd.*,
                     sol.nombre AS nombre,
                     sol.apellido AS apellido
                 FROM solicitud_ayuda sa
@@ -674,10 +583,10 @@ public static function buscarCi($ci) {
             $stmt = $conexion->prepare("
                 SELECT 
                     sa.*, 
-                    saf.fecha, saf.fecha_modificacion, saf.visto,
-                    sac.correo_enviado,
-                    sc.tipo_ayuda, sc.categoria,
-                    sd.descripcion, sd.promotor, sd.observaciones
+                    saf.*,
+                    sac.*,
+                    sc.*,
+                    sd.*
                 FROM solicitud_ayuda sa
                 LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
                 LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
@@ -807,22 +716,12 @@ public static function buscarCi($ci) {
                 $conexion = DB::conectar();
                 $consulta = "
                         SELECT 
-                            sa.id_doc,
-                            sa.id_manual,
-                            sa.ci,
-                            sa.estado,
-                            sa.invalido,
-
-                            sai.razon,
+                            sa.*,
+                            sai.*,
                             sac.correo_enviado,
-                            sc.tipo_ayuda,
-                            sc.categoria,
-                            sd.descripcion,
-                            sd.promotor,
-                            sd.observaciones,
-                            saf.fecha,
-                            saf.fecha_modificacion,
-                            saf.visto,
+                            sc.*,
+                            sd.*,
+                            saf.*,
                             sol.nombre AS nombre,
                             sol.apellido AS apellido
                         FROM solicitud_ayuda sa
@@ -875,6 +774,38 @@ public static function buscarCi($ci) {
                 ];
             }
         }
+
+    public static function verificar_solicitante($ci) {
+        try {
+            $conexion = DB::conectar();
+            $consulta = "SELECT s.*, sc.*, sco.*, se.*, si.*, sin.*, sp.*, st.*
+                        FROM solicitantes s
+                        LEFT JOIN solicitantes_comunidad sc ON s.id_solicitante = sc.id_solicitante
+                        LEFT JOIN solicitantes_conocimiento sco ON s.id_solicitante = sco.id_solicitante
+                        LEFT JOIN solicitantes_extra se ON s.id_solicitante = se.id_solicitante
+                        LEFT JOIN solicitantes_info si ON s.id_solicitante = si.id_solicitante
+                        LEFT JOIN solicitantes_ingresos sin ON s.id_solicitante = sin.id_solicitante
+                        LEFT JOIN solicitantes_patologia sp ON s.id_solicitante = sp.id_solicitante
+                        LEFT JOIN solicitantes_trabajo st ON s.id_solicitante = st.id_solicitante
+                        WHERE s.ci = :ci";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(':ci', $ci, PDO::PARAM_STR);
+            $stmt->execute();
+            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'exito' => true,
+                'datos' => $datos
+            ];
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
 }
 
 ?>

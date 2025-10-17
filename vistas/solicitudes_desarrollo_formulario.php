@@ -47,7 +47,7 @@
         <input type="text" name="id_manual" id="id_manual" placeholder="Ingrese el número de documento">
 
         <label for="descripcion">Descripción:</label>
-        <input type="text" name="descripcion" placeholder="Ingrese descripción" required>
+        <input type="text" name="descripcion" placeholder="Descripción específica de la ayuda" required>
 
         <label for="correo">Correo:</label>
         <input type="text" name="correo" placeholder="Ingrese su correo"
