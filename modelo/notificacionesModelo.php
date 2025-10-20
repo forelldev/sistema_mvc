@@ -155,10 +155,10 @@ require_once 'conexiondb.php';
             $consultaDesarrollo = "
                 SELECT 
                     sd.*, 
-                    sdi.descripcion, sdi.creador,
-                    sdt.categoria,
-                    sdl.examen,
-                    sdf.fecha, sdf.fecha_modificacion, sdf.visto
+                    sdi.*,
+                    sdt.*,
+                    sdl.*,
+                    sdf.*
                 FROM solicitud_desarrollo sd
                 LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
                 LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
@@ -218,10 +218,10 @@ require_once 'conexiondb.php';
             $consulta = "
                 SELECT 
                     sa.*, 
-                    saf.fecha, saf.fecha_modificacion, saf.visto,
-                    sc.correo_enviado,
-                    cat.tipo_ayuda, cat.categoria,
-                    des.descripcion, des.promotor, des.observaciones,
+                    saf.*,
+                    sc.*,
+                    cat.*,
+                    des.*,
                     sol.nombre AS nombre,
                     sol.apellido AS apellido
                 FROM solicitud_ayuda sa
@@ -259,31 +259,30 @@ require_once 'conexiondb.php';
         }
     }
 
-    public static function mostrar_notis_desarrollo($id_doc) {
+    public static function mostrar_notis_desarrollo($id_des) {
         try {
             $conexion = DB::conectar();
 
             $consulta = "
                 SELECT 
-                    sa.*, 
-                    saf.fecha, saf.fecha_modificacion, saf.visto,
-                    sc.correo_enviado,
-                    cat.tipo_ayuda, cat.categoria,
-                    des.descripcion, des.promotor, des.observaciones,
-                    sol.nombre AS nombre,
-                    sol.apellido AS apellido
-                FROM solicitud_ayuda sa
-                LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
-                LEFT JOIN solicitud_ayuda_correo sc ON sa.id_doc = sc.id_doc
-                LEFT JOIN solicitud_categoria cat ON sa.id_doc = cat.id_doc
-                LEFT JOIN solicitud_descripcion des ON sa.id_doc = des.id_doc
-                LEFT JOIN solicitantes sol ON sa.ci = sol.ci
-                WHERE sa.id_doc = :id_doc
+                    sd.*, 
+                    sdi.*,
+                    sdt.*,
+                    sdl.*,
+                    sdf.*,
+                    sol.*
+                FROM solicitud_desarrollo sd
+                LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                LEFT JOIN solicitud_desarrollo_laboratorio sdl ON sd.id_des = sdl.id_des
+                LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+                WHERE sd.id_des = :id_des
             ";
 
 
             $busqueda = $conexion->prepare($consulta);
-            $busqueda->bindParam(':id_doc', $id_doc, PDO::PARAM_STR);
+            $busqueda->bindParam(':id_des', $id_des, PDO::PARAM_STR);
             $busqueda->execute();
             $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
 

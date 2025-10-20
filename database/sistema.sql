@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-10-2025 a las 16:51:58
+-- Tiempo de generación: 20-10-2025 a las 16:53:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -210,17 +210,46 @@ CREATE TABLE `despacho` (
   `invalido` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `despacho`
+--
+
+INSERT INTO `despacho` (`id_despacho`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
+(5, 1, 3215, 'En Revisión 1/2', 0),
+(6, 2147483647, 3215, 'En Revisión 1/2', 0);
+
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `despacho_descripcion`
+-- Estructura de tabla para la tabla `despacho_categoria`
 --
 
-CREATE TABLE `despacho_descripcion` (
+CREATE TABLE `despacho_categoria` (
   `id` int(11) NOT NULL,
   `id_despacho` int(11) NOT NULL,
-  `asunto` varchar(255) NOT NULL,
-  `creador` varchar(255) NOT NULL
+  `categoria` varchar(100) NOT NULL,
+  `tipo_ayuda` varchar(100) NOT NULL,
+  `prioridad` varchar(55) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `despacho_categoria`
+--
+
+INSERT INTO `despacho_categoria` (`id`, `id_despacho`, `categoria`, `tipo_ayuda`, `prioridad`) VALUES
+(1, 5, 'Salud', 'Medicamentos', 'Alta'),
+(2, 6, 'Salud', 'Medicamentos', 'Alta');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `despacho_correo`
+--
+
+CREATE TABLE `despacho_correo` (
+  `id` int(11) NOT NULL,
+  `id_despacho` int(11) NOT NULL,
+  `correo_enviado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -234,8 +263,38 @@ CREATE TABLE `despacho_fecha` (
   `id_despacho` int(11) NOT NULL,
   `fecha` datetime NOT NULL,
   `fecha_modificacion` datetime NOT NULL,
+  `fecha_renovacion` datetime NOT NULL,
   `visto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `despacho_fecha`
+--
+
+INSERT INTO `despacho_fecha` (`id`, `id_despacho`, `fecha`, `fecha_modificacion`, `fecha_renovacion`, `visto`) VALUES
+(2, 5, '2025-10-16 11:44:18', '2025-10-16 11:44:18', '2025-10-16 11:44:18', 1),
+(3, 6, '2025-10-19 21:04:57', '2025-10-19 21:04:57', '2025-10-19 21:04:57', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `despacho_info`
+--
+
+CREATE TABLE `despacho_info` (
+  `id` int(11) NOT NULL,
+  `id_despacho` int(11) NOT NULL,
+  `descripcion` varchar(255) NOT NULL,
+  `creador` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `despacho_info`
+--
+
+INSERT INTO `despacho_info` (`id`, `id_despacho`, `descripcion`, `creador`) VALUES
+(4, 5, 'rapida', 'Admin Supremo'),
+(5, 6, 'prioridad alta para cavernicolas eso fuimos', 'Admin Supremo');
 
 -- --------------------------------------------------------
 
@@ -343,7 +402,11 @@ INSERT INTO `reportes_acciones` (`id`, `id_doc`, `fecha`, `accion`, `ci`) VALUES
 (73, 6, '2025-10-15 09:23:47', 'Editó la solicitud', 3434),
 (74, 6, '2025-10-15 09:24:08', 'Habilitó la solicitud', 3434),
 (75, 6, '2025-10-15 09:24:26', 'Inhabilitó la solicitud razón: pq si', 3434),
-(76, 6, '2025-10-15 09:24:38', 'Habilitó la solicitud', 3434);
+(76, 6, '2025-10-15 09:24:38', 'Habilitó la solicitud', 3434),
+(77, 17, '2025-10-15 11:57:50', 'Creó una nueva solicitud de ayuda.', 3434),
+(78, 19, '2025-10-15 11:59:02', 'Creó una nueva solicitud de ayuda.', 3434),
+(79, 15, '2025-10-15 16:50:41', 'Registró solicitud en Desarrollo Social', 3434),
+(80, 17, '2025-10-20 10:34:49', 'Registró solicitud en Desarrollo Social', 3434);
 
 -- --------------------------------------------------------
 
@@ -437,7 +500,13 @@ INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VA
 (72, 3434, '2025-10-12 12:09:37', '2025-10-13 09:54:00'),
 (73, 3434, '2025-10-13 09:54:06', '2025-10-14 18:14:03'),
 (74, 3434, '2025-10-14 18:21:47', '2025-10-14 21:23:53'),
-(75, 3434, '2025-10-15 08:18:45', '0000-00-00 00:00:00');
+(75, 3434, '2025-10-15 08:18:45', '2025-10-15 20:06:42'),
+(76, 3434, '2025-10-15 20:14:26', '2025-10-15 20:14:38'),
+(77, 3434, '2025-10-16 08:44:31', '2025-10-17 10:00:24'),
+(78, 3434, '2025-10-17 10:00:35', '2025-10-17 10:42:08'),
+(79, 123, '2025-10-17 10:42:19', '2025-10-17 10:48:43'),
+(80, 3434, '2025-10-19 10:40:54', '2025-10-20 09:58:05'),
+(81, 3434, '2025-10-20 09:58:15', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -612,8 +681,8 @@ CREATE TABLE `solicitantes_patologia` (
 --
 
 INSERT INTO `solicitantes_patologia` (`id`, `id_solicitante`, `tip_patologia`, `nom_patologia`) VALUES
-(14, 7, 'Hereditarias', 'hipertension'),
-(15, 7, 'Congénitas', 'miopia');
+(18, 7, 'Hereditarias', 'hipertension'),
+(19, 7, 'Congénitas', 'miopia');
 
 -- --------------------------------------------------------
 
@@ -681,7 +750,9 @@ CREATE TABLE `solicitud_ayuda` (
 INSERT INTO `solicitud_ayuda` (`id_doc`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
 (4, '123123', '3215', 'En espera del documento físico para ser procesado 0/3', 0),
 (5, '32123', '30420669', 'En espera del documento físico para ser procesado 0/3', 0),
-(6, '23231', '3215', 'En espera del documento físico para ser procesado 0/3', 0);
+(6, '23231', '3215', 'En espera del documento físico para ser procesado 0/3', 0),
+(7, '1', '3215', 'En espera del documento físico para ser procesado 0/3', 0),
+(8, '2', '3215', 'En espera del documento físico para ser procesado 0/3', 0);
 
 -- --------------------------------------------------------
 
@@ -702,7 +773,9 @@ CREATE TABLE `solicitud_ayuda_correo` (
 INSERT INTO `solicitud_ayuda_correo` (`id`, `id_doc`, `correo_enviado`) VALUES
 (4, 4, 0),
 (5, 5, 0),
-(6, 6, 0);
+(6, 6, 0),
+(7, 7, 1),
+(8, 8, 0);
 
 -- --------------------------------------------------------
 
@@ -715,6 +788,7 @@ CREATE TABLE `solicitud_ayuda_fecha` (
   `id_doc` int(11) NOT NULL,
   `fecha` datetime NOT NULL,
   `fecha_modificacion` datetime NOT NULL,
+  `fecha_renovacion` datetime NOT NULL,
   `visto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -722,10 +796,12 @@ CREATE TABLE `solicitud_ayuda_fecha` (
 -- Volcado de datos para la tabla `solicitud_ayuda_fecha`
 --
 
-INSERT INTO `solicitud_ayuda_fecha` (`id`, `id_doc`, `fecha`, `fecha_modificacion`, `visto`) VALUES
-(3, 4, '2025-10-14 18:44:43', '2025-10-14 18:44:43', 1),
-(4, 5, '2025-10-14 21:01:52', '2025-10-14 21:01:52', 1),
-(5, 6, '2025-10-14 21:22:27', '2025-10-14 21:22:27', 1);
+INSERT INTO `solicitud_ayuda_fecha` (`id`, `id_doc`, `fecha`, `fecha_modificacion`, `fecha_renovacion`, `visto`) VALUES
+(3, 4, '2025-10-14 18:44:43', '2025-10-14 18:44:43', '0000-00-00 00:00:00', 1),
+(4, 5, '2025-10-14 21:01:52', '2025-10-14 21:01:52', '0000-00-00 00:00:00', 1),
+(5, 6, '2025-10-14 21:22:27', '2025-10-14 21:22:27', '0000-00-00 00:00:00', 1),
+(6, 7, '2025-10-15 11:57:48', '2025-10-15 11:57:48', '0000-00-00 00:00:00', 1),
+(7, 8, '2025-10-15 11:59:00', '2025-10-15 11:59:00', '0000-00-00 00:00:00', 1);
 
 -- --------------------------------------------------------
 
@@ -759,7 +835,9 @@ CREATE TABLE `solicitud_categoria` (
 INSERT INTO `solicitud_categoria` (`id`, `id_doc`, `tipo_ayuda`, `categoria`) VALUES
 (4, 4, 'Otros', 'Otros'),
 (5, 5, 'Otros', 'Economica'),
-(6, 6, 'Otros', 'Ayudas técnicas');
+(6, 6, 'Otros', 'Ayudas técnicas'),
+(7, 7, 'Medicamentos', 'Medicamentos'),
+(8, 8, 'Silla de Ruedas(Niño)', 'Ayudas Tecnicas');
 
 -- --------------------------------------------------------
 
@@ -775,6 +853,14 @@ CREATE TABLE `solicitud_desarrollo` (
   `invalido` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo`
+--
+
+INSERT INTO `solicitud_desarrollo` (`id_des`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
+(15, '123123', 3215, 'En espera del documento físico para ser procesado 0/2', 0),
+(17, '0401294', 3215, 'En espera del documento físico para ser procesado 0/2', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -787,6 +873,14 @@ CREATE TABLE `solicitud_desarrollo_correo` (
   `correo_enviado` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_correo`
+--
+
+INSERT INTO `solicitud_desarrollo_correo` (`id`, `id_des`, `correo_enviado`) VALUES
+(7, 15, 1),
+(8, 17, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -798,8 +892,17 @@ CREATE TABLE `solicitud_desarrollo_fecha` (
   `id_des` int(11) DEFAULT NULL,
   `fecha` date DEFAULT NULL,
   `fecha_modificacion` date DEFAULT NULL,
+  `fecha_renovacion` datetime NOT NULL,
   `visto` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_fecha`
+--
+
+INSERT INTO `solicitud_desarrollo_fecha` (`id`, `id_des`, `fecha`, `fecha_modificacion`, `fecha_renovacion`, `visto`) VALUES
+(13, 15, '2025-10-15', '2025-10-15', '0000-00-00 00:00:00', 1),
+(14, 17, '2025-10-20', '2025-10-20', '2025-10-20 10:34:49', 1);
 
 -- --------------------------------------------------------
 
@@ -813,6 +916,14 @@ CREATE TABLE `solicitud_desarrollo_info` (
   `descripcion` text DEFAULT NULL,
   `creador` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_info`
+--
+
+INSERT INTO `solicitud_desarrollo_info` (`id`, `id_des`, `descripcion`, `creador`) VALUES
+(14, 15, 'Ecosonograma para niña especial', 'Admin Supremo'),
+(16, 17, 'Tiene sudado el estómago', 'Admin Supremo');
 
 -- --------------------------------------------------------
 
@@ -850,6 +961,14 @@ CREATE TABLE `solicitud_desarrollo_tipo` (
   `categoria` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `solicitud_desarrollo_tipo`
+--
+
+INSERT INTO `solicitud_desarrollo_tipo` (`id`, `id_des`, `categoria`) VALUES
+(14, 15, 'Medicamentos'),
+(16, 17, 'Medicamentos');
+
 -- --------------------------------------------------------
 
 --
@@ -871,7 +990,9 @@ CREATE TABLE `solicitud_descripcion` (
 INSERT INTO `solicitud_descripcion` (`id`, `id_doc`, `descripcion`, `promotor`, `observaciones`) VALUES
 (3, 4, 'Ayuda para economia', 'Admin Supremo', 'Sin observaciones'),
 (4, 5, 'Ayuda para mi', 'Admin Supremo', 'Sin observaciones'),
-(5, 6, 'Ayuda para sobrevolar', 'Admin Supremo', 'Sin observaciónn');
+(5, 6, 'Ayuda para sobrevolar', 'Admin Supremo', 'Sin observaciónn'),
+(6, 7, 'Cornidazol', 'Admin Supremo', 'Sin observaciones'),
+(7, 8, 'Cornidazol parte 2', 'Admin Supremo', 'Sin observaciones');
 
 -- --------------------------------------------------------
 
@@ -956,11 +1077,17 @@ ALTER TABLE `despacho`
   ADD PRIMARY KEY (`id_despacho`);
 
 --
--- Indices de la tabla `despacho_descripcion`
+-- Indices de la tabla `despacho_categoria`
 --
-ALTER TABLE `despacho_descripcion`
+ALTER TABLE `despacho_categoria`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `despacho_correo`
+--
+ALTER TABLE `despacho_correo`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_descripcion_despacho` (`id_despacho`);
+  ADD KEY `id_despacho` (`id_despacho`);
 
 --
 -- Indices de la tabla `despacho_fecha`
@@ -968,6 +1095,13 @@ ALTER TABLE `despacho_descripcion`
 ALTER TABLE `despacho_fecha`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_fecha_despacho` (`id_despacho`);
+
+--
+-- Indices de la tabla `despacho_info`
+--
+ALTER TABLE `despacho_info`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_descripcion_despacho` (`id_despacho`);
 
 --
 -- Indices de la tabla `despacho_invalido`
@@ -1187,19 +1321,31 @@ ALTER TABLE `constancias`
 -- AUTO_INCREMENT de la tabla `despacho`
 --
 ALTER TABLE `despacho`
-  MODIFY `id_despacho` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_despacho` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT de la tabla `despacho_descripcion`
+-- AUTO_INCREMENT de la tabla `despacho_categoria`
 --
-ALTER TABLE `despacho_descripcion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `despacho_categoria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `despacho_correo`
+--
+ALTER TABLE `despacho_correo`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_fecha`
 --
 ALTER TABLE `despacho_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `despacho_info`
+--
+ALTER TABLE `despacho_info`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_invalido`
@@ -1211,13 +1357,13 @@ ALTER TABLE `despacho_invalido`
 -- AUTO_INCREMENT de la tabla `reportes_acciones`
 --
 ALTER TABLE `reportes_acciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_entradas`
 --
 ALTER TABLE `reportes_entradas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1265,7 +1411,7 @@ ALTER TABLE `solicitantes_ingresos`
 -- AUTO_INCREMENT de la tabla `solicitantes_patologia`
 --
 ALTER TABLE `solicitantes_patologia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_propiedad`
@@ -1283,19 +1429,19 @@ ALTER TABLE `solicitantes_trabajo`
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda`
 --
 ALTER TABLE `solicitud_ayuda`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_correo`
 --
 ALTER TABLE `solicitud_ayuda_correo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_fecha`
 --
 ALTER TABLE `solicitud_ayuda_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_invalido`
@@ -1307,31 +1453,31 @@ ALTER TABLE `solicitud_ayuda_invalido`
 -- AUTO_INCREMENT de la tabla `solicitud_categoria`
 --
 ALTER TABLE `solicitud_categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo`
 --
 ALTER TABLE `solicitud_desarrollo`
-  MODIFY `id_des` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_des` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_correo`
 --
 ALTER TABLE `solicitud_desarrollo_correo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_fecha`
 --
 ALTER TABLE `solicitud_desarrollo_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_info`
 --
 ALTER TABLE `solicitud_desarrollo_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_invalido`
@@ -1349,13 +1495,13 @@ ALTER TABLE `solicitud_desarrollo_laboratorio`
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_tipo`
 --
 ALTER TABLE `solicitud_desarrollo_tipo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_descripcion`
 --
 ALTER TABLE `solicitud_descripcion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios_info`
@@ -1374,16 +1520,22 @@ ALTER TABLE `usuarios_recuperacion`
 --
 
 --
--- Filtros para la tabla `despacho_descripcion`
+-- Filtros para la tabla `despacho_correo`
 --
-ALTER TABLE `despacho_descripcion`
-  ADD CONSTRAINT `fk_descripcion_despacho` FOREIGN KEY (`id_despacho`) REFERENCES `despacho` (`id_despacho`) ON DELETE CASCADE;
+ALTER TABLE `despacho_correo`
+  ADD CONSTRAINT `despacho_correo_ibfk_1` FOREIGN KEY (`id_despacho`) REFERENCES `despacho` (`id_despacho`);
 
 --
 -- Filtros para la tabla `despacho_fecha`
 --
 ALTER TABLE `despacho_fecha`
   ADD CONSTRAINT `fk_fecha_despacho` FOREIGN KEY (`id_despacho`) REFERENCES `despacho` (`id_despacho`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `despacho_info`
+--
+ALTER TABLE `despacho_info`
+  ADD CONSTRAINT `fk_descripcion_despacho` FOREIGN KEY (`id_despacho`) REFERENCES `despacho` (`id_despacho`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `despacho_invalido`

@@ -176,20 +176,23 @@ public function validarSesionAjax() {
                 $id_doc = $_GET['id_doc'];
                 $id_name = $_GET['id_name'];
                 $tabla = $_GET['tabla'];
-                $notificaciones = Notificaciones::mostrar_notis($id_doc);
-                if($notificaciones['exito']){
-                    $datos = $notificaciones['datos'];
-                    if($datos['visto'] == 0){
-                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc,$id_name,$tabla);
-                    }
-                }
-                // Validar si hubo error
-                else {
-                    $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
-                }
                 // Extraer los datos si la búsqueda fue exitosa
                 switch($id_name){
                     case 'id_doc':
+                        $notificaciones = Notificaciones::mostrar_notis($id_doc);
+                            if($notificaciones['exito']){
+                                $datos = $notificaciones['datos'];
+                                foreach ($datos as $fila) {
+                                    if (isset($fila['visto']) && $fila['visto'] == 0) {
+                                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
+                                        break; // Si solo necesitas marcar una vez
+                                    }
+                                }
+                            }
+                            // Validar si hubo error
+                            else {
+                                $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
+                            }
                         $acciones = [
                             'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
                             'En Proceso 1/3' => 'Enviar a despacho',
@@ -197,29 +200,61 @@ public function validarSesionAjax() {
                             'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
                             'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
                         ];
+                        require_once 'vistas/solicitud.php';
                         break;
                     case 'id_des':
+                        $notificaciones = Notificaciones::mostrar_notis_desarrollo($id_doc);
+                            if($notificaciones['exito']){
+                                $datos = $notificaciones['datos'];
+                                foreach ($datos as $fila) {
+                                    if (isset($fila['visto']) && $fila['visto'] == 0) {
+                                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
+                                        break; // Si solo necesitas marcar una vez
+                                    }
+                                }
+                            }
+                            // Validar si hubo error
+                            else {
+                                $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
+                            }
                         $acciones = [
                             'En espera del documento físico para ser procesado 0/2' => 'Aprobar para su procedimiento',
                             'En Proceso 1/2' => 'Aprobar Ayuda',
                             'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
                             'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
                         ];
+                        require_once 'vistas/solicitud_notificacion_desarrollo.php';
                         break;
                     case 'id_despacho':
+                        $notificaciones = Notificaciones::mostrar_notis_despacho($id_doc);
+                            if($notificaciones['exito']){
+                                $datos = $notificaciones['datos'];
+                                foreach ($datos as $fila) {
+                                    if (isset($fila['visto']) && $fila['visto'] == 0) {
+                                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
+                                        break; // Si solo necesitas marcar una vez
+                                    }
+                                }
+                            }
+                            // Validar si hubo error
+                            else {
+                                $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
+                            }
                         $acciones = [
                             'En Revisión 1/2' => 'Enviar a Administración',
                             'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
                             'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
                         ];
+                        require_once 'vistas/solicitud_notificacion_despacho.php';
                         break;
                 }
                 // Pasar los datos a la vista
             }else{
                 $msj = 'Ocurrió un error al recibir los datos (GET)';
+                header("Location: ".BASE_URL."/main");
             }
-            require_once 'vistas/solicitud.php';
         }
+
         public static function marcar_vistas(){
             Notificaciones::marcar_vista();
             // Capturar el resultado de las notificaciones

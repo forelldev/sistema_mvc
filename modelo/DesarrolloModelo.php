@@ -290,7 +290,7 @@ class Desarrollo {
 
             // Insertar en solicitud_fecha
             $insertFecha = $db->prepare("INSERT INTO solicitud_desarrollo_fecha 
-                (id_des, fecha, fecha_modificacion, visto) 
+                (id_des, fecha, fecha_modificacion,fecha_renovacion, visto) 
                 VALUES (:id_des, :fecha, :fecha_modificacion, :fecha_renovacion, 0)");
             $insertFecha->execute([
                 ':id_des' => $id_des,

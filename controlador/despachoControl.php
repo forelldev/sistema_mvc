@@ -58,6 +58,10 @@
             }
         }
 
+        public static function felicidades_despacho(){
+            require_once 'vistas/felicidades_despacho.php';
+        }
+
         public static function procesar(){
         if(isset($_GET['id_despacho'])){
             $id_despacho = $_GET['id_despacho'];

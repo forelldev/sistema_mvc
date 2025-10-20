@@ -37,6 +37,7 @@ Router::post('/inhabilitar_solicitudDespacho','DespachoControl@inhabilitar_solic
 Router::get('/habilitarDespacho','DespachoControl@habilitar');
 Router::get('/beneficiario_infoDespacho','DespachoControl@beneficiario_info');
 Router::get('/editarDespacho','DespachoControl@editar');
+Router::get('/felicidades_despacho','DespachoControl@felicidades_despacho');
 Router::post('/editar_solicitudDespacho','DespachoControl@editar_solicitud');
 Router::get('/reportes','ReportesControl@reportes_entradas');
 Router::post('/fecha_reportes','ReportesControl@filtrar_fecha');
