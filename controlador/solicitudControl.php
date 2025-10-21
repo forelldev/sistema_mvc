@@ -27,14 +27,14 @@ class SolicitudControl {
             else{
                 $resultado = Solicitud::verificar_solicitante($ci);
                 if($resultado['exito']){
-                    $msj = 'Registra al Solicitante';
-                    require_once 'vistas/solicitud_formulario.php';
-                }
-                else{
                     $msj = 'El solicitante ya está registrado!';
                     $data = self::obtenerDatosBeneficiario($ci);
                     extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                    require_once 'vistas/solicitud_formulario_cargado.php';
+                    require_once 'vistas/solicitud_formulario_cargado.php';                
+                }
+                else{
+                    $msj = 'Registra al Solicitante';
+                    require_once 'vistas/solicitud_formulario.php';
                 }
                 
             }

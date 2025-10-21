@@ -17,7 +17,6 @@
         </div>
     </header>
     <main>
-        <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
         <form action="<?=BASE_URL?>/enviarFormulario" method="POST" class="formulario-ayuda" autocomplete="off">
             <h2><i class="fa fa-hands-helping"></i> Solicitud de Ayuda</h2>
             <div class="titulo-seccion"><i class="fa fa-user"></i> Datos Personales</div>
@@ -274,9 +273,15 @@
         </form>
     </main>
 </body>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<?php if (isset($msj)): ?>
+        <script>
+            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
+        </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/edad.js"></script>

@@ -60,8 +60,8 @@ public static function solicitud($id_doc, $estado) {
                     WHERE id_doc = ?
                 ");
                 $stmt4->execute([$id_doc]);
-                $stmt5 = $conexion->prepare("UPDATE solicitud_ayuda_fecha SET fecha_renovacion = ? WHERE id_des = ?");
-                $stmt5->execute([$fecha,$id_des]);
+                $stmt5 = $conexion->prepare("UPDATE solicitud_ayuda_fecha SET fecha_renovacion = ? WHERE id_doc = ?");
+                $stmt5->execute([$fecha,$id_doc]);
             }
         }
 

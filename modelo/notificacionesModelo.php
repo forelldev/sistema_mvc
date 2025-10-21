@@ -383,6 +383,10 @@ require_once 'conexiondb.php';
         }
     }
 
+    public static function solicitud_urgencia(){
+        
+    }
+
 
   }
 ?>

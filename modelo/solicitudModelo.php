@@ -107,202 +107,136 @@ public static function buscarCi($ci) {
     }
 
     // PROCESAR FORMULARIO UNA VEZ ENVIADO:
-    public static function enviarForm($data) {
-        $db = DB::conectar();
-        $db->beginTransaction();
-        try {
-            // Verificar si el id_manual ya existe
-            $checkStmt = $db->prepare("SELECT COUNT(*) FROM solicitud_ayuda WHERE id_manual = :id_manual");
-            $checkStmt->execute([':id_manual' => $data['id_manual']]);
-            $exists = $checkStmt->fetchColumn();
-            if ($exists > 0) {
-                throw new Exception("❌ El número de documento ya está registrado.");
-            }
-            self::normalizarCamposTrabajo($data);
-            if (empty($data['tipo_ayuda']) && !empty($data['categoria'])) {
-                $data['tipo_ayuda'] = $data['categoria'];
-            }
-
-            // ✅ 1. Validar campos obligatorios
-            $camposObligatorios = [
-                'id_manual', 'ci', 'descripcion', 'fecha',
-                'categoria', 'tipo_ayuda','ci_user',
-                'nombre', 'apellido','correo', 'fecha_nacimiento', 'lugar_nacimiento',
-                'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
-                'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
-                'propiedad', 'propiedad_est',
-                'trabajo', 'nombre_insti',
-                'nivel_ingreso', 'pension', 'bono'
-            ];
-            foreach ($camposObligatorios as $campo) {
-                if (!isset($data[$campo]) || $data[$campo] === '') {
-                    throw new Exception("Falta el campo obligatorio: $campo");
-                }
-            }
-                $campos = [
-                'nombre',
-                'apellido',
-                'lugar_nacimiento',
-                'profesion',
-                'trabajo',
-                'direccion_trabajo',
-                'nombre_insti',
-                'direc_habita',
-                'estruc_base',
-                'descripcion'
-            ];
-
-            foreach ($campos as $campo) {
-                if (isset($data[$campo])) {
-                    $data[$campo] = ucfirst($data[$campo]);
-                }
-            }
-
-
-            if (!empty($data['observaciones'])) {
-                $data['observaciones'] = ucfirst($data['observaciones']);
-            }
-
-            if(isset($data['observaciones']) && $data['observaciones'] == ''){
-                $data['observaciones'] = 'Sin observaciones';
-            }
-
-            if(isset($data['observaciones_propiedad']) && $data['observaciones_propiedad'] == ''){
-                $data['observaciones_propiedad'] = 'Sin observaciones';
-            }
-
-            if (!empty($data['observaciones_propiedad'])) {
-                $data['observaciones_propiedad'] = ucfirst($data['observaciones_propiedad']);
-            }
-
-            if (!empty($data['patologias']) && is_array($data['patologias'])) {
-                foreach ($data['patologias'] as $i => $patologia) {
-                    if (!empty($patologia['nom_patologia']) && is_string($patologia['nom_patologia'])) {
-                        $data['patologias'][$i]['nom_patologia'] = ucfirst($patologia['nom_patologia']);
-                    }
-                }
-            }
-
-
-            // ✅ 2. Obtener datos del promotor
-            $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
-            $stmt->execute([':ci' => $data['ci_user']]);
-            $promotor = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$promotor) {
-                throw new Exception("No se encontró el promotor con CI: " . $data['ci_user']);
-            }
-
-            $nombrePromotor = $promotor['nombre'] . ' ' . $promotor['apellido'];
-
-            // ✅ 3. Insertar solicitud de ayuda
-            $stmt = $db->prepare("
-                INSERT INTO solicitud_ayuda (
-                    id_manual, ci, estado
-                ) VALUES (
-                    :id_manual, :ci, :estado
-                )
-            ");
-            $stmt->execute([
-                ':id_manual' => $data['id_manual'],
-                ':ci' => $data['ci'],
-                ':estado' => 'En espera del documento físico para ser procesado 0/3'
-            ]);
-
-            $id_doc = $db->lastInsertId(); // Obtener el ID generado
-
-            // Correo Enviado Tabla
-
-            $stmt = $db->prepare("
-                INSERT INTO solicitud_ayuda_correo (
-                    id_doc, correo_enviado
-                ) VALUES (
-                    :id_doc, :correo_enviado
-                )
-            ");
-            $stmt->execute([
-                ':id_doc' => $id_doc,
-                ':correo_enviado' =>  0
-            ]);
-
-            // Categoría y tipo Tabla
-
-            $stmt = $db->prepare("
-                INSERT INTO solicitud_categoria (
-                    id_doc, tipo_ayuda, categoria
-                ) VALUES (
-                    :id_doc, :tipo_ayuda, :categoria
-                )
-            ");
-            $stmt->execute([
-                ':id_doc' => $id_doc,
-                ':tipo_ayuda' => $data['tipo_ayuda'],
-                ':categoria' => $data['categoria']
-            ]);
-
-            // Descripción, promotor
-
-            $stmt = $db->prepare("
-                INSERT INTO solicitud_descripcion (
-                    id_doc, descripcion, promotor, observaciones
-                ) VALUES (
-                    :id_doc, :descripcion, :promotor, :observaciones
-                )
-            ");
-            $stmt->execute([
-                ':id_doc' => $id_doc,
-                ':descripcion' => $data['descripcion'],
-                ':promotor' => $nombrePromotor,
-                ':observaciones' => $data['observaciones'] ?? null
-            ]);
-
-            // Fecha y visto
-
-            $stmt = $db->prepare("
-                INSERT INTO solicitud_ayuda_fecha (
-                    id_doc, fecha, fecha_modificacion,fecha_renovacion visto
-                ) VALUES (
-                    :id_doc, :fecha, :fecha_modificacion,fecha_renovacion :visto
-                )
-            ");
-            $stmt->execute([
-                ':id_doc' => $id_doc,
-                ':fecha' => $data['fecha'],
-                ':fecha_modificacion' => $data['fecha'],
-                ':fecha_renovacion' => $data['fecha'],
-                ':visto' => 0
-            ]);
-
-            // ✅ 4. Verificar si el solicitante ya existe
-            $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = :ci");
-            $stmt->execute([':ci' => $data['ci']]);
-            $solicitante = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($solicitante) {
-                $id_solicitante = $solicitante['id_solicitante'];
-
-                // 🔄 Actualizar datos
-                self::actualizarSolicitante($db, $id_solicitante, $data);
-            } else {
-                // 🆕 Insertar nuevo solicitante
-                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo'], $data['fecha']]);
-                $id_solicitante = $db->lastInsertId();
-
-                self::insertarSolicitante($db, $id_solicitante, $data);
-            }
-            $idInsertado = $db->lastInsertId();
-            $db->commit();
-            return ['exito' => true,
-                    'id_doc' => $idInsertado
-            ];
-
-        } catch (Exception $e) {
-            $db->rollBack();
-            error_log("Error al registrar solicitud: " . $e->getMessage());
-            return ['exito' => false, 'error' => $e->getMessage()];
+   public static function enviarForm($data) {
+    $db = DB::conectar();
+    $db->beginTransaction();
+    try {
+        // Verificar si el id_manual ya existe
+        $checkStmt = $db->prepare("SELECT COUNT(*) FROM solicitud_ayuda WHERE id_manual = :id_manual");
+        $checkStmt->execute([':id_manual' => $data['id_manual']]);
+        if ($checkStmt->fetchColumn() > 0) {
+            throw new Exception("❌ El número de documento ya está registrado.");
         }
+
+        self::normalizarCamposTrabajo($data);
+
+        if (empty($data['tipo_ayuda']) && !empty($data['categoria'])) {
+            $data['tipo_ayuda'] = $data['categoria'];
+        }
+
+        // Validar campos obligatorios
+        $camposObligatorios = [
+            'id_manual', 'ci', 'descripcion', 'fecha',
+            'categoria', 'tipo_ayuda', 'ci_user',
+            'nombre', 'apellido', 'correo', 'fecha_nacimiento', 'lugar_nacimiento',
+            'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
+            'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
+            'propiedad', 'propiedad_est', 'trabajo', 'nombre_insti',
+            'nivel_ingreso', 'pension', 'bono'
+        ];
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || $data[$campo] === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
+            }
+        }
+
+        // Capitalizar campos
+        $campos = ['nombre', 'apellido', 'lugar_nacimiento', 'profesion', 'trabajo', 'direccion_trabajo', 'nombre_insti', 'direc_habita', 'estruc_base', 'descripcion'];
+        foreach ($campos as $campo) {
+            if (isset($data[$campo])) {
+                $data[$campo] = ucfirst($data[$campo]);
+            }
+        }
+
+        $data['observaciones'] = !empty($data['observaciones']) ? ucfirst($data['observaciones']) : 'Sin observaciones';
+        $data['observaciones_propiedad'] = !empty($data['observaciones_propiedad']) ? ucfirst($data['observaciones_propiedad']) : 'Sin observaciones';
+
+
+        if (!empty($data['patologias']) && is_array($data['patologias'])) {
+            foreach ($data['patologias'] as $i => $patologia) {
+                if (!empty($patologia['nom_patologia']) && is_string($patologia['nom_patologia'])) {
+                    $data['patologias'][$i]['nom_patologia'] = ucfirst($patologia['nom_patologia']);
+                }
+            }
+        }
+
+        // Obtener datos del promotor
+        $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
+        $stmt->execute([':ci' => $data['ci_user']]);
+        $promotor = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$promotor) {
+            throw new Exception("No se encontró el promotor con CI: " . $data['ci_user']);
+        }
+        $nombrePromotor = $promotor['nombre'] . ' ' . $promotor['apellido'];
+
+        // Insertar solicitud_ayuda
+        $stmt = $db->prepare("INSERT INTO solicitud_ayuda (id_manual, ci, estado) VALUES (:id_manual, :ci, :estado)");
+        $stmt->execute([
+            ':id_manual' => $data['id_manual'],
+            ':ci' => $data['ci'],
+            ':estado' => 'En espera del documento físico para ser procesado 0/3'
+        ]);
+        $id_doc = $db->lastInsertId();
+
+        // solicitud_ayuda_correo
+        $stmt = $db->prepare("INSERT INTO solicitud_ayuda_correo (id_doc, correo_enviado) VALUES (:id_doc, :correo_enviado)");
+        $stmt->execute([
+            ':id_doc' => $id_doc,
+            ':correo_enviado' => 0
+        ]);
+
+        // solicitud_categoria
+        $stmt = $db->prepare("INSERT INTO solicitud_categoria (id_doc, tipo_ayuda, categoria) VALUES (:id_doc, :tipo_ayuda, :categoria)");
+        $stmt->execute([
+            ':id_doc' => $id_doc,
+            ':tipo_ayuda' => $data['tipo_ayuda'],
+            ':categoria' => $data['categoria']
+        ]);
+
+        // solicitud_descripcion
+        $stmt = $db->prepare("INSERT INTO solicitud_descripcion (id_doc, descripcion, promotor, observaciones) VALUES (:id_doc, :descripcion, :promotor, :observaciones)");
+        $stmt->execute([
+            ':id_doc' => $id_doc,
+            ':descripcion' => $data['descripcion'],
+            ':promotor' => $nombrePromotor,
+            ':observaciones' => $data['observaciones']
+        ]);
+
+        // ❌ ERROR ORIGINAL: faltaba coma entre :fecha_renovacion y :visto
+        $stmt = $db->prepare("INSERT INTO solicitud_ayuda_fecha (id_doc, fecha, fecha_modificacion, fecha_renovacion, visto) VALUES (:id_doc, :fecha, :fecha_modificacion, :fecha_renovacion, :visto)");
+        $stmt->execute([
+            ':id_doc' => $id_doc,
+            ':fecha' => $data['fecha'],
+            ':fecha_modificacion' => $data['fecha'],
+            ':fecha_renovacion' => $data['fecha'],
+            ':visto' => 0
+        ]);
+
+        // Verificar si el solicitante ya existe
+        $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = :ci");
+        $stmt->execute([':ci' => $data['ci']]);
+        $solicitante = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($solicitante) {
+            $id_solicitante = $solicitante['id_solicitante'];
+            self::actualizarSolicitante($db, $id_solicitante, $data);
+        } else {
+            $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo'], $data['fecha']]);
+            $id_solicitante = $db->lastInsertId();
+            self::insertarSolicitante($db, $id_solicitante, $data);
+        }
+
+        $db->commit();
+        return ['exito' => true, 'id_doc' => $id_doc];
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log("Error al registrar solicitud: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
     }
+}
+
 
     private static function normalizarCamposTrabajo(&$data) {
         $data['trabajo'] = isset($data['trabajo']) && trim($data['trabajo']) !== '' ? $data['trabajo'] : 'No tiene';
@@ -564,7 +498,8 @@ public static function buscarCi($ci) {
             $stmt->execute();
             $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $resultados;
+            return ['exito' => true,
+                    'datos' => $resultados];
 
         } catch (PDOException $e) {
             error_log("Error al filtrar solicitud: " . $e->getMessage());

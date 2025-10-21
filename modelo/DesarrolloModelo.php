@@ -22,8 +22,8 @@ class Desarrollo {
                         sdf.fecha_modificacion,
                         sdf.visto,
 
-                        s.nombre AS remitente_nombre,
-                        s.apellido AS remitente_apellido
+                        s.nombre AS nombre,
+                        s.apellido AS apellido
 
                     FROM solicitud_desarrollo sd
                     LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
@@ -565,8 +565,8 @@ class Desarrollo {
                     sdt.categoria,
                     sdi.descripcion, sdi.creador,
                     sdl.examen,
-                    sol.nombre AS nombre,
-                    sol.apellido AS apellido
+                    sol.nombre AS remitente_nombre,
+                    sol.apellido AS remitente_apellido
                 FROM solicitud_desarrollo sd
                 LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
                 LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
@@ -626,7 +626,7 @@ class Desarrollo {
             $stmt->execute();
             $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $resultados;
+            return ['exito' => true, 'datos' => $resultados];
 
         } catch (PDOException $e) {
             error_log("Error al filtrar solicitud_desarrollo: " . $e->getMessage());
@@ -648,8 +648,8 @@ class Desarrollo {
                         sdt.categoria,
                         sdi.descripcion, sdi.creador,
                         sdl.examen,
-                        sol.nombre AS nombre,
-                        sol.apellido AS apellido
+                        sol.nombre AS remitente_nombre,
+                        sol.apellido AS remitente_apellido
                     FROM solicitud_desarrollo sd
                     LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
                     LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des

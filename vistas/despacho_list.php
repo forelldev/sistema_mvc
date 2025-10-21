@@ -57,13 +57,20 @@ $acciones = [
                         </div>
                         <div class="solicitud-actions">
                             <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
-                            <?php if($estado == 'En Revisión 1/2' || $estado == 'Solicitud Finalizada (Ayuda Entregada)'){ ?>
-                            <a href="<?= BASE_URL.'/editarDespacho?id_despacho='.$fila['id_despacho']  ?>" class="aprobar-btn">Editar</a>
-                            <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="rechazar-btn">Inhabilitar</a>
-                                <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
-                                    <?= $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
-                                </a>
-                            <?php } ?>
+                            <?php if (($estado == 'En Revisión 1/2' && $_SESSION['id_rol'] == 2) || $_SESSION['id_rol'] == 4) {
+                                $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida';
+                                    // Roles 2 y 4 pueden editar e inhabilitar
+                                    ?>
+                                    <a href="<?= BASE_URL.'/editarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="aprobar-btn">Editar</a>
+                                    <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="rechazar-btn">Inhabilitar</a>
+                                    <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn"><?= $accion ?></a>
+                                    <?php
+                                } elseif ($estado == 'En Proceso 2/2 (Sin entregar)' && $rol == 3) {
+                                    // Rol 3 solo puede procesar
+                                    ?>
+                                    <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn"><?= $accion ?></a>
+                                    <?php
+                                }?>
                         </div>
                     </div>
                 <?php endforeach; ?>

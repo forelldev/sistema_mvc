@@ -237,7 +237,7 @@ class DesarrolloControl {
             $filtro = $_GET['filtro'];
             $res = Desarrollo::filtrar($filtro);
             if($res['exito']){
-
+                $datos = $res['datos'];
             }
             else{
                 $msj = 'Ocurrió un error: '.$res['error'];
@@ -262,6 +262,7 @@ class DesarrolloControl {
         else{
             $msj = 'Ocurrió un error con el envío de datos (POST)';
         }
+        require_once 'vistas/solicitudes_desarrollo.php';
     }
 
     public static function mostrar_noti_urgencia(){

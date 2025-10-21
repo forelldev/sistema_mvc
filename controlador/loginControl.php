@@ -174,6 +174,7 @@ public function validarSesionAjax() {
         public static function solicitud_notificacion(){
             if(isset($_GET['id_doc'])){
                 $id_doc = $_GET['id_doc'];
+                if(isset($_GET['id_name'])){
                 $id_name = $_GET['id_name'];
                 $tabla = $_GET['tabla'];
                 // Extraer los datos si la búsqueda fue exitosa
@@ -248,7 +249,18 @@ public function validarSesionAjax() {
                         require_once 'vistas/solicitud_notificacion_despacho.php';
                         break;
                 }
-                // Pasar los datos a la vista
+            }
+            else{
+                $res = Notificaciones::mostrar_notis($id_doc);
+                if($res['exito']){
+                    $datos = $res['datos'];
+                }
+                else{   
+                    $msj = 'Ocurrió un error en la urgencia';
+                }
+                require_once 'vistas/solicitud_urgencia.php';
+            }
+
             }else{
                 $msj = 'Ocurrió un error al recibir los datos (GET)';
                 header("Location: ".BASE_URL."/main");
