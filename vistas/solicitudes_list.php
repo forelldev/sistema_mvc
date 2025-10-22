@@ -81,7 +81,18 @@
   </header>
 
     <main>
+        <section class="filtros-card">
+        <form class="filtros-form" action="filtro_buscar" method="POST" autocomplete="off">
+            <label for="filtro_busqueda">Realiza tu búsqueda:</label>
+            <input type="text" name="filtro_busqueda" id="filtro_busqueda" placeholder="Busqueda" value="<?= $filtro ?? '' ?>">
+            <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
+                <i class="fa fa-filter"></i> <span>Filtrar</span>
+            </button>
+        </form>
+        </section>
     <section class="filtros-card">
+         
+
         <form class="filtros-form" action="filtrar_fecha" method="POST">
             <label>
                 Desde
@@ -150,9 +161,11 @@
                     </div>
                     <div class="solicitud-actions">
                         <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
-                        <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-                        <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
-                        <?php endif; ?>
+                        <?php if (
+                                ($_SESSION['id_rol'] == 1 && $fila['estado'] === 'En espera del documento físico para ser procesado 0/3') || ($_SESSION['id_rol'] == 4 && $fila['estado'] === 'En espera del documento físico para ser procesado 0/3')): ?>
+                                <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
+                            <?php endif; ?>
+
                         <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
                             <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
                         <?php endif; ?>

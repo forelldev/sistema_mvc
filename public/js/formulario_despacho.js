@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const opcionesPorCategoria = {
     "Salud": ["Medicamentos", "Ayudas Técnicas", "Operaciones", "Exámenes", "Estudios", "Consultas"],
-    "Ayuda Económica": ["Enseres"],
+    "Ayuda Económica": ["Económica"],
     "Materiales de Construcción": ["Sacos de cemento", "Bloques", "Tuberías", "Tubos", "Cables"],
     "Varios": ["Tanques de Agua"]
   };

@@ -710,24 +710,104 @@ public static function buscarCi($ci) {
             }
         }
 
-    public static function verificar_solicitante($ci) {
+   public static function verificar_solicitante($ci) {
+    // Validación: ¿el parámetro está vacío?
+    if (empty($ci) || !is_string($ci)) {
+        return [
+            'exito' => false,
+            'error' => 'La cédula proporcionada está vacía o no es válida.'
+        ];
+    }
+
+    try {
+        $conexion = DB::conectar();
+
+        $consulta = "SELECT s.*, sc.*, sco.*, se.*, si.*, sin.*, sp.*, st.*
+                    FROM solicitantes s
+                    LEFT JOIN solicitantes_comunidad sc ON s.id_solicitante = sc.id_solicitante
+                    LEFT JOIN solicitantes_conocimiento sco ON s.id_solicitante = sco.id_solicitante
+                    LEFT JOIN solicitantes_extra se ON s.id_solicitante = se.id_solicitante
+                    LEFT JOIN solicitantes_info si ON s.id_solicitante = si.id_solicitante
+                    LEFT JOIN solicitantes_ingresos sin ON s.id_solicitante = sin.id_solicitante
+                    LEFT JOIN solicitantes_patologia sp ON s.id_solicitante = sp.id_solicitante
+                    LEFT JOIN solicitantes_trabajo st ON s.id_solicitante = st.id_solicitante
+                    WHERE s.ci = :ci";
+
+        $stmt = $conexion->prepare($consulta);
+        $stmt->bindParam(':ci', $ci, PDO::PARAM_STR);
+        $stmt->execute();
+        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Validación: ¿se encontraron resultados?
+        if (!$datos || count($datos) === 0) {
+            return [
+                'exito' => false,
+                'error' => 'No se encontró ningún solicitante con esa cédula.'
+            ];
+        }
+
+        return [
+            'exito' => true,
+            'datos' => $datos
+        ];
+    } catch (PDOException $e) {
+        return [
+            'exito' => false,
+            'error' => 'Error de base de datos: ' . $e->getMessage()
+        ];
+    }
+}
+
+    public static function buscar_filtro($filtro) {
+        // Validación básica del término de búsqueda
+        if (empty($filtro) || !is_string($filtro)) {
+            return [
+                'exito' => false,
+                'error' => 'El término de búsqueda está vacío o no es válido.'
+            ];
+        }
+
         try {
             $conexion = DB::conectar();
-            $consulta = "SELECT s.*, sc.*, sco.*, se.*, si.*, sin.*, sp.*, st.*
-                        FROM solicitantes s
-                        LEFT JOIN solicitantes_comunidad sc ON s.id_solicitante = sc.id_solicitante
-                        LEFT JOIN solicitantes_conocimiento sco ON s.id_solicitante = sco.id_solicitante
-                        LEFT JOIN solicitantes_extra se ON s.id_solicitante = se.id_solicitante
-                        LEFT JOIN solicitantes_info si ON s.id_solicitante = si.id_solicitante
-                        LEFT JOIN solicitantes_ingresos sin ON s.id_solicitante = sin.id_solicitante
-                        LEFT JOIN solicitantes_patologia sp ON s.id_solicitante = sp.id_solicitante
-                        LEFT JOIN solicitantes_trabajo st ON s.id_solicitante = st.id_solicitante
-                        WHERE s.ci = :ci";
+
+            $consulta = "
+                SELECT 
+                    sa.*,
+                    sai.*,
+                    sac.correo_enviado,
+                    sc.*,
+                    sd.*,
+                    saf.*,
+                    sol.nombre AS nombre,
+                    sol.apellido AS apellido
+                FROM solicitud_ayuda sa
+                LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+                WHERE 
+                    sa.ci LIKE :filtro OR
+                    sa.estado LIKE :filtro OR
+                    sc.categoria LIKE :filtro OR
+                    sd.descripcion LIKE :filtro OR
+                    sol.nombre LIKE :filtro OR
+                    sol.apellido LIKE :filtro
+            ";
 
             $stmt = $conexion->prepare($consulta);
-            $stmt->bindParam(':ci', $ci, PDO::PARAM_STR);
+            $busqueda = '%' . $filtro . '%';
+            $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
             $stmt->execute();
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!$datos || count($datos) === 0) {
+                return [
+                    'exito' => false,
+                    'error' => 'No se encontraron coincidencias con el filtro proporcionado.'
+                ];
+            }
 
             return [
                 'exito' => true,
@@ -736,11 +816,9 @@ public static function buscarCi($ci) {
         } catch (PDOException $e) {
             return [
                 'exito' => false,
-                'error' => $e->getMessage()
+                'error' => 'Error en la base de datos: ' . $e->getMessage()
             ];
         }
     }
-
 }
 
-?>

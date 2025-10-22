@@ -78,5 +78,7 @@ Router::get('/editarDesarrollo','DesarrolloControl@editar');
 Router::post('/editar_desarrollo','DesarrolloControl@editar_solicitud');
 Router::get('/filtrar_desarrollo','DesarrolloControl@filtrar_desarrollo');
 Router::get('/mostrar_noti_urgencia','DesarrolloControl@mostrar_noti_urgencia');
+Router::post('/filtro_buscar','SolicitudControl@filtrar_busqueda');
+
 
 ?>

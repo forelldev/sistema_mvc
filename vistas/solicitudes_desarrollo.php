@@ -133,7 +133,7 @@ $acciones = [
                             <?php
                                 $estado = htmlspecialchars($fila['estado'] ?? '');
                                 if ($estado == 'En espera del documento físico para ser procesado 0/3') echo 'pendiente';
-                                else if ($estado == 'En Proceso 1/3') echo 'activo1';
+                                else if ($estado == 'En Proceso 1/2') echo 'activo1';
                                 else if ($estado == 'En Proceso 2/2 (Sin entregar)') echo 'activo2';
                                 else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'finalizada';
                                 else if ($estado == 'Documento inválido') echo 'invalido';

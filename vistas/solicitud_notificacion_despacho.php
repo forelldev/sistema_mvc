@@ -44,7 +44,7 @@
                         <div><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? ''))?></div>
                     </div>
                     <div class="solicitud-actions">
-                        <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
+                        <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
                         <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
                         <a href="<?= BASE_URL.'/editarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="aprobar-btn">Editar</a>
                         <?php endif; ?>

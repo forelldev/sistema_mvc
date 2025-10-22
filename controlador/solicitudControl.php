@@ -308,8 +308,22 @@ class SolicitudControl {
         require_once 'vistas/solicitudes_list.php';
     }
 
-    
-
-
+    public static function filtrar_busqueda() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $filtro = $_POST['filtro_busqueda'];
+            $resultado = Solicitud::buscar_filtro($filtro);
+            if($resultado['exito']){
+                $datos = $resultado['datos'];
+            }
+            else{
+                $msj = 'No se encontró información';
+            }
+        }
+        else{
+            $msj = 'Ocurrió un error recibiendo los datos (POST)';
+        }
+        require_once 'vistas/solicitudes_list.php';
+    }
 }
+
 ?>

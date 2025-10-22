@@ -306,6 +306,53 @@ require_once 'conexiondb.php';
         }
     }
 
+      public static function mostrar_notis_despacho($id_despacho) {
+        try {
+            $conexion = DB::conectar();
+
+            $consulta = "
+                SELECT 
+                    d.*, 
+                    di.*, 
+                    df.*, 
+                    dc.*, 
+                    sol.*
+                FROM despacho d
+                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                LEFT JOIN solicitantes sol ON d.ci = sol.ci
+                WHERE d.id_despacho = :id_despacho
+                ORDER BY df.fecha DESC
+            ";
+
+            $busqueda = $conexion->prepare($consulta);
+            $busqueda->bindParam(':id_despacho', $id_despacho, PDO::PARAM_STR);
+            $busqueda->execute();
+            $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($resultado && count($resultado) > 0) {
+                return [
+                    'exito' => true,
+                    'datos' => $resultado
+                ];
+            } else {
+                return [
+                    'exito' => false,
+                    'mensaje' => 'No se encontraron despachos válidos.'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("Error en mostrar_notis_despacho: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'mensaje' => 'Error al realizar la búsqueda.'
+            ];
+        }
+    }
+
+
+
 
     public static function marcar_vista() {
     $conexion = DB::conectar();
