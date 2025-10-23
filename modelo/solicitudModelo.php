@@ -554,7 +554,7 @@ public static function buscarCi($ci) {
     }
 
 
-    //NOTIFICACIONES DE LOS MEDICAMENTOS Y ENVIAR CORREO:
+    //NOTIFICACIONES DE LOS MEDICAMENTOS Y LABORATORIO Y ENVIAR CORREO:
 
     public static function notificacion_urgencia() {
             $conexion = DB::conectar();
@@ -586,10 +586,12 @@ public static function buscarCi($ci) {
                         sa.*, 
                         saf.*,
                         sac.correo_enviado,
+                        sd.*,
                         sc.categoria
                     FROM solicitud_ayuda sa
                     LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
                     LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
                     LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
                     WHERE sc.categoria IN ('Medicamentos', 'Laboratorio')
                     AND $estadoFiltro
@@ -820,5 +822,59 @@ public static function buscarCi($ci) {
             ];
         }
     }
+
+    public static function solicitud_urgencia($id_doc) {
+        try {
+            $conexion = DB::conectar();
+
+            $consulta = "SELECT 
+                            sa.*,
+                            sai.*,
+                            sac.correo_enviado,
+                            sc.*,
+                            sd.*,
+                            saf.*,
+                            sol.nombre AS nombre,
+                            sol.apellido AS apellido
+                        FROM solicitud_ayuda sa
+                        LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                        LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                        LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                        LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                        LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                        LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+                        WHERE sa.id_doc = :id_doc";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(':id_doc', $id_doc, PDO::PARAM_INT);
+
+            if ($stmt->execute()) {
+                $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if ($datos) {
+                    return [
+                        'exito' => true,
+                        'datos' => $datos
+                    ];
+                } else {
+                    return [
+                        'exito' => false,
+                        'error' => 'No se encontró información para el documento solicitado.'
+                    ];
+                }
+            } else {
+                return [
+                    'exito' => false,
+                    'error' => 'Error al ejecutar la consulta.'
+                ];
+            }
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => 'Excepción: ' . $e->getMessage()
+            ];
+        }
+    }
 }
+
 

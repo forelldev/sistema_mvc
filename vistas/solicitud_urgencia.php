@@ -20,12 +20,11 @@
 </head>
 <body class="solicitud-body">
     <header class="header">
-        <div class="titulo-header">Solicitud Notificada</div>
+        <div class="titulo-header">Solicitud Urgente</div>
         <div class="header-right">
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
-    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
      <main class="solicitudes-main">
 <section class="solicitudes-lista">
     <?php if (!empty($datos)): ?>
@@ -81,6 +80,11 @@
         <?php endif; ?>
     </section>
 </body>
+<?php if (isset($msj)): ?>
+        <script>
+            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
+        </script>
+<?php endif; ?>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>

@@ -46,7 +46,7 @@
                                 </li>
                             <?php endforeach; ?>
                         <?php endforeach; ?>
-                            <a href="<?= $_SESSION['id_rol'] == 2 ? 'marcar_vistasDespacho' : 'marcar_vistas' ?>">Marcar todas como vistas</a>
+                            <a href="<?=BASE_URL?>/marcar_vistas">Marcar todas como vistas</a>
                         <?php else: ?>
                             <li class="notificacion-item">No hay notificaciones nuevas.</li>
                         <?php endif; ?>
@@ -67,21 +67,21 @@
                 <a href="<?= BASE_URL ?>/reportes_acciones"><i class="fas fa-file-alt"></i> Reportes de Acciones</a>
                 <a href="<?= BASE_URL ?>/reportes"><i class="fas fa-chart-bar"></i> Reportes</a>
                 <a href="<?= BASE_URL ?>/limites"><i class="fas fa-user-shield"></i> Límite por rol</a>
+                <a href="<?= BASE_URL ?>/estadisticas"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes</a>
         </div>
     </div>
-    <div class="dropdown">
-        <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-chart-bar"></i> Estadísticas
-        </button>
-        <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>/estadisticas"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes</a>
-            <!-- <a href="">Estadísticas de Usuarios</a> -->
-        </div>
-    </div>
+        <!-- <div class="dropdown">
+            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
+                <i class="fas fa-chart-bar"></i> Estadísticas
+            </button>
+            <div class="dropdown-menu" id="menuDropdown">
+            <a href="">Estadísticas de Usuarios</a> 
+            </div>
+        </div> -->
     <?php } ?>
     <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-folder-open"></i> Solicitudes
+            <i class="fas fa-folder-open"></i> Ver...
         </button>
         <div class="dropdown-menu" id="menuDropdown">
             <a href="<?= BASE_URL ?>/solicitudes_list"><i class="fas fa-folder-open"></i> Solicitudes de Ayuda</a>
@@ -90,19 +90,20 @@
             <?php } ?>
             <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4) { ?>
                 <a href="<?= BASE_URL ?>/despacho_list"><i class="fas fa-folder-open"></i> Solicitudes Despacho</a>
+                
             <?php } ?>
         </div>
     </div>
-    <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
-    <div class="dropdown">
+
+    <!-- <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
             <i class="fas fa-file-alt"></i> Constancias
         </button>
         <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>/constancias"><i class="fas fa-file-alt"></i> Constancias</a>
-    <?php } ?>
+            
         </div>
-    </div>
+    </div> -->
+    
     <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Usuario" id="usuarioDropdownBtn">
             <i class="fas fa-user"></i> Usuario

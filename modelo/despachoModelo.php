@@ -1,5 +1,6 @@
 <?php 
 require_once 'conexiondb.php';
+require_once 'correoModelo.php';
 class Despacho{
        // MOSTRAR LISTA DE SOLICITUDES DE DESPACHO:
     public static function buscarLista (){
@@ -242,5 +243,175 @@ class Despacho{
             $data['telefono']
         ]);
     }
+
+    public static function notificacion_urgencia() {
+        $conexion = DB::conectar();
+
+        try {
+            $stmt = $conexion->prepare("
+                SELECT 
+                    d.*, 
+                    di.*,
+                    df.*,
+                    dc.correo_enviado,
+                    dc.categoria,
+                    sol.nombre,
+                    sol.correo,
+                    sol.ci
+                FROM despacho d
+                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                LEFT JOIN solicitantes sol ON d.ci = sol.ci
+                WHERE d.invalido = 0
+                AND dc.categoria IN ('Medicamentos', 'Laboratorio')
+                AND df.fecha <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                ORDER BY 
+                    CASE dc.categoria
+                        WHEN 'Medicamentos' THEN 0
+                        WHEN 'Laboratorio' THEN 1
+                        ELSE 2
+                    END,
+                    df.fecha ASC
+            ");
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($resultados as $fila) {
+                if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
+                    $correo = $fila['correo'];
+                    $nombre = $fila['nombre'];
+
+                    $enviado = Correo::correoVencido($correo, $nombre);
+
+                    if ($enviado) {
+                        $stmtUpdate = $conexion->prepare("
+                            UPDATE despacho_categoria 
+                            SET correo_enviado = 1 
+                            WHERE id_despacho = :id_despacho
+                        ");
+                        $stmtUpdate->execute(['id_despacho' => $fila['id_despacho']]);
+                    }
+                }
+            }
+
+            return [
+                'exito' => true,
+                'datos' => $resultados
+            ];
+        } catch (Exception $e) {
+            error_log("Error al filtrar despachos por categoría y fecha: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public static function solicitud_urgencia($id_despacho) {
+        try {
+            $conexion = DB::conectar();
+
+            $consulta = "SELECT 
+                            d.*, 
+                            di.*, 
+                            df.*, 
+                            dc.*, 
+                            sol.*
+                        FROM despacho d
+                        LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                        LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                        LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                        LEFT JOIN solicitantes sol ON d.ci = sol.ci
+                        WHERE d.id_despacho = :id_despacho";
+
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(':id_despacho', $id_despacho, PDO::PARAM_INT);
+
+            if ($stmt->execute()) {
+                $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($datos) {
+                    return [
+                        'exito' => true,
+                        'datos' => $datos
+                    ];
+                } else {
+                    return [
+                        'exito' => false,
+                        'error' => 'No se encontró información para el despacho solicitado.'
+                    ];
+                }
+            } else {
+                return [
+                    'exito' => false,
+                    'error' => 'Error al ejecutar la consulta.'
+                ];
+            }
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => 'Excepción: ' . $e->getMessage()
+            ];
+        }
+    }
+
+  public static function buscar_filtro($filtro) {
+        if (empty($filtro) || !is_string($filtro)) {
+            return [
+                'exito' => false,
+                'error' => 'El término de búsqueda está vacío o no es válido.'
+            ];
+        }
+
+        try {
+            $conexion = DB::conectar();
+
+            $consulta = "
+                SELECT 
+                    d.*, 
+                    di.*, 
+                    df.*, 
+                    dc.*, 
+                    sol.*
+                FROM despacho d
+                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                LEFT JOIN solicitantes sol ON d.ci = sol.ci
+                WHERE 
+                    d.ci LIKE :filtro OR
+                    d.estado LIKE :filtro OR
+                    dc.categoria LIKE :filtro OR
+                    di.descripcion LIKE :filtro OR
+                    sol.nombre LIKE :filtro OR
+                    sol.apellido LIKE :filtro
+            ";
+
+            $stmt = $conexion->prepare($consulta);
+            $busqueda = '%' . $filtro . '%';
+            $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
+            $stmt->execute();
+            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!$datos || count($datos) === 0) {
+                return [
+                    'exito' => false,
+                    'error' => 'No se encontraron coincidencias con el filtro proporcionado.'
+                ];
+            }
+
+            return [
+                'exito' => true,
+                'datos' => $datos
+            ];
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => 'Error en la base de datos: ' . $e->getMessage()
+            ];
+        }
+    }
 }
+
 ?>

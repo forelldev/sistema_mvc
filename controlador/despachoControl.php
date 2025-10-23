@@ -42,6 +42,7 @@
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Registró solicitud de despacho';
+                $id_doc = $_POST['id_despacho'];
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             } else {
@@ -86,6 +87,7 @@
                 header('Location: '.BASE_URL.'/despacho_list');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
+                $id_doc = $id_despacho;
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -175,8 +177,10 @@
                 header('Location: '.BASE_URL.'/'.$direccion);
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
+                $id_doc = $_POST['id_despacho'];
                 $accion = 'Editó la solicitud de Despacho';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+
             }
             else{
                 $msj = "Error" . $resultado['error'];
@@ -185,6 +189,22 @@
 
     public static function despacho_busqueda(){
         require_once 'vistas/despacho_busqueda.php';
+    }
+
+    public static function solicitud_urgencia(){
+        if(isset($_GET['id_despacho'])){
+            $resultado = Despacho::solicitud_urgencia($_GET['id_despacho']);
+            if($resultado['exito']){
+                $datos = $resultado['datos'];
+            }  
+            else{
+                $msj = 'Ocurrió un error';
+            }
+        }
+        else{
+            $msj = 'No se recibió el id';
+        }
+        require_once 'vistas/solicitud_despacho_urgencia.php';
     }
         
     }

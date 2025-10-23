@@ -268,7 +268,7 @@ public function validarSesionAjax() {
         }
 
         public static function marcar_vistas(){
-            Notificaciones::marcar_vista();
+            Notificaciones::marcar_vista($_SESSION['id_rol']);
             // Capturar el resultado de las notificaciones
             $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
 

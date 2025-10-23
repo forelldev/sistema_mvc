@@ -1,6 +1,8 @@
 <?php 
 require_once 'modelo/solicitudModelo.php';
 require_once 'modelo/procesarModelo.php';
+require_once 'modelo/DesarrolloModelo.php';
+require_once 'modelo/despachoModelo.php';
 class SolicitudControl {
     public static function lista(){
         $resultado = Solicitud::buscarLista();
@@ -310,20 +312,57 @@ class SolicitudControl {
 
     public static function filtrar_busqueda() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $filtro = $_POST['filtro_busqueda'];
-            $resultado = Solicitud::buscar_filtro($filtro);
-            if($resultado['exito']){
+            $filtro = $_POST['filtro_busqueda'] ?? '';
+            $direccion = $_POST['direccion'] ?? '';
+
+            switch ($direccion) {
+                case 'despacho':
+                    $resultado = Despacho::buscar_filtro($filtro);
+                    $vista = 'vistas/despacho_list.php';
+                    break;
+
+                case 'desarrollo':
+                    $resultado = Desarrollo::buscar_filtro($filtro);
+                    $vista = 'vistas/desarrollo_list.php';
+                    break;
+
+                case 'solicitud':
+                default:
+                    $resultado = Solicitud::buscar_filtro($filtro);
+                    $vista = 'vistas/solicitudes_list.php';
+                    break;
+            }
+
+            if (isset($resultado['exito']) && $resultado['exito']) {
+                $datos = $resultado['datos'];
+            } else {
+                $msj = $resultado['error'] ?? 'No se encontró información';
+            }
+        } else {
+            $msj = 'Ocurrió un error recibiendo los datos (POST)';
+            $vista = 'vistas/solicitudes_list.php';
+        }
+        require_once $vista;
+    }
+
+
+    public static function solicitud_urgencia(){
+        if(isset($_GET['id_doc'])){
+            $resultado = Solicitud::solicitud_urgencia($_GET['id_doc']);
+            if($resultado['exito']){    
                 $datos = $resultado['datos'];
             }
             else{
-                $msj = 'No se encontró información';
+                $msj = $resultado['error'];
             }
         }
         else{
-            $msj = 'Ocurrió un error recibiendo los datos (POST)';
+            $msj = 'No se recibió el id del documento';
         }
-        require_once 'vistas/solicitudes_list.php';
+        require_once 'vistas/solicitud_urgencia.php';
     }
+
+    
 }
 
 ?>

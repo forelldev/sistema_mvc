@@ -14,18 +14,77 @@ $acciones = [
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>../css/style.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
     <header class="header">
         <div class="titulo-header">Solicitudes internas de despacho</div>
         <div class="header-right">
-            <a href="<?=BASE_URL?>/despacho_busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+            <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
+                <a href="<?=BASE_URL?>/despacho_busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+                <a href="<?=BASE_URL?>/inhabilitados_despacho"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas (Despacho)</button></a>
+            <?php } ?>
             <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
-            <a href="<?=BASE_URL?>/inhabilitados_despacho"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas (Despacho)</button></a>
         </div>
+        <button class="notificaciones-btn" id="btn-notificaciones">
+                <i class="fas fa-bell"></i> Notificaciones de Urgencia
+                <?php
+                        $notificaciones = Despacho::notificacion_urgencia();
+                        $notificacion = $notificaciones['exito'] ? $notificaciones['datos'] : [];
+                        $notificacionAgrupada = [];
+                        foreach ($notificacion as $item) {
+                            $tipo = $item['categoria'] ?? 'general';
+                            $notificacionAgrupada[$tipo][] = $item;
+                        }
+                    $total = 0;
+                    foreach ($notificacionAgrupada as $grupo) {
+                        // Si es un mensaje plano, no es un array de notificaciones
+                        if (isset($grupo['mensaje'])) {
+                            continue;
+                        }
+                        $total += count($grupo);
+                    }
+                    ?>
+
+                    <?php if ($total > 0): ?>
+                        <span class="badge"><?= $total ?></span>
+                    <?php endif; ?>
+                    </button>
+
+                    <div id="barra-notificaciones" class="barra-notificaciones oculto">
+                        <ul id="lista-notificaciones" class="notificaciones-lista">
+                            <?php if ($total > 0): ?>
+                                <?php foreach ($notificacionAgrupada as $tipo => $notificaciones): ?>
+                                    <?php foreach ($notificaciones as $noti): ?>
+                                        <li class="notificacion-item">
+                                            <strong><?= ucfirst($tipo) ?>:</strong>
+                                            <a href="<?= htmlspecialchars(BASE_URL.'/mostrar_noti_urgencia?id_despacho='.urlencode($noti['id_despacho'])) ?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
+                                            <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
+                                            <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span></a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li class="notificacion-item">
+                                    <strong>Info:</strong> No hay notificaciones disponibles
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+    </div>
     </header>
     <main>
+        <section class="filtros-card">
+            <form class="filtros-form" action="filtro_buscar" method="POST" autocomplete="off">
+                <label for="filtro_busqueda">Realiza tu búsqueda:</label>
+                <input type="text" name="filtro_busqueda" id="filtro_busqueda" placeholder="Busqueda" value="<?= $filtro ?? '' ?>" required>
+                <input type="hidden" name="direccion" value="despacho">
+                <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
+                    <i class="fa fa-filter"></i> <span>Filtrar</span>
+                </button>
+            </form>
+        </section>
         <section class="solicitudes-lista">
             <?php if (!empty($datos)):  ?>
                 <?php foreach ($datos as $fila): ?>
@@ -92,4 +151,5 @@ $acciones = [
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
+<script src="<?= BASE_URL ?>/public/js/notificacionAdministrador.js"></script>
 </html>

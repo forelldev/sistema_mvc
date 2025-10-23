@@ -354,56 +354,116 @@ require_once 'conexiondb.php';
 
 
 
-    public static function marcar_vista() {
-    $conexion = DB::conectar();
-    $consulta = "UPDATE solicitud_ayuda_fecha SET visto = 1 WHERE visto = 0";
-    $busqueda = $conexion->prepare($consulta);
-    if ($busqueda->execute()) {
-        $filas_afectadas = $busqueda->rowCount();
+   public static function marcar_vista($rol) {
+        $conexion = DB::conectar();
+        $total_actualizadas = 0;
+
+        // 1. solicitud_ayuda + solicitud_ayuda_fecha
+        $consulta1 = null;
+        if ($rol == 1) {
+            $consulta1 = "UPDATE solicitud_ayuda_fecha saf
+                        JOIN solicitud_ayuda sa ON sa.id_doc = saf.id_doc
+                        SET saf.visto = 1
+                        WHERE saf.visto = 0 AND sa.estado IN (
+                            'En espera del documento físico para se procesado',
+                            'En Proceso 1/3'
+                        )";
+        } elseif ($rol == 2) {
+            $consulta1 = "UPDATE solicitud_ayuda_fecha saf
+                        JOIN solicitud_ayuda sa ON sa.id_doc = saf.id_doc
+                        SET saf.visto = 1
+                        WHERE saf.visto = 0 AND sa.estado = 'En Proceso 2/3'";
+        } elseif ($rol == 3) {
+            $consulta1 = "UPDATE solicitud_ayuda_fecha saf
+                        JOIN solicitud_ayuda sa ON sa.id_doc = saf.id_doc
+                        SET saf.visto = 1
+                        WHERE saf.visto = 0 AND sa.estado = 'En Proceso 3/3 (Sin Entregar)'";
+        } elseif ($rol == 4) {
+            $consulta1 = "UPDATE solicitud_ayuda_fecha SET visto = 1 WHERE visto = 0";
+        }
+
+        if ($consulta1) {
+            $busqueda1 = $conexion->prepare($consulta1);
+            if ($busqueda1->execute()) {
+                $total_actualizadas += $busqueda1->rowCount();
+            }
+        }
+
+        // 2. despacho + despacho_fecha
+        if ($rol == 2) {
+            $consulta2 = "UPDATE despacho_fecha df
+                        JOIN despacho d ON d.id_despacho = df.id_despacho
+                        SET df.visto = 1
+                        WHERE df.visto = 0 AND d.estado = 'En Revisión 1/2'";
+        } elseif ($rol == 3) {
+            $consulta2 = "UPDATE despacho_fecha df
+                        JOIN despacho d ON d.id_despacho = df.id_despacho
+                        SET df.visto = 1
+                        WHERE df.visto = 0 AND d.estado = 'En Proceso 2/2 (Sin entregar)'";
+        } elseif ($rol == 4) {
+            $consulta2 = "UPDATE despacho_fecha SET visto = 1 WHERE visto = 0";
+        }
+
+        if (isset($consulta2)) {
+            $busqueda2 = $conexion->prepare($consulta2);
+            if ($busqueda2->execute()) {
+                $total_actualizadas += $busqueda2->rowCount();
+            }
+        }
+
+        // 3. solicitud_desarrollo + solicitud_desarrollo_fecha (solo rol 4)
+        if ($rol == 4) {
+            $consulta3 = "UPDATE solicitud_desarrollo_fecha sdf
+                        JOIN solicitud_desarrollo sd ON sd.id_des = sdf.id_des
+                        SET sdf.visto = 1
+                        WHERE sdf.visto = 0";
+            $busqueda3 = $conexion->prepare($consulta3);
+            if ($busqueda3->execute()) {
+                $total_actualizadas += $busqueda3->rowCount();
+            }
+        }
+
         return [
             'exito' => true,
-            'datos' => ['filas_actualizadas' => $filas_afectadas]
-        ];
-    } else {
-        return [
-            'exito' => false,
-            'mensaje' => 'Ocurrió un error realizando la actualización'
+            'datos' => ['filas_actualizadas' => $total_actualizadas]
         ];
     }
-}
 
-    public static function marcar_vistaDespacho() {
-    $conexion = DB::conectar();
 
-    $consulta1 = "UPDATE solicitud_ayuda_fecha SET visto = 1 WHERE visto = 0";
-    $consulta2 = "UPDATE despacho_fecha SET visto = 1 WHERE visto = 0";
 
-    try {
-        // Ejecutar primera consulta
-        $stmt1 = $conexion->prepare($consulta1);
-        $stmt1->execute();
-        $filas1 = $stmt1->rowCount();
 
-        // Ejecutar segunda consulta
-        $stmt2 = $conexion->prepare($consulta2);
-        $stmt2->execute();
-        $filas2 = $stmt2->rowCount();
+//     public static function marcar_vistaDespacho() {
+//     $conexion = DB::conectar();
 
-        return [
-            'exito' => true,
-            'datos' => [
-                'solicitud_ayuda_actualizadas' => $filas1,
-                'despacho_actualizadas' => $filas2,
-                'total_actualizadas' => $filas1 + $filas2
-            ]
-        ];
-    } catch (PDOException $e) {
-        return [
-            'exito' => false,
-            'mensaje' => 'Error en la actualización: ' . $e->getMessage()
-        ];
-    }
-}
+//     $consulta1 = "UPDATE solicitud_ayuda_fecha SET visto = 1 WHERE visto = 0";
+//     $consulta2 = "UPDATE despacho_fecha SET visto = 1 WHERE visto = 0";
+
+//     try {
+//         // Ejecutar primera consulta
+//         $stmt1 = $conexion->prepare($consulta1);
+//         $stmt1->execute();
+//         $filas1 = $stmt1->rowCount();
+
+//         // Ejecutar segunda consulta
+//         $stmt2 = $conexion->prepare($consulta2);
+//         $stmt2->execute();
+//         $filas2 = $stmt2->rowCount();
+
+//         return [
+//             'exito' => true,
+//             'datos' => [
+//                 'solicitud_ayuda_actualizadas' => $filas1,
+//                 'despacho_actualizadas' => $filas2,
+//                 'total_actualizadas' => $filas1 + $filas2
+//             ]
+//         ];
+//     } catch (PDOException $e) {
+//         return [
+//             'exito' => false,
+//             'mensaje' => 'Error en la actualización: ' . $e->getMessage()
+//         ];
+//     }
+// }
     public static function marcar_vista_uno($id_doc,$id_name,$tabla){
         try{
             $conexion = DB::conectar();
@@ -430,9 +490,6 @@ require_once 'conexiondb.php';
         }
     }
 
-    public static function solicitud_urgencia(){
-        
-    }
 
 
   }

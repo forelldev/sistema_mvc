@@ -62,7 +62,7 @@ $acciones = [
                                     <?php foreach ($notificaciones as $noti): ?>
                                         <li class="notificacion-item">
                                             <strong><?= ucfirst($tipo) ?>:</strong>
-                                            <a href="<?= htmlspecialchars(BASE_URL.'/mostrar_noti_urgencia?id_doc='.urlencode($noti['id_des'])) ?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
+                                            <a href="<?= htmlspecialchars(BASE_URL.'/mostrar_noti_urgencia?id_des='.urlencode($noti['id_des'])) ?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
                                             <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
                                             <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span></a>
                                         </li>
@@ -79,6 +79,16 @@ $acciones = [
   </header>
 
     <main>
+        <section class="filtros-card">
+            <form class="filtros-form" action="filtro_buscar" method="POST" autocomplete="off">
+                <label for="filtro_busqueda">Realiza tu búsqueda:</label>
+                <input type="text" name="filtro_busqueda" id="filtro_busqueda" placeholder="Busqueda" value="<?= $filtro ?? '' ?>" required>
+                <input type="hidden" name="direccion" value="desarrollo">
+                <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
+                    <i class="fa fa-filter"></i> <span>Filtrar</span>
+                </button>
+            </form>
+        </section>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
     <section class="filtros-card">
         <form class="filtros-form" action="filtrar_fechaDesarrollo" method="POST">

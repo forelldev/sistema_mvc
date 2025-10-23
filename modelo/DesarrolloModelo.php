@@ -793,6 +793,66 @@ class Desarrollo {
             }
         }
 
+       public static function buscar_filtro($filtro) {
+            if (empty($filtro) || !is_string($filtro)) {
+                return [
+                    'exito' => false,
+                    'error' => 'El término de búsqueda está vacío o no es válido.'
+                ];
+            }
+
+            try {
+                $conexion = DB::conectar();
+
+                $consulta = "
+                    SELECT 
+                        sd.*, 
+                        sdf.*, 
+                        sdc.correo_enviado, 
+                        sdt.*, 
+                        sdi.*, 
+                        sol.*
+                    FROM solicitud_desarrollo sd
+                    LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                    LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                    LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                    LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                    LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+                    WHERE 
+                        sd.ci LIKE :filtro OR
+                        sd.estado LIKE :filtro OR
+                        sdt.categoria LIKE :filtro OR
+                        sdi.descripcion LIKE :filtro OR
+                        sol.nombre LIKE :filtro OR
+                        sol.apellido LIKE :filtro
+                ";
+
+                $stmt = $conexion->prepare($consulta);
+                $busqueda = '%' . $filtro . '%';
+                $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
+                $stmt->execute();
+                $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if (!$datos || count($datos) === 0) {
+                    return [
+                        'exito' => false,
+                        'error' => 'No se encontraron coincidencias con el filtro proporcionado.'
+                    ];
+                }
+
+                return [
+                    'exito' => true,
+                    'datos' => $datos
+                ];
+            } catch (PDOException $e) {
+                return [
+                    'exito' => false,
+                    'error' => 'Error en la base de datos: ' . $e->getMessage()
+                ];
+            }
+        }
+
+
 }
 
 

@@ -33,7 +33,7 @@
       <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
       
          <button class="notificaciones-btn" id="btn-notificaciones">
-                <i class="fas fa-bell"></i> Notificaciones de Urgencia
+                <i class="fas fa-bell"></i> Notificaciones Urgentes
                 <?php
                         $notificaciones = Solicitud::notificacion_urgencia();
                         $notificacion = $notificaciones['exito'] ? $notificaciones['datos'] : [];
@@ -64,7 +64,7 @@
                                     <?php foreach ($notificaciones as $noti): ?>
                                         <li class="notificacion-item">
                                             <strong><?= ucfirst($tipo) ?>:</strong>
-                                            <a href="<?= BASE_URL ?>/noti?id_doc=<?= $noti['id_doc']?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
+                                            <a href="<?= BASE_URL ?>/solicitud_urgencia?id_doc=<?= $noti['id_doc']?>"><?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
                                             <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
                                             <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span></a>
                                         </li>
@@ -82,13 +82,14 @@
 
     <main>
         <section class="filtros-card">
-        <form class="filtros-form" action="filtro_buscar" method="POST" autocomplete="off">
-            <label for="filtro_busqueda">Realiza tu búsqueda:</label>
-            <input type="text" name="filtro_busqueda" id="filtro_busqueda" placeholder="Busqueda" value="<?= $filtro ?? '' ?>">
-            <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
-                <i class="fa fa-filter"></i> <span>Filtrar</span>
-            </button>
-        </form>
+            <form class="filtros-form" action="filtro_buscar" method="POST" autocomplete="off">
+                <label for="filtro_busqueda">Realiza tu búsqueda:</label>
+                <input type="text" name="filtro_busqueda" id="filtro_busqueda" placeholder="Busqueda" value="<?= $filtro ?? '' ?>" required>
+                <input type="hidden" name="direccion" value="solicitud">
+                <button type="submit" name="btn_filtro" value="Filtrar" class="filtrar-btn">
+                    <i class="fa fa-filter"></i> <span>Filtrar</span>
+                </button>
+            </form>
         </section>
     <section class="filtros-card">
          
@@ -188,6 +189,11 @@
     </section>
 </main>
 </body>
+<?php if (isset($msj)): ?>
+        <script>
+            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
+        </script>
+<?php endif; ?>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
