@@ -14,7 +14,9 @@
         <div class="header-right">
             <div class="rol">Rol: <?= $_SESSION['rol'] ?></div>
             <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
-            <a href="<?= BASE_URL ?>/busqueda" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
+                <a href="<?= BASE_URL ?>/nueva_solicitud" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
+            <?php } if($_SESSION['id_rol'] == 2){ ?>
+                <a href="<?= BASE_URL ?>/despacho_busqueda" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
             <?php } ?>
           <div class="notification-dropdown">
                 <button class="notificaciones-btn" id="btn-notificaciones">
@@ -55,33 +57,11 @@
             </div>
         </div>
     </header>
+    
     <nav class="navbar" aria-label="Menú principal">
-        <?php if ($_SESSION['id_rol'] == 4) { ?>
-        <div class="dropdown">
-            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-bars"></i> Menú
-        </button>
-        <div class="dropdown-menu" id="menuDropdown">
-                <a href="<?= BASE_URL ?>/beneficiarios_lista"><i class="fas fa-users"></i> Lista de beneficiarios</a>
-                <a href="<?= BASE_URL ?>/registro"><i class="fas fa-user-plus"></i> Registrar Usuario</a>
-                <a href="<?= BASE_URL ?>/reportes_acciones"><i class="fas fa-file-alt"></i> Reportes de Acciones</a>
-                <a href="<?= BASE_URL ?>/reportes"><i class="fas fa-chart-bar"></i> Reportes</a>
-                <a href="<?= BASE_URL ?>/limites"><i class="fas fa-user-shield"></i> Límite por rol</a>
-                <a href="<?= BASE_URL ?>/estadisticas"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes</a>
-        </div>
-    </div>
-        <!-- <div class="dropdown">
-            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-                <i class="fas fa-chart-bar"></i> Estadísticas
-            </button>
-            <div class="dropdown-menu" id="menuDropdown">
-            <a href="">Estadísticas de Usuarios</a> 
-            </div>
-        </div> -->
-    <?php } ?>
     <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-folder-open"></i> Ver...
+            <i class="fas fa-folder-open"></i> Solicitudes
         </button>
         <div class="dropdown-menu" id="menuDropdown">
             <a href="<?= BASE_URL ?>/solicitudes_list"><i class="fas fa-folder-open"></i> Solicitudes de Ayuda</a>
@@ -94,6 +74,35 @@
             <?php } ?>
         </div>
     </div>
+
+
+
+        <?php if ($_SESSION['id_rol'] == 4) { ?>
+        <div class="dropdown">
+            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
+            <i class="fas fa-bars"></i> Menú
+        </button>
+        <div class="dropdown-menu" id="menuDropdown">
+                <a href="<?= BASE_URL ?>/beneficiarios_lista"><i class="fas fa-users"></i> Lista de beneficiarios</a>
+                <a href="<?= BASE_URL ?>/registro"><i class="fas fa-user-plus"></i> Registrar Usuario</a>
+                <a href="<?= BASE_URL ?>/reportes_acciones"><i class="fas fa-file-alt"></i> Reportes de Acciones</a>
+                <a href="<?= BASE_URL ?>/reportes"><i class="fas fa-chart-bar"></i> Reportes</a>
+                <a href="<?= BASE_URL ?>/limites"><i class="fas fa-user-shield"></i> Límite por rol</a>
+        </div>
+    </div>
+        <div class="dropdown">
+            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
+                <i class="fas fa-chart-bar"></i> Estadísticas
+            </button>
+            
+            <div class="dropdown-menu" id="menuDropdown">
+            <a href="<?= BASE_URL ?>/estadisticas"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes (Generales)</a>
+            <a href="<?= BASE_URL ?>/estadisticas_solicitudes_desarrollo"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes de Desarrollo</a>
+            <a href="<?= BASE_URL ?>/estadisticas_solicitudes_despacho"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes de Despacho</a>
+            <!-- <a href="">Estadísticas de Usuarios</a>  -->
+            </div>
+        </div>
+    <?php } ?>
 
     <!-- <div class="dropdown">
         <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">

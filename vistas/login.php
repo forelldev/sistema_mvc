@@ -15,7 +15,7 @@
     <form action="<?= BASE_PATH ?>/login" method="POST">
             <div class="input-group">
             <i class="fa fa-id-card"></i>
-            <input type="text" name="ci" required placeholder="CI" autocomplete="off">
+            <input type="text" name="ci" required placeholder="CI" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
         <div class="input-group">
             <i class="fa fa-lock"></i>

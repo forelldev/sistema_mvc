@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/estadisticas.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
@@ -20,7 +21,7 @@
     <main>
         <div class="estadisticas-card">
             <div class="estadisticas-header">
-                <h2><i class="fa fa-chart-bar"></i> Resumen de solicitudes</h2>
+                <h2><i class="fa fa-chart-bar"></i> Resumen de solicitudes generales</h2>
             </div>
             <div class="estadisticas-contenido">
                 <div class="estadisticas-resumen">

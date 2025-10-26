@@ -11,9 +11,10 @@ class SolicitudControl {
         require_once 'vistas/solicitudes_list.php';
     }
 
-
-
     public static function busquedaVista(){
+        if(isset($_GET['direccion'])){
+            $direccion = true;
+        }
         require_once 'vistas/busqueda.php';
     }
 
@@ -360,6 +361,31 @@ class SolicitudControl {
             $msj = 'No se recibió el id del documento';
         }
         require_once 'vistas/solicitud_urgencia.php';
+    }
+
+    public static function nueva_solicitud(){
+        require_once 'vistas/nueva_solicitud.php';
+    }
+
+    public static function direccion_solicitud (){
+        if(isset($_GET['direccion'])){
+            $direccion = BASE_URL.'/nueva_solicitud';
+            switch($_GET['direccion']){
+                case 'solicitud':
+                    header("Location: ".BASE_URL."/busqueda?direccion=".$direccion);
+                    break;
+                case 'desarrollo':
+                    header("Location: ".BASE_URL."/buscar_desarrollo?direccion=".$direccion);
+                    break;
+                case 'despacho':
+                    header("Location: ".BASE_URL."/despacho_busqueda?direccion=".$direccion);
+                    break;
+            }
+        }
+        else{
+            $msj = 'Ocurrió un error';
+            require_once 'vistas/nueva_solicitud.php';
+        }
     }
 
     

@@ -14,7 +14,10 @@
     <div class="titulo-header">Verificar si el beneficiario ya está registrado</div>
     <div class="header-right">
       <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
-      <a href="<?= BASE_URL ?>/solicitudes_desarrollo"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+      <?php $url = $direccion ? '/nueva_solicitud' : '/solicitudes_desarrollo';?>
+        <a href="<?= BASE_URL . $url ?>">
+            <button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button>
+        </a>
     </div>
   </header>
 <main>

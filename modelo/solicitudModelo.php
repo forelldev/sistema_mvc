@@ -277,12 +277,11 @@ public static function buscarCi($ci) {
         // Actualizar info personal
         $db->prepare("
             UPDATE solicitantes_info 
-            SET fecha_nacimiento = ?, lugar_nacimiento = ?, edad = ?, estado_civil = ?, telefono = ?
+            SET fecha_nacimiento = ?, lugar_nacimiento = ?, estado_civil = ?, telefono = ?
             WHERE id_solicitante = ?
         ")->execute([
             $data['fecha_nacimiento'],
             $data['lugar_nacimiento'],
-            $data['edad'],
             $data['estado_civil'],
             $data['telefono'],
             $id
@@ -366,13 +365,12 @@ public static function buscarCi($ci) {
 
         // Insertar info personal
         $db->prepare("
-            INSERT INTO solicitantes_info (id_solicitante, fecha_nacimiento, lugar_nacimiento, edad, estado_civil, telefono)
+            INSERT INTO solicitantes_info (id_solicitante, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono)
             VALUES (?, ?, ?, ?, ?, ?)
         ")->execute([
             $id,
             $data['fecha_nacimiento'],
             $data['lugar_nacimiento'],
-            $data['edad'],
             $data['estado_civil'],
             $data['telefono']
         ]);

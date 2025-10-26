@@ -10,15 +10,46 @@
             require_once 'vistas/despacho_list.php';
         }
 
+    public static function despacho_busqueda(){
+        if(isset($_GET['direccion'])){
+            $direccion = true;
+        }
+        require_once 'vistas/despacho_busqueda.php';
+    }
+
     public static function buscar() {
         $ci = $_POST['ci'] ?? null;
         if ($ci) {
+            $res = Despacho::verificar_solicitudes($ci);
+            if($res['exito']){
+                $msj = 'Se han encontrado solicitudes anteriores de esta persona';
+                $datos = $res['datos'];
+                require_once 'vistas/despacho_anteriores.php';
+            }
+            else{
+                $data = self::obtenerDatosBeneficiario($ci);
+                extract($data); // crea $data_exists, $datos_beneficiario, etc.
+                // Verificar si el solicitante existe para bloquear edición
+                $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
+                require_once 'vistas/despacho_formulario.php';
+            }
+        }
+    }
+
+    public static function registrar(){
+        $ci = $_POST['ci'] ?? null;
+        if($ci){
+            $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-
+            $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
             require_once 'vistas/despacho_formulario.php';
         }
-}
+    }
+
+
+
+
     private static function obtenerDatosBeneficiario($ci) {
         $data = [
             'datos_beneficiario' => null
@@ -187,9 +218,6 @@
             }
     }
 
-    public static function despacho_busqueda(){
-        require_once 'vistas/despacho_busqueda.php';
-    }
 
     public static function solicitud_urgencia(){
         if(isset($_GET['id_despacho'])){

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/font/css/all.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/reportes.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
@@ -26,6 +27,7 @@
         <form action="filtro_acciones" method="POST">
         <!-- <input type="text" id="filtro-nombre" class="auditoria-filtro" placeholder="Buscar por nombre..." required> POR AHORA INNECESARIO IGUAL QUE EN REPORTES-->
             <select id="filtro-rol" class="auditoria-filtro" name="id_rol" required>
+                <option value="">Seleccione</option>
                 <option value="0" <?= ($id_rol ?? '') === '0' ? 'selected' : '' ?>>Todos los roles</option>
                 <option value="1" <?= ($id_rol ?? '') === '1' ? 'selected' : '' ?>>Promotor Social</option>
                 <option value="2" <?= ($id_rol ?? '') === '2' ? 'selected' : '' ?>>Despacho</option>
@@ -39,8 +41,8 @@
     <button class="filtrar-btn" id="btnPDF" onclick="generarPDF()"><i class="fa fa-file-excel" ></i> Exportar PDF</button>
   <section class="auditoria-tabla-card">
     <div class="tabla-responsive">
-    <table class="auditoria-tabla"  id="exportarPDF">
-        <thead>
+    <table class="table table-bordered table-hover align-middle text-center"  id="exportarPDF">
+        <thead class="table-primary">
             <tr>
                 <th>Número</th>
                 <th>CI</th>
@@ -54,12 +56,12 @@
             <?php if (!empty($datos)):  ?>
                 <?php foreach ($datos as $fila): ?>
                     <tr>
-                        <td><?= htmlspecialchars($fila['id']) ?></td>
-                        <td><?= htmlspecialchars($fila['ci']) ?></td>
-                        <td><?= htmlspecialchars($fila['nombre']) ?></td>
+                        <td class="col-id"><?= htmlspecialchars($fila['id']) ?></td>
+                        <td class="col-ci"><?= htmlspecialchars($fila['ci']) ?></td>
+                        <td class="col-nombre"><?= htmlspecialchars($fila['nombre']) ?></td>
                         <td class="auditoria-fecha"><?= date('d-m-Y', strtotime($fila['fecha'])) ?></td>
-                        <td class="auditoria-fecha"><?= date('H:i', strtotime($fila['fecha'])) ?></td>
-                        <td><?= htmlspecialchars($fila['accion']) ?></td>
+                        <td class="auditoria-fecha"><?= date('g:i A', strtotime($fila['fecha'])) ?></td>
+                        <td class="text-start"><?= htmlspecialchars($fila['accion']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>

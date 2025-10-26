@@ -19,6 +19,9 @@ class DesarrolloControl {
         }
 
     public static function buscar_desarrollo(){
+        if(isset($_GET['direccion'])){
+            $direccion = true;
+        }
         require_once 'vistas/solicitudes_desarrollo_buscar.php';
     }
     public static function formulario_desarrollo() {

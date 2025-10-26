@@ -10,13 +10,13 @@ class BeneficiarioModelo{
             $stmt = $conexion->prepare("
                 SELECT 
                     s.*, 
-                    c.comunidad, c.direc_habita, c.estruc_base,
-                    co.profesion, co.nivel_instruc,
-                    e.codigo_patria, e.serial_patria,
-                    i.fecha_nacimiento, i.lugar_nacimiento, i.edad, i.estado_civil, i.telefono,
-                    ing.nivel_ingreso, ing.pension, ing.bono,
-                    pr.propiedad, pr.propiedad_est, pr.observaciones_propiedad,
-                    t.trabajo, t.direccion_trabajo, t.trabaja_public, t.nombre_insti
+                    c.*,
+                    co.*,
+                    e.*,
+                    i.*,
+                    ing.*,
+                    pr.*,
+                    t.*
                 FROM solicitantes s
                 LEFT JOIN solicitantes_comunidad c ON s.id_solicitante = c.id_solicitante
                 LEFT JOIN solicitantes_conocimiento co ON s.id_solicitante = co.id_solicitante
@@ -42,7 +42,10 @@ class BeneficiarioModelo{
 
                 // Añadir las patologías al array principal
                 $datos['patologias'] = $patologias;
-
+                $fechaNacimiento = new DateTime($datos['fecha_nacimiento']);
+                $hoy = new DateTime();
+                $edad = $hoy->diff($fechaNacimiento)->y;
+                $datos['edad'] = $edad;
                 return [
                     'exito' => true,
                     'datos' => $datos

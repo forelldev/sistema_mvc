@@ -18,8 +18,7 @@
     </header>
     <main>
         <div class="registro-card form-user" style="text-align:center;">
-            <h1><i class="fa fa-check-circle" style="color:#3b4cca"></i> Solicitud enviada con éxito!</h1>
-            <p>Gracias por enviar su solicitud. Nos pondremos en contacto con usted pronto.</p>
+            <h1><i class="fa fa-check-circle" style="color:#3b4cca"></i> Solicitud de Desarrollo Social registrada con éxito!</h1>
         </div>
     </main>
 </body>

@@ -33,6 +33,68 @@ class EstadisticasModelo{
         }
     }
 
+    public static function estadisticas_despacho(){
+        $conexion = DB::conectar();
+        try {
+            $stmt = $conexion->prepare("
+                SELECT estado, COUNT(*) AS total
+                FROM despacho
+                WHERE estado IN (
+                    'En Revisión 1/2',
+                    'En Proceso 2/2',
+                    'En Proceso 2/2 (Sin Entregar)',
+                    'Solicitud Finalizada (Ayuda Entregada)'
+                )
+                GROUP BY estado
+            ");
+
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'exito' => true,
+                'datos' => $resultados
+            ];
+        } catch (Exception $e) {
+            error_log("Error al obtener estadísticas de solicitud_ayuda: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    public static function estadisticas_desarrollo(){
+        $conexion = DB::conectar();
+        try {
+            $stmt = $conexion->prepare("
+                SELECT estado, COUNT(*) AS total
+                FROM solicitud_desarrollo
+                WHERE estado IN (
+                    'En espera del documento físico para ser procesado 0/2',
+                    'En Proceso 1/2',
+                    'En Proceso 2/2 (Sin Entregar)',
+                    'Solicitud Finalizada (Ayuda Entregada)'
+                )
+                GROUP BY estado
+            ");
+
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'exito' => true,
+                'datos' => $resultados
+            ];
+        } catch (Exception $e) {
+            error_log("Error al obtener estadísticas de solicitud_ayuda: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
 }
 
 ?>

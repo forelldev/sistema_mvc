@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/reportes.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
@@ -19,46 +20,64 @@
   </header>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
     <section class="filtros-card"> 
-        <h2>Búsqueda Rápida:</h2>
-        <form action="<?= BASE_URL?>/buscar_beneficiario"  method="POST" autocomplete="off">
-            <input type="search" name="filtro_busqueda" placeholder="Búsqueda de beneficiarios" required value=<?= htmlspecialchars($_POST['filtro_busqueda'] ?? '') ?>>
-            <input type="submit" value="Buscar" class="filtro-btn">
-        </form>
-    </section>
-    <!-- En caso de que exista la busqueda a través de get osea que ingresó a una pues se le pone boton de exportar en word o pdf, en caso de que no pues no existe este botón -->
-     <main class="auditoria-main">
-    <section class="auditoria-tabla-card">
-        <div class="tabla-responsive">
-     <table class="auditoria-tabla">
-        <?php if (!empty($datos)): ?>
-        <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Cédula</th>
-            <th>Ver Información Completa</th>
-        </tr>
-            <?php foreach ($datos as $fila): ?>
-        <tr>
-            <td><?= htmlspecialchars($fila['nombre']) ?></td>
-            <td><?= htmlspecialchars($fila['apellido']) ?></td>
-            <td><?= htmlspecialchars($fila['ci']) ?></td>
-            <td><a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']; ?>" class="usuario-btn">Ver información Completa</a></td>
-        </tr>
-        <?php endforeach; ?>
-        <?php else: ?>
-        <div class="solicitud-card">
-                <div class="solicitud-header">
-                    <span class="solicitud-estado">Sin información</span>
-                </div>
-                <div class="solicitud-info">
-                    No hay información disponible.
-                </div>
+        <div class="container my-4">
+        <h2 class="mb-3">🔍 Búsqueda Rápida</h2>
+        <form action="<?= BASE_URL ?>/buscar_beneficiario" method="POST" autocomplete="off" class="row g-2">
+            <div class="col-md-9">
+            <input type="search"
+                    name="filtro_busqueda"
+                    class="form-control"
+                    placeholder="Buscar beneficiarios..."
+                    required
+                    value="<?= htmlspecialchars($_POST['filtro_busqueda'] ?? '') ?>">
             </div>
-        <?php endif; ?>
-     </table>
+            <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
         </div>
     </section>
-    </main>
+
+<main class="container my-5">
+  <section class="card shadow-sm rounded-4">
+    <div class="card-body">
+      <h3 class="mb-4">📋 Lista de Beneficiarios</h3>
+      <div class="table-responsive">
+        <?php if (!empty($datos)): ?>
+          <table class="table table-bordered table-hover table-striped align-middle text-center">
+            <thead class="table-primary">
+              <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cédula</th>
+                <th>Ver Información</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($datos as $fila): ?>
+                <tr>
+                  <td><?= htmlspecialchars($fila['nombre']) ?></td>
+                  <td><?= htmlspecialchars($fila['apellido']) ?></td>
+                  <td><?= htmlspecialchars($fila['ci']) ?></td>
+                  <td>
+                    <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']; ?>" class="btn btn-outline-primary btn-sm">
+                      Ver información
+                    </a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        <?php else: ?>
+          <div class="alert alert-warning text-center" role="alert">
+            <strong>Sin información:</strong> No hay beneficiarios registrados en este momento.
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  </section>
+</main>
+
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

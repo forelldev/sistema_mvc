@@ -169,6 +169,18 @@ class Despacho{
                 ':prioridad' => $data['prioridad']
             ]);
 
+            $stmt = $db->prepare("
+                INSERT INTO despacho_correo (
+                    id_despacho, correo_enviado
+                ) VALUES (
+                    :id_despacho, :correo_enviado
+                )
+            ");
+            $stmt->execute([
+                ':id_despacho' => $id_despacho,
+                ':correo_enviado' => 0,
+            ]);
+
 
 
 
@@ -409,6 +421,54 @@ class Despacho{
             return [
                 'exito' => false,
                 'error' => 'Error en la base de datos: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public static function verificar_solicitudes($ci){
+            try {
+            $conexion = DB::conectar();
+            $consulta = "
+                SELECT 
+                    d.*,
+                    dc.*,
+                    dco.*,
+                    df.*,
+                    di.*,
+                    din.*,
+                    sol.*
+                FROM despacho d
+                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                LEFT JOIN despacho_correo dco ON d.id_despacho = dco.id_despacho
+                LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                LEFT JOIN despacho_invalido din ON d.id_despacho = din.id_despacho
+                LEFT JOIN solicitantes sol ON d.ci = sol.ci
+                WHERE d.ci = :ci
+                ORDER BY df.fecha DESC
+            ";
+
+
+
+            $cons = $conexion->prepare($consulta);
+            $cons->bindParam(':ci', $ci);
+            $cons->execute();
+            $datos = $cons->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!empty($datos)) {
+                return [
+                    'exito' => true,
+                    'datos' => $datos
+                ];
+            } else {
+                return [
+                    'exito' => false
+                ];
+            }
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => 'Error al consultar solicitudes de desarrollo: ' . $e->getMessage()
             ];
         }
     }

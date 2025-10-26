@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>../css/estadisticas.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
 </head>
 <body class="solicitud-body">
@@ -20,7 +21,8 @@
         <?php } ?>
         
         <?php if (isset($beneficiario)): ?>
-            <table class="info-beneficiario-table">
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="table-primary">
                 <tr>
                     <th>Nombre</th>
                     <th>Apellido</th>
@@ -33,6 +35,7 @@
                     <th>Trabajo</th>
                     <th>Acción</th>
                 </tr>
+                </thead>
                 <tr>
                     <td><?= htmlspecialchars($beneficiario['nombre']?? '' ) ?></td>
                     <td><?= htmlspecialchars($beneficiario['apellido'] ?? '' )?></td>
