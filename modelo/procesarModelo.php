@@ -452,7 +452,7 @@ public static function solicitud($id_doc, $estado) {
                 $stmt = $conexion->prepare("INSERT INTO reportes_acciones (id_doc,fecha,accion,ci) VALUES (?, ?, ?, ?)");
                 $stmt->execute([$id_doc,$fecha,$accion,$ci]);
                 return ['exito' => true];
-            } catch(Excepction $e){
+            } catch(Exception $e){
                 $conexion->rollBack();
                 error_log("Error al insertar el reporte: " . $e->getMessage());
                 return ['exito' => false, 'error' => $e->getMessage()];
@@ -462,12 +462,66 @@ public static function solicitud($id_doc, $estado) {
         public static function despacho($id_despacho,$estado){
         try {
             $conexion = DB::conectar();
+            date_default_timezone_set('America/Caracas');
+            $fecha = date('Y-m-d H:i:s');
+
+            // Actualizar estado
+
             $stmt = $conexion->prepare("UPDATE despacho SET estado = ? WHERE id_despacho = ?");
-            $stmt->execute([$estado, $id_despacho]); 
-            return true;
+            $stmt->execute([$estado, $id_despacho]);
+
+            // Actualizar visto y fecha_modificacion en solicitud_desarrollo_fecha
+            $stmtFecha = $conexion->prepare("
+                UPDATE despacho_fecha 
+                SET visto = ?, fecha_modificacion = ? 
+                WHERE id_despacho = ?
+            ");
+
+            // Obtener correo_enviado desde despacho_correo y ci desde despacho
+            $stmt2 = $conexion->prepare("
+                SELECT d.ci, dc.correo_enviado
+                FROM despacho d
+                LEFT JOIN despacho_correo dc ON d.id_despacho = dc.id_despacho
+                WHERE d.id_despacho = ?
+            ");
+            $stmt2->execute([$id_despacho]);
+            $fila = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+            $stmtFecha->execute([0, $fecha, $id_despacho]);
+
+            // Si existe el registro y correo_enviado es distinto de 0, enviar correo y reiniciar
+            if ($fila && $fila['correo_enviado'] != 0 && !empty($fila['ci'])) {
+                $ci = $fila['ci'];
+
+                // Obtener nombre y correo del solicitante
+                $stmt3 = $conexion->prepare("
+                    SELECT nombre, correo FROM solicitantes 
+                    WHERE ci = ?
+                ");
+                $stmt3->execute([$ci]);
+                $info = $stmt3->fetch(PDO::FETCH_ASSOC);
+
+                if ($info) {
+                    $nombre = $info['nombre'];
+                    $correo = $info['correo'];
+                    // Enviar correo de renovación
+                    Correo::correoRenovado($correo, $nombre);
+
+                    // Reiniciar correo_enviado en solicitud_desarrollo_correo
+                    $stmt4 = $conexion->prepare("
+                        UPDATE despacho_correo 
+                        SET correo_enviado = 0 
+                        WHERE id_despacho = ?
+                    ");
+                    $stmt4->execute([$id_despacho]);
+                    $stmt5 = $conexion->prepare("UPDATE despacho_fecha SET fecha_renovacion = ? WHERE id_despacho = ?");
+                    $stmt5->execute([$fecha,$id_despacho]);
+                }
+            }
+            return ['exito' =>true];
         } catch (PDOException $e) {
             error_log("Error al actualizar solicitud: " . $e->getMessage());
-            return false;
+            return ['exito' => false,'error' => $e->getMessage()];
         };
     }
 

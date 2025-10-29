@@ -26,14 +26,13 @@
     <div class="auditoria-filtros-bar">
         <form action="filtro_acciones" method="POST">
         <!-- <input type="text" id="filtro-nombre" class="auditoria-filtro" placeholder="Buscar por nombre..." required> POR AHORA INNECESARIO IGUAL QUE EN REPORTES-->
-            <select id="filtro-rol" class="auditoria-filtro" name="id_rol" required>
+            <select id="filtro-rol" class="auditoria-filtro" name="oficina" required>
                 <option value="">Seleccione</option>
-                <option value="0" <?= ($id_rol ?? '') === '0' ? 'selected' : '' ?>>Todos los roles</option>
-                <option value="1" <?= ($id_rol ?? '') === '1' ? 'selected' : '' ?>>Promotor Social</option>
-                <option value="2" <?= ($id_rol ?? '') === '2' ? 'selected' : '' ?>>Despacho</option>
-                <option value="3" <?= ($id_rol ?? '') === '3' ? 'selected' : '' ?>>Administración</option>
-                <option value="4" <?= ($id_rol ?? '') === '4' ? 'selected' : '' ?>>Admin</option>
+                <option value="todas" <?= ($oficina ?? '') === 'todas' ? 'selected' : '' ?>>Todas las oficinas</option>
+                <option value="Desarrollo Social" <?= ($oficina ?? '') === 'Desarrollo Social' ? 'selected' : '' ?>>Desarrollo Social</option>
+                <option value="Despacho" <?= ($oficina ?? '') === 'Despacho' ? 'selected' : '' ?>>Despacho</option>
             </select>
+
             <input type="date" id="filtro-fecha" class="auditoria-filtro" required name="fecha" value="<?php echo isset($fecha) ? $fecha : ''; ?>">
         <button type="submit" class="filtrar-btn"><i class="fa fa-search"></i> Filtrar</button>
         </form>

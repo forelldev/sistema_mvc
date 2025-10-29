@@ -47,26 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // PRIORIDAD:
-const prioridadContainer = document.getElementById("prioridadContainer");
-const prioridadSelect = document.getElementById("prioridad");
-
-// Ocultar prioridad al cargar
-prioridadContainer.style.display = "none";
-prioridadSelect.removeAttribute("required");
-
-categoriaSelect.addEventListener("change", function () {
-  const categoria = categoriaSelect.value;
-
-  if (categoria === "Salud") {
-    prioridadContainer.style.display = "block";
-    prioridadSelect.setAttribute("required", "required");
-  } else {
-    prioridadContainer.style.display = "none";
-    prioridadSelect.removeAttribute("required");
-    prioridadSelect.value = ""; // Limpiar selección si se oculta
-  }
-});
 });
 
 

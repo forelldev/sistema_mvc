@@ -29,7 +29,7 @@
         </div>
         <div class="campo-user">
             <label for="ci">Cédula de Identidad</label>
-            <input type="text" name="ci" placeholder="Cédula de Identidad" required>
+            <input type="text" name="ci" placeholder="Cédula de Identidad" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="campo-user">
             <label for="clave">Contraseña</label>

@@ -69,12 +69,11 @@
             $_POST['ci_user'] = $_SESSION['ci'];
             $resultado = Despacho::enviarForm($_POST);
             if ($resultado['exito']) {
-                header('Location: ' . BASE_URL . '/felicidades_despacho');
-                date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Registró solicitud de despacho';
-                $id_doc = $_POST['id_despacho'];
+                $accion = 'Registró solicitud. (Despacho)';
+                $id_doc = $resultado['id_despacho'];
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                header('Location: ' . BASE_URL . '/felicidades_despacho');
                 exit;
             } else {
                 $msj = "Error al registrar la solicitud: " . $resultado['error'];
@@ -97,8 +96,8 @@
         public static function procesar(){
         if(isset($_GET['id_despacho'])){
             $id_despacho = $_GET['id_despacho'];
-            $estado = $_GET['estado'];
-            switch($estado){
+            $estado_switch = $_GET['estado'];
+            switch($estado_switch){
                 case 'En Revisión 1/2':
                     $estado_new = 'En Proceso 2/2 (Sin entregar)';
                     $accion = 'Envió la solicitud a Administración. (Despacho)';
@@ -114,7 +113,8 @@
                 default:
                     $msj = 'Ocurrió un error!';
             }
-            if(Procesar::despacho($id_despacho,$estado_new)){
+            $res = Procesar::despacho($id_despacho,$estado_new);
+            if($res['exito']){
                 header('Location: '.BASE_URL.'/despacho_list');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
@@ -123,7 +123,7 @@
                 exit;
             }
             else{
-                $msj = 'Ocurrió un error ejecutando la consulta de procesamiento';
+                $msj = 'Ocurrió un error ejecutando la consulta de procesamiento '.$res['error'];
             }
         }
         else{
@@ -147,7 +147,7 @@
                 header('Location: '.BASE_URL.'/inhabilitados_despacho');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon;
+                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Despacho)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -174,7 +174,7 @@
                 header('Location: '.BASE_URL.'/despacho_list');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Habilitó la solicitud';
+                $accion = 'Habilitó la solicitud (Despacho)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -234,6 +234,55 @@
         }
         require_once 'vistas/solicitud_despacho_urgencia.php';
     }
+
+
+     public static function filtrar_despacho(){
+        if(isset($_GET['filtro'])){
+            $filtro = $_GET['filtro'];
+            $res = Despacho::filtrar($filtro);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+        }
+        require_once 'vistas/despacho_list.php';
+    }
+
+    public static function filtrar_fecha(){
+        if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_final']) && isset($_POST['estado'])) {
+            $resultado = Despacho::fecha_filtro($_POST);
+                if ($resultado['exito']) {
+                    $datos = $resultado['datos'];
+                    $fecha_inicio = $_POST['fecha_inicio'];
+                    $fecha_final = $_POST['fecha_final'];
+                    $estado = $_POST['estado'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$resultado['error'];
+            }
+        }
+        else{
+            $msj = 'Ocurrió un error con el envío de datos (POST)';
+        }
+        require_once 'vistas/despacho_list.php';
+    }
+
+    public static function mostrar_noti_urgencia(){
+        if(isset($_GET['id_despacho'])){
+            $id_despacho = $_GET['id_despacho'];
+            $res = Despacho::solicitud_urgencia($id_despacho);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+        }
+        require_once 'vistas/solicitud_despacho_urgencia.php';
+    }
+
         
     }
 ?>

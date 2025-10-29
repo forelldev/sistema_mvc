@@ -51,7 +51,7 @@
                     <li><strong>📂 Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></li>
                     <li><strong>🆔 Número de documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></li>
                     <li><strong>🧾 CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></li>
-                    <li><strong>👤 Remitente:</strong> <?= htmlspecialchars(($fila['remitente_nombre'] ?? '') . ' ' . ($fila['remitente_apellido'] ?? '')) ?></li>
+                    <li><strong>👤 Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></li>
                   </ul>
                 </div>
               </div>

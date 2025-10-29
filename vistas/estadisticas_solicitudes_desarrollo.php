@@ -13,7 +13,7 @@
 </head>
 <body class="solicitud-body">
     <header class="header">
-        <div class="titulo-header">Estadísticas de solicitudes</div>
+        <div class="titulo-header">Estadísticas de solicitudes de Desarrollo Social</div>
         <div class="header-right">
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>

@@ -115,35 +115,67 @@ class ReportesControl{
 
     public static function filtrar_fecha() {
         if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_final'])) {
+            $_POST['pagina'] = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+            $_POST['porPagina'] = 10;
             $resultado = reportesModelo::fecha_filtro($_POST);
             if ($resultado['exito']) {
                 $datos = $resultado['datos'];
                 $fecha_inicio = $_POST['fecha_inicio'];
                 $fecha_final = $_POST['fecha_final'];
-                require_once 'vistas/reportes.php';
+                $total = $resultado['total'];
+                $porPagina = $resultado['porPagina'];
+                $paginaActual = $resultado['pagina'];
+                $totalPaginas = ceil($total / $porPagina);
+                
             } else {
-                echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+                $msj = "Error al filtrar solicitudes por fecha: " . $resultado['error'];
             }
         } else {
-            echo "No está llegando el POST correctamente.";
+            $msj = "No está llegando el POST correctamente.";
         }
+        require_once 'vistas/reportes.php';
     }
 
         public static function filtrar_acciones() {
-            if (isset($_POST['fecha']) && isset($_POST['id_rol'])) {
+            // Paginación
+            $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+            $porPagina = 10;
+
+            // Inicializar variables para la vista
+            $datos = [];
+            $total = 0;
+            $totalPaginas = 1;
+            $paginaActual = $pagina;
+            $msj = '';
+            $fecha = '';
+            $oficina = '';
+
+            // Validar POST
+            if (isset($_POST['fecha']) && isset($_POST['oficina'])) {
                 $fecha = $_POST['fecha'];
-                $id_rol = $_POST['id_rol'];
-                $resultado = reportesModelo::filtro_acciones($fecha,$id_rol);
+                $oficina = $_POST['oficina'];
+
+                // Ejecutar modelo con filtros
+                $resultado = reportesModelo::filtro_acciones($fecha, $oficina, $pagina, $porPagina);
+
                 if ($resultado['exito']) {
                     $datos = $resultado['datos'];
-                    require_once 'vistas/reportes_acciones.php';
+                    $total = $resultado['total'];
+                    $porPagina = $resultado['porPagina'];
+                    $paginaActual = $resultado['pagina'];
+                    $totalPaginas = ceil($total / $porPagina);
                 } else {
-                    echo "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+                    $msj = "Error al filtrar reportes: " . $resultado['error'];
                 }
             } else {
-                echo "No está llegando el POST correctamente.";
+                $msj = "Faltan parámetros para filtrar.";
             }
+
+            // Cargar vista
+            require_once 'vistas/reportes_acciones.php';
         }
+
+
 
 }
 ?>

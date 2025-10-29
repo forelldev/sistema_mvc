@@ -129,7 +129,7 @@ public static function buscarCi($ci) {
             'id_manual', 'ci', 'descripcion', 'fecha',
             'categoria', 'tipo_ayuda', 'ci_user',
             'nombre', 'apellido', 'correo', 'fecha_nacimiento', 'lugar_nacimiento',
-            'edad', 'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
+            'estado_civil', 'telefono', 'codigo_patria', 'serial_patria',
             'comunidad', 'direc_habita', 'estruc_base', 'profesion', 'nivel_instruc',
             'propiedad', 'propiedad_est', 'trabajo', 'nombre_insti',
             'nivel_ingreso', 'pension', 'bono'

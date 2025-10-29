@@ -57,9 +57,9 @@
                         <td><?= htmlspecialchars($fila['id']) ?></td>
                         <td><?= htmlspecialchars($fila['ci']) ?></td>
                         <td><?= date('d-m-Y', strtotime($fila['fecha_entrada'])) ?></td>
-                        <td><?= date('H:i', strtotime($fila['fecha_entrada'])) ?></td>
+                        <td><?= date('g:i A', strtotime($fila['fecha_entrada'])) ?></td>
                         <td><?= ($fila['fecha_salida'] === '0000-00-00 00:00:00' || empty($fila['fecha_salida'])) ? 'En Línea' : date('d-m-Y', strtotime($fila['fecha_salida'])) ?></td>
-                        <td><?= ($fila['fecha_salida'] === '0000-00-00 00:00:00' || empty($fila['fecha_salida'])) ? 'En Línea' : date('H:i', strtotime($fila['fecha_salida'])) ?></td>
+                        <td><?= ($fila['fecha_salida'] === '0000-00-00 00:00:00' || empty($fila['fecha_salida'])) ? 'En Línea' : date('g:i A', strtotime($fila['fecha_salida'])) ?></td>
                         <td><?= htmlspecialchars($fila['nombre']) ?></td>
                     </tr>
                 <?php endforeach; ?>

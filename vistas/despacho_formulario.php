@@ -68,17 +68,6 @@
                     <select name="tipo_ayuda" id="tipo_ayuda" required></select>
                 </div>
             </div>
-            <div class="fila-formulario" id="prioridadContainer">
-                <div class="campo-formulario" >
-                    <label for="prioridad">Prioridad:</label>
-                    <select name="prioridad" id="prioridad">
-                        <option value="">Seleccione</option>
-                        <option value="Alta">Alta</option>
-                        <option value="Media">Media</option>
-                        <option value="Baja">Baja</option>
-                    </select>
-                </div>
-            </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="descripcion">Descripción:</label>

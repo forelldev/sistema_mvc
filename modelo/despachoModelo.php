@@ -74,9 +74,6 @@ class Despacho{
         $db = DB::conectar();
         $db->beginTransaction();
         try {
-            if (empty($data['prioridad'])) {
-                $data['prioridad'] = 'Baja';
-            }
             // Verificar si el id_manual ya existe
             $checkStmt = $db->prepare("SELECT COUNT(*) FROM despacho WHERE id_manual = :id_manual");
             $checkStmt->execute([':id_manual' => $data['id_manual']]);
@@ -86,7 +83,7 @@ class Despacho{
             }
             // ✅ 1. Validar campos obligatorios
             $camposObligatorios = [
-                'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita','tipo_ayuda','categoria','prioridad'
+                'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita','tipo_ayuda','categoria'
             ];
 
             foreach ($camposObligatorios as $campo) {
@@ -157,16 +154,15 @@ class Despacho{
 
             $stmt = $db->prepare("
                 INSERT INTO despacho_categoria (
-                    id_despacho, categoria, tipo_ayuda, prioridad
+                    id_despacho, categoria, tipo_ayuda
                 ) VALUES (
-                    :id_despacho, :categoria, :tipo_ayuda, :prioridad
+                    :id_despacho, :categoria, :tipo_ayuda 
                 )
             ");
             $stmt->execute([
                 ':id_despacho' => $id_despacho,
                 ':categoria' => $data['categoria'],
-                ':tipo_ayuda' => $data['tipo_ayuda'],
-                ':prioridad' => $data['prioridad']
+                ':tipo_ayuda' => $data['tipo_ayuda']
             ]);
 
             $stmt = $db->prepare("
@@ -204,7 +200,7 @@ class Despacho{
             }
 
             $db->commit();
-            return ['exito' => true];
+            return ['exito' => true,'id_despacho' => $id_despacho];
 
         } catch (Exception $e) {
             $db->rollBack();
@@ -265,23 +261,25 @@ class Despacho{
                     d.*, 
                     di.*,
                     df.*,
-                    dc.correo_enviado,
-                    dc.categoria,
+                    dco.correo_enviado,
+                    dc.tipo_ayuda,
                     sol.nombre,
                     sol.correo,
                     sol.ci
                 FROM despacho d
                 LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
                 LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                LEFT JOIN despacho_correo dco ON d.id_despacho = dco.id_despacho
                 LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
                 LEFT JOIN solicitantes sol ON d.ci = sol.ci
                 WHERE d.invalido = 0
-                AND dc.categoria IN ('Medicamentos', 'Laboratorio')
-                AND df.fecha <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+                AND dc.tipo_ayuda IN ('Medicamentos', 'Estudios','Exámenes')
+                AND df.fecha_renovacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
                 ORDER BY 
-                    CASE dc.categoria
+                    CASE dc.tipo_ayuda
                         WHEN 'Medicamentos' THEN 0
-                        WHEN 'Laboratorio' THEN 1
+                        WHEN 'Estudios' THEN 1
+                        WHEN 'Exámenes' THEN 2
                         ELSE 2
                     END,
                     df.fecha ASC
@@ -298,7 +296,7 @@ class Despacho{
 
                     if ($enviado) {
                         $stmtUpdate = $conexion->prepare("
-                            UPDATE despacho_categoria 
+                            UPDATE despacho_correo
                             SET correo_enviado = 1 
                             WHERE id_despacho = :id_despacho
                         ");
@@ -341,7 +339,7 @@ class Despacho{
             $stmt->bindParam(':id_despacho', $id_despacho, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
-                $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+                $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 if ($datos) {
                     return [
@@ -472,6 +470,128 @@ class Despacho{
             ];
         }
     }
+
+      public static function filtrar($filtro) {
+    try {
+        $conexion = DB::conectar();
+        $baseQuery = "
+            SELECT 
+                d.*, 
+                df.*, 
+                dc.*, 
+                di.*, 
+                sol.*
+            FROM despacho d
+            LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+            LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+            LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+            LEFT JOIN solicitantes sol ON d.ci = sol.ci
+            WHERE d.invalido = 0
+        ";
+
+        $order = "DESC";
+        $categoria = null;
+
+        switch ($filtro) {
+            case "economica":
+                $categoria = "Economica";
+                break;
+            case "salud":
+                $categoria = "Salud";
+                break;
+            case "materiales_construccion":
+                $categoria = "Materiales de Construcción";
+                break;
+            case "varios":
+                $categoria = "Varios";
+                break;
+            case "antiguos":
+                $order = "ASC";
+                break;
+            case "recientes":
+            default:
+                // No se modifica categoría ni orden (DESC por defecto)
+                break;
+        }
+
+        if ($categoria !== null) {
+            $baseQuery .= " AND dc.categoria = :categoria";
+        }
+
+        $baseQuery .= " ORDER BY df.fecha $order";
+
+        $stmt = $conexion->prepare($baseQuery);
+
+        if ($categoria !== null) {
+            $stmt->bindParam(':categoria', $categoria);
+        }
+
+        $stmt->execute();
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'exito' => true,
+            'datos' => $resultados,
+            'mensaje' => 'Consulta realizada correctamente'
+        ];
+
+    } catch (PDOException $e) {
+        error_log("Error al filtrar despacho: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'datos' => [],
+            'mensaje' => 'Error al ejecutar la consulta: ' . $e->getMessage()
+        ];
+    }
+}
+
+
+    public static function fecha_filtro($datos) {
+        $conexion = DB::conectar();
+        $fecha_inicio = $datos['fecha_inicio'];
+        $fecha_final = $datos['fecha_final'];
+        $estado = $datos['estado'];
+        try {
+            $stmt = $conexion->prepare("
+                  SELECT 
+                        d.*, 
+                        df.*, 
+                        dc.*, 
+                        di.*, 
+                        sol.*
+                    FROM despacho d
+                    LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                    LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                    LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                    LEFT JOIN solicitantes sol ON d.ci = sol.ci
+                    WHERE DATE(df.fecha) >= :fecha_inicio
+                    AND DATE(df.fecha) <= :fecha_final
+                    AND d.estado = :estado
+                    AND d.invalido = 0
+                    ORDER BY df.fecha DESC
+                ");
+
+            $stmt->bindParam(':fecha_inicio', $fecha_inicio);
+            $stmt->bindParam(':fecha_final', $fecha_final);
+            $stmt->bindParam(':estado', $estado);
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return [
+                'exito' => true,
+                'datos' => $resultados
+            ];
+        } catch (Exception $e) {
+            error_log("Error al filtrar solicitudes por fecha: " . $e->getMessage());
+            return [
+                'exito' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+
+
 }
 
 ?>

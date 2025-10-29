@@ -3,6 +3,9 @@ require_once 'modelo/DesarrolloModelo.php';
 require_once 'modelo/procesarModelo.php';
 class DesarrolloControl {
     public static function lista (){
+        if(isset($_GET['msj'])){
+            $msj = $_GET['msj'];
+        }
         $resultado = Desarrollo::mostrar_lista();
         $notificaciones = Desarrollo::notificaciones();
         $notificacion = $notificaciones['exito'] ? $notificaciones['datos'] : [];
@@ -74,7 +77,7 @@ class DesarrolloControl {
             if ($resultado['exito']) {
                 header('Location: ' . BASE_URL . '/felicidades_desarrollo');
                 $fecha = $_POST['fecha'];
-                $accion = 'Registró solicitud en Desarrollo Social';
+                $accion = 'Registró solicitud (Desarrollo Social)';
                 $id_des = $resultado['id_des'];
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
@@ -101,11 +104,11 @@ class DesarrolloControl {
         public static function procesar(){
         if(isset($_GET['id_des'])){
             $id_des = $_GET['id_des'];
-            $estado = $_GET['estado'];
-            switch($estado){
+            $estado_buscar = $_GET['estado'];
+            switch($estado_buscar){
                 case 'En espera del documento físico para ser procesado 0/2':
                     $estado_new = 'En Proceso 1/2';
-                    $accion = 'Aprobó la solicitud para su procedimiento (Desarrollo Social)';
+                    $accion = 'Aprobó la solicitud para su procedimiento. (Desarrollo Social)';
                     break;
                 case 'En Proceso 1/2':
                     $estado_new = 'En Proceso 2/2 (Sin entregar)';
@@ -123,7 +126,7 @@ class DesarrolloControl {
                     $msj = 'Ocurrió un error!';
             }
             if(Procesar::desarrollo($id_des,$estado_new)){
-                header('Location: '.BASE_URL.'/solicitudes_desarrollo');
+                header('Location: '.BASE_URL.'/solicitudes_desarrollo?msj=Solicitud actualizada con éxito');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
@@ -155,7 +158,7 @@ class DesarrolloControl {
                 header('Location: '.BASE_URL.'/desarrollo_invalidos');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon;
+                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Desarrollo Social)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -180,7 +183,7 @@ class DesarrolloControl {
                 header('Location: '.BASE_URL.'/solicitudes_desarrollo');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Habilitó la solicitud';
+                $accion = 'Habilitó la solicitud. (Desarrollo Social)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -269,9 +272,9 @@ class DesarrolloControl {
     }
 
     public static function mostrar_noti_urgencia(){
-        if(isset($_GET['id_doc'])){
-            $id_doc = $_GET['id_doc'];
-            $res = Desarrollo::mostrar_urgencia($id_doc);
+        if(isset($_GET['id_des'])){
+            $id_des = $_GET['id_des'];
+            $res = Desarrollo::mostrar_urgencia($id_des);
             if($res['exito']){
                 $datos = $res['datos'];
             }

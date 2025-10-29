@@ -21,7 +21,7 @@
     <main class="container my-5">
   <div class="card shadow-sm rounded-4">
     <div class="card-body">
-      <h2 class="mb-4"><i class="fa fa-chart-bar me-2"></i>Resumen de solicitudes generales</h2>
+      <h2 class="mb-4"><i class="fa fa-chart-bar me-2"></i>Resumen de solicitudes de despacho</h2>
 
       <div class="row g-3">
         <div class="col-md-6 col-lg-4">
@@ -58,7 +58,6 @@
 <script>
   window.solicitudesData = [
     <?= $datos['En Revisión 1/2'] ?>,
-    <?= $datos['En Proceso 1/2'] ?>,
     <?= $datos['En Proceso 2/2 (Sin entregar)'] ?>,
     <?= $datos['Solicitud Finalizada (Ayuda Entregada)'] ?>
   ];

@@ -95,12 +95,12 @@ class SolicitudControl {
             $resultado = Solicitud::enviarForm($_POST);
 
             if ($resultado['exito']) {
-                header('Location: ' . BASE_URL . '/felicidades');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Creó una nueva solicitud de ayuda.';
+                $accion = 'Creó una nueva solicitud de ayuda (General).';
                 $id_doc = $resultado['id_doc'];
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                header('Location: ' . BASE_URL . '/felicidades');
                 exit;
             } else {
                 $msj = "Error al registrar la solicitud: " . $resultado['error'];
@@ -118,7 +118,7 @@ class SolicitudControl {
                 }
             }
 
-            require_once 'vistas/solicitud_formulario.php';
+            require_once 'vistas/solicitud_formulario_cargado.php';
         }
         else{
 
@@ -145,23 +145,23 @@ class SolicitudControl {
             switch($estado){
                 case 'En espera del documento físico para ser procesado 0/3':
                     $estado_new = 'En Proceso 1/3';
-                    $accion = 'Recibió documento físico, y aprobó para su procedimiento.';
+                    $accion = 'Recibió documento físico, y aprobó para su procedimiento. (General)';
                     break;
                 case 'En Proceso 1/3':
                     $estado_new = 'En Proceso 2/3';
-                    $accion = 'Envió la solicitud a despacho.';
+                    $accion = 'Envió la solicitud a despacho. (General)';
                     break;
                 case 'En Proceso 2/3':
                     $estado_new = 'En Proceso 3/3 (Sin entregar)';
-                    $accion = 'Envió la solicitud a administración.';
+                    $accion = 'Envió la solicitud a administración. (General)';
                     break;
                 case 'En Proceso 3/3 (Sin entregar)':
                     $estado_new = 'Solicitud Finalizada (Ayuda Entregada)';
-                    $accion = 'Confirmó que se entregó la ayuda.';
+                    $accion = 'Confirmó que se entregó la ayuda. (General)';
                     break;
                 case 'Solicitud Finalizada (Ayuda Entregada)':
                     $estado_new = 'En espera del documento físico para ser procesado 0/3';
-                    $accion = 'Reinició el proceso de la solicitud.';
+                    $accion = 'Reinició el proceso de la solicitud. (General)';
                     break;
                 default:
                     $msj = 'Ocurrió un error!';
@@ -202,7 +202,7 @@ class SolicitudControl {
                 header('Location: '.BASE_URL.'/inhabilitados_lista');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon;
+                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (General)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -229,7 +229,7 @@ class SolicitudControl {
                 header('Location: '.BASE_URL.'/solicitudes_list');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Habilitó la solicitud';
+                $accion = 'Habilitó la solicitud (General)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -313,23 +313,23 @@ class SolicitudControl {
 
     public static function filtrar_busqueda() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $filtro = $_POST['filtro_busqueda'] ?? '';
+            $filtro_busqueda = $_POST['filtro_busqueda'] ?? '';
             $direccion = $_POST['direccion'] ?? '';
 
             switch ($direccion) {
                 case 'despacho':
-                    $resultado = Despacho::buscar_filtro($filtro);
+                    $resultado = Despacho::buscar_filtro($filtro_busqueda);
                     $vista = 'vistas/despacho_list.php';
                     break;
 
                 case 'desarrollo':
-                    $resultado = Desarrollo::buscar_filtro($filtro);
+                    $resultado = Desarrollo::buscar_filtro($filtro_busqueda);
                     $vista = 'vistas/desarrollo_list.php';
                     break;
 
                 case 'solicitud':
                 default:
-                    $resultado = Solicitud::buscar_filtro($filtro);
+                    $resultado = Solicitud::buscar_filtro($filtro_busqueda);
                     $vista = 'vistas/solicitudes_list.php';
                     break;
             }

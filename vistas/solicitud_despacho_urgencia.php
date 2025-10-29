@@ -20,7 +20,7 @@ $acciones = [
     <header class="header">
         <div class="titulo-header">Solicitud Urgente (Despacho)</div>
         <div class="header-right">
-            <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+            <a href="<?= BASE_URL ?>/despacho_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
     <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>

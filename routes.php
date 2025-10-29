@@ -84,5 +84,8 @@ Router::get('/estadisticas_solicitudes_desarrollo','EstadisticasControl@estadist
 Router::get('/estadisticas_solicitudes_despacho','EstadisticasControl@estadisticas_solicitudes_despacho');
 Router::get('/nueva_solicitud','SolicitudControl@nueva_solicitud');
 Router::get('/direccion_solicitud','SolicitudControl@direccion_solicitud');
+Router::get('/filtrar_despacho','DespachoControl@filtrar_despacho');
+Router::get('/noti_urgente_despacho','DespachoControl@mostrar_noti_urgencia');
+Router::post('/filtrar_fechaDespacho','DespachoControl@filtrar_fecha');
 
 ?>
