@@ -5,6 +5,10 @@ require_once 'modelo/DesarrolloModelo.php';
 require_once 'modelo/despachoModelo.php';
 class SolicitudControl {
     public static function lista(){
+        if (!isset($_SESSION['ci'])) {
+            header('Location: ' . BASE_URL . '/');
+            exit;
+        }
         $resultado = Solicitud::buscarLista();
         $datos = $resultado['exito'] ? $resultado['datos'] : [];
         // Agrupar notificaciones por categoría
