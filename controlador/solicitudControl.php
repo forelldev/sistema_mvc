@@ -167,7 +167,7 @@ class SolicitudControl {
                     $msj = 'Ocurrió un error!';
             }
             if(Procesar::solicitud($id_doc,$estado_new)){
-                header('Location: '.BASE_URL.'/solicitudes_list');
+                header('Location: '.BASE_URL.'/solicitudes_list?msj=Solicitud actualizada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);

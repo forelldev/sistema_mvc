@@ -159,7 +159,7 @@ $acciones = [
                         <span class="solicitud-estado 
                             <?php
                                 $estado = htmlspecialchars($fila['estado'] ?? '');
-                                if ($estado == 'En espera del documento físico para ser procesado 0/3') echo 'pendiente';
+                                if ($estado == 'En espera del documento físico para ser procesado 0/2') echo 'pendiente';
                                 else if ($estado == 'En Proceso 1/2') echo 'activo1';
                                 else if ($estado == 'En Proceso 2/2 (Sin entregar)') echo 'activo2';
                                 else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'finalizada';
@@ -211,10 +211,13 @@ $acciones = [
 </main>
 </body>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
-<?php if (isset($msj)): ?>
-        <script>
-            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
-        </script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
 <?php endif; ?>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

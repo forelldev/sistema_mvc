@@ -115,7 +115,7 @@
             }
             $res = Procesar::despacho($id_despacho,$estado_new);
             if($res['exito']){
-                header('Location: '.BASE_URL.'/despacho_list');
+                header('Location: '.BASE_URL.'/despacho_list?msj=Solicitud actualizada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $id_doc = $id_despacho;

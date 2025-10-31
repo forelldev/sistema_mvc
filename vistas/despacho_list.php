@@ -204,11 +204,15 @@ $acciones = [
     </main>
 </body>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
-<?php if (isset($msj)): ?>
-        <script>
-            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
-        </script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
 <?php endif; ?>
+
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
