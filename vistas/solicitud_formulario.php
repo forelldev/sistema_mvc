@@ -42,7 +42,7 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="telefono">Teléfono:</label>
-                    <input type="text" id="telefono" name="telefono" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Télefono del Beneficiario">
+                    <input type="text" id="telefono" name="telefono" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Télefono del Beneficiario" maxlength="12">
                 </div>
             </div>
             <div class="fila-formulario">
@@ -228,7 +228,7 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="ci">Cedula de Identidad:</label>
-                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($ci ?? '')?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($ci ?? '')?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
                 </div>
             </div>
             <div class="fila-formulario">
@@ -279,7 +279,7 @@
 </script>
 <?php if (isset($msj)): ?>
         <script>
-            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
+            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 20000);
         </script>
 <?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>

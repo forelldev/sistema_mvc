@@ -26,7 +26,7 @@
         <div class="titulo-header">Lista de solicitudes</div>
         <div class="header-right">
          <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
-            <a href="<?=BASE_URL?>/busqueda"><button class="principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+            <a href="<?=BASE_URL?>/busqueda"><button class="principal-btn"><i class="fa fa-plus"></i> Crear Solicitud</button></a>
         <?php } ?>
         <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
             <a href="<?=BASE_URL?>/inhabilitados_lista"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>
@@ -190,10 +190,19 @@
                         <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
                             <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
                         <?php endif; ?>
+                       <?php if ($fila['estado'] === 'Solicitud Finalizada (Ayuda Entregada)'): ?>
+                        <?php if ($_SESSION['id_rol'] == 4): ?>
+                            <a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
+                                <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
+                            </a>
+                        <?php endif; ?>
+                    <?php else: ?>
                         <a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
                             <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
                         </a>
-                    </div>
+                    <?php endif; ?>
+
+                        </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

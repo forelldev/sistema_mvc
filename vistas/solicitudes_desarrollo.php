@@ -24,7 +24,7 @@ $acciones = [
         <div class="titulo-header">Lista de solicitudes de Desarrollo Social</div>
         <div class="header-right">
          <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
-            <a href="<?=BASE_URL?>/buscar_desarrollo"><button class="principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+            <a href="<?=BASE_URL?>/buscar_desarrollo"><button class="principal-btn"><i class="fa fa-plus"></i> Crear Solicitud</button></a>
         <?php } ?>
         <?php if($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4){?>
             <a href="<?=BASE_URL?>/desarrollo_invalidos"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>

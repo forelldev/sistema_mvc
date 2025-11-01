@@ -23,7 +23,7 @@ $acciones = [
         <div class="titulo-header">Solicitudes internas de despacho</div>
         <div class="header-right">
             <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
-                <a href="<?=BASE_URL?>/despacho_busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Rellenar Formulario</button></a>
+                <a href="<?=BASE_URL?>/despacho_busqueda"><button class="nav-btn principal-btn"><i class="fa fa-plus"></i> Crear Solicitud</button></a>
                 <a href="<?=BASE_URL?>/inhabilitados_despacho"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas (Despacho)</button></a>
             <?php } ?>
             <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
@@ -181,10 +181,11 @@ $acciones = [
                                     <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="rechazar-btn">Inhabilitar</a>
                                     <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn"><?= $accion ?></a>
                                     <?php
-                                } elseif ($estado == 'En Proceso 2/2 (Sin entregar)' && $rol == 3) {
+                                } elseif ($estado == 'En Proceso 2/2 (Sin entregar)' && $_SESSION['id_rol'] == 3) {
+                                    $accion = isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida';
                                     // Rol 3 solo puede procesar
                                     ?>
-                                    <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn"><?= $accion ?></a>
+                                    <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn"><?= $accion ?></a>
                                     <?php
                                 }?>
                         </div>

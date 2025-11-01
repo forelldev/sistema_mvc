@@ -231,12 +231,34 @@ public static function buscarCi($ci) {
         return ['exito' => true, 'id_doc' => $id_doc];
 
     } catch (Exception $e) {
-        $db->rollBack();
-        error_log("Error al registrar solicitud: " . $e->getMessage());
-        return ['exito' => false, 'error' => $e->getMessage()];
-    }
-}
+            $db->rollBack();
 
+            // Captura información detallada del error
+            $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
+            $mensaje = $e->getMessage();
+            $codigo = $e->getCode();
+            $archivo = $e->getFile();
+            $linea = $e->getLine();
+
+            // Log detallado
+            error_log("⛔ ERROR PDO:");
+            error_log("Mensaje: $mensaje");
+            error_log("Código: $codigo");
+            error_log("Archivo: $archivo");
+            error_log("Línea: $linea");
+            if ($errorInfo) {
+                error_log("SQLSTATE: " . ($errorInfo[0] ?? ''));
+                error_log("Driver error: " . ($errorInfo[1] ?? ''));
+                error_log("Descripción: " . ($errorInfo[2] ?? ''));
+            }
+
+            return [
+                'exito' => false,
+                'error' => "Error en línea $linea: $mensaje"
+            ];
+        }
+
+    }
 
     private static function normalizarCamposTrabajo(&$data) {
         $data['trabajo'] = isset($data['trabajo']) && trim($data['trabajo']) !== '' ? $data['trabajo'] : 'No tiene';
@@ -247,184 +269,201 @@ public static function buscarCi($ci) {
 
 
     private static function actualizarSolicitante($db, $id, $data) {
-        // Actualizar solicitante
-        $db->prepare("
-            UPDATE solicitantes
-            SET nombre = ?, apellido = ?
-            WHERE id_solicitante = ?
-        ")->execute([$data['nombre'], $data['apellido'], $id]);
-        // Actualizar comunidad
-        $db->prepare("
-            UPDATE solicitantes_comunidad 
-            SET comunidad = ?, direc_habita = ?, estruc_base = ?
-            WHERE id_solicitante = ?
-        ")->execute([$data['comunidad'], $data['direc_habita'], $data['estruc_base'], $id]);
+    // Actualizar solicitante
+    $db->prepare("
+        UPDATE solicitantes
+        SET nombre = ?, apellido = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['nombre'], $data['apellido'], $id]);
 
-        // Actualizar conocimiento
-        $db->prepare("
-            UPDATE solicitantes_conocimiento 
-            SET profesion = ?, nivel_instruc = ?
-            WHERE id_solicitante = ?
-        ")->execute([$data['profesion'], $data['nivel_instruc'], $id]);
+    // Actualizar comunidad
+    $db->prepare("
+        UPDATE solicitantes_comunidad 
+        SET comunidad = ?, direc_habita = ?, estruc_base = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['comunidad'], $data['direc_habita'], $data['estruc_base'], $id]);
 
-        // Actualizar patria
-        $db->prepare("
-            UPDATE solicitantes_extra 
-            SET codigo_patria = ?, serial_patria = ?
-            WHERE id_solicitante = ?
-        ")->execute([$data['codigo_patria'], $data['serial_patria'], $id]);
+    // Actualizar conocimiento
+    $db->prepare("
+        UPDATE solicitantes_conocimiento 
+        SET profesion = ?, nivel_instruc = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['profesion'], $data['nivel_instruc'], $id]);
 
-        // Actualizar info personal
-        $db->prepare("
-            UPDATE solicitantes_info 
-            SET fecha_nacimiento = ?, lugar_nacimiento = ?, estado_civil = ?, telefono = ?
-            WHERE id_solicitante = ?
-        ")->execute([
-            $data['fecha_nacimiento'],
-            $data['lugar_nacimiento'],
-            $data['estado_civil'],
-            $data['telefono'],
-            $id
-        ]);
+    // Actualizar patria
+    $db->prepare("
+        UPDATE solicitantes_extra 
+        SET codigo_patria = ?, serial_patria = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['codigo_patria'], $data['serial_patria'], $id]);
 
-        // Actualizar propiedad
-        $db->prepare("
-            UPDATE solicitantes_propiedad 
-            SET propiedad = ?, propiedad_est = ?, observaciones_propiedad = ?
-            WHERE id_solicitante = ?
-        ")->execute([
-            $data['propiedad'],
-            $data['propiedad_est'],
-            $data['observaciones_propiedad'],
-            $id
-        ]);
+    // Actualizar info personal
+    $db->prepare("
+        UPDATE solicitantes_info 
+        SET fecha_nacimiento = ?, lugar_nacimiento = ?, estado_civil = ?, telefono = ?
+        WHERE id_solicitante = ?
+    ")->execute([
+        $data['fecha_nacimiento'],
+        $data['lugar_nacimiento'],
+        $data['estado_civil'],
+        $data['telefono'],
+        $id
+    ]);
 
-        // Actualizar trabajo
-        $db->prepare("
-            UPDATE solicitantes_trabajo 
-            SET trabajo = ?, direccion_trabajo = ?, trabaja_public = ?, nombre_insti = ?
-            WHERE id_solicitante = ?
-        ")->execute([
-            $data['trabajo'],
-            $data['direccion_trabajo'],
-            $data['trabaja_public'],
-            $data['nombre_insti'],
-            $id
-        ]);
+    // Actualizar propiedad
+    $db->prepare("
+        UPDATE solicitantes_propiedad 
+        SET propiedad = ?, propiedad_est = ?, observaciones_propiedad = ?
+        WHERE id_solicitante = ?
+    ")->execute([
+        $data['propiedad'],
+        $data['propiedad_est'],
+        $data['observaciones_propiedad'],
+        $id
+    ]);
 
-        // Actualizar ingresos
-        $db->prepare("
-            UPDATE solicitantes_ingresos 
-            SET nivel_ingreso = ?, pension = ?, bono = ?
-            WHERE id_solicitante = ?
-        ")->execute([
-            $data['nivel_ingreso'],
-            $data['pension'],
-            $data['bono'],
-            $id
-        ]);
+    // Actualizar trabajo
+    $db->prepare("
+        UPDATE solicitantes_trabajo 
+        SET trabajo = ?, direccion_trabajo = ?, trabaja_public = ?, nombre_insti = ?
+        WHERE id_solicitante = ?
+    ")->execute([
+        $data['trabajo'],
+        $data['direccion_trabajo'],
+        $data['trabaja_public'],
+        $data['nombre_insti'],
+        $id
+    ]);
 
-        // Actualizar patologías
-        $db->prepare("DELETE FROM solicitantes_patologia WHERE id_solicitante = ?")
-            ->execute([$id]);
+    // Actualizar ingresos
+    $db->prepare("
+        UPDATE solicitantes_ingresos 
+        SET nivel_ingreso = ?, pension = ?, bono = ?
+        WHERE id_solicitante = ?
+    ")->execute([
+        $data['nivel_ingreso'],
+        $data['pension'],
+        $data['bono'],
+        $id
+    ]);
 
-        if (!empty($data['tip_patologia']) && is_array($data['tip_patologia'])) {
-            $esSinPatologia = count($data['tip_patologia']) === 1 && strtolower($data['tip_patologia'][0]) === 'no';
-            if (!$esSinPatologia) {
-                foreach ($data['tip_patologia'] as $i => $tipo) {
-                    $nombre = $data['nom_patologia'][$i] ?? '';
-                    if (!empty($tipo) && !empty($nombre)) {
-                        $db->prepare("
-                            INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
-                            VALUES (?, ?, ?)
-                        ")->execute([$id, $tipo, $nombre]);
-                    }
-                }
+    // Actualizar patologías
+    $db->prepare("DELETE FROM solicitantes_patologia WHERE id_solicitante = ?")
+        ->execute([$id]);
+
+    $tipos = $data['tip_patologia'] ?? [];
+    $nombres = $data['nom_patologia'] ?? [];
+
+    if (!is_array($tipos)) $tipos = [$tipos];
+    if (!is_array($nombres)) $nombres = [$nombres];
+
+    $esSinPatologia = count($tipos) === 1 && strtolower(trim($tipos[0])) === 'no';
+
+    if (!$esSinPatologia) {
+        $total = min(count($tipos), count($nombres));
+        for ($i = 0; $i < $total; $i++) {
+            $tipo = trim($tipos[$i]);
+            $nombre = trim($nombres[$i] ?? '');
+            if ($tipo !== '' && $nombre !== '') {
+                $db->prepare("
+                    INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
+                    VALUES (?, ?, ?)
+                ")->execute([$id, $tipo, ucfirst($nombre)]);
             }
         }
     }
-    
-    private static function insertarSolicitante($db, $id, $data) {
-        // Insertar comunidad
-        $db->prepare("
-            INSERT INTO solicitantes_comunidad (id_solicitante, comunidad, direc_habita, estruc_base)
-            VALUES (?, ?, ?, ?)
-        ")->execute([$id, $data['comunidad'], $data['direc_habita'], $data['estruc_base']]);
+}
 
-        // Insertar conocimiento
-        $db->prepare("
-            INSERT INTO solicitantes_conocimiento (id_solicitante, profesion, nivel_instruc)
-            VALUES (?, ?, ?)
-        ")->execute([$id, $data['profesion'], $data['nivel_instruc']]);
 
-        // Insertar patria
-        $db->prepare("
-            INSERT INTO solicitantes_extra (id_solicitante, codigo_patria, serial_patria)
-            VALUES (?, ?, ?)
-        ")->execute([$id, $data['codigo_patria'], $data['serial_patria']]);
+private static function insertarSolicitante($db, $id, $data) {
+    // Insertar comunidad
+    $db->prepare("
+        INSERT INTO solicitantes_comunidad (id_solicitante, comunidad, direc_habita, estruc_base)
+        VALUES (?, ?, ?, ?)
+    ")->execute([$id, $data['comunidad'], $data['direc_habita'], $data['estruc_base']]);
 
-        // Insertar info personal
-        $db->prepare("
-            INSERT INTO solicitantes_info (id_solicitante, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ")->execute([
-            $id,
-            $data['fecha_nacimiento'],
-            $data['lugar_nacimiento'],
-            $data['estado_civil'],
-            $data['telefono']
-        ]);
+    // Insertar conocimiento
+    $db->prepare("
+        INSERT INTO solicitantes_conocimiento (id_solicitante, profesion, nivel_instruc)
+        VALUES (?, ?, ?)
+    ")->execute([$id, $data['profesion'], $data['nivel_instruc']]);
 
-        // Insertar propiedad
-        $db->prepare("
-            INSERT INTO solicitantes_propiedad (id_solicitante, propiedad, propiedad_est, observaciones_propiedad)
-            VALUES (?, ?, ?, ?)
-        ")->execute([
-            $id,
-            $data['propiedad'],
-            $data['propiedad_est'],
-            $data['observaciones_propiedad']
-        ]);
+    // Insertar patria
+    $db->prepare("
+        INSERT INTO solicitantes_extra (id_solicitante, codigo_patria, serial_patria)
+        VALUES (?, ?, ?)
+    ")->execute([$id, $data['codigo_patria'], $data['serial_patria']]);
 
-        // Insertar trabajo
-        $db->prepare("
-            INSERT INTO solicitantes_trabajo (id_solicitante, trabajo, direccion_trabajo, trabaja_public, nombre_insti)
-            VALUES (?, ?, ?, ?, ?)
-        ")->execute([
-            $id,
-            $data['trabajo'],
-            $data['direccion_trabajo'],
-            $data['trabaja_public'],
-            $data['nombre_insti']
-        ]);
+    // Insertar info personal
+    $db->prepare("
+        INSERT INTO solicitantes_info (id_solicitante, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono)
+        VALUES (?, ?, ?, ?, ?)
+    ")->execute([
+        $id,
+        $data['fecha_nacimiento'],
+        $data['lugar_nacimiento'],
+        $data['estado_civil'],
+        $data['telefono']
+    ]);
 
-        // Insertar ingresos
-        $db->prepare("
-            INSERT INTO solicitantes_ingresos (id_solicitante, nivel_ingreso, pension, bono)
-            VALUES (?, ?, ?, ?)
-        ")->execute([
-            $id,
-            $data['nivel_ingreso'],
-            $data['pension'],
-            $data['bono']
-        ]);
+    // Insertar propiedad
+    $db->prepare("
+        INSERT INTO solicitantes_propiedad (id_solicitante, propiedad, propiedad_est, observaciones_propiedad)
+        VALUES (?, ?, ?, ?)
+    ")->execute([
+        $id,
+        $data['propiedad'],
+        $data['propiedad_est'],
+        $data['observaciones_propiedad']
+    ]);
 
-        // Insertar patologías
-        if (!empty($data['tip_patologia']) && is_array($data['tip_patologia'])) {
-            $esSinPatologia = count($data['tip_patologia']) === 1 && strtolower($data['tip_patologia'][0]) === 'no';
-            if (!$esSinPatologia) {
-                foreach ($data['tip_patologia'] as $i => $tipo) {
-                    $nombre = $data['nom_patologia'][$i] ?? '';
-                    if (!empty($tipo) && !empty($nombre)) {
-                        $db->prepare("
-                            INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
-                            VALUES (?, ?, ?)
-                        ")->execute([$id, $tipo, $nombre]);
-                    }
-                }
+    // Insertar trabajo
+    $db->prepare("
+        INSERT INTO solicitantes_trabajo (id_solicitante, trabajo, direccion_trabajo, trabaja_public, nombre_insti)
+        VALUES (?, ?, ?, ?, ?)
+    ")->execute([
+        $id,
+        $data['trabajo'],
+        $data['direccion_trabajo'],
+        $data['trabaja_public'],
+        $data['nombre_insti']
+    ]);
+
+    // Insertar ingresos
+    $db->prepare("
+        INSERT INTO solicitantes_ingresos (id_solicitante, nivel_ingreso, pension, bono)
+        VALUES (?, ?, ?, ?)
+    ")->execute([
+        $id,
+        $data['nivel_ingreso'],
+        $data['pension'],
+        $data['bono']
+    ]);
+
+    // Insertar patologías
+    $tipos = $data['tip_patologia'] ?? [];
+    $nombres = $data['nom_patologia'] ?? [];
+
+    if (!is_array($tipos)) $tipos = [$tipos];
+    if (!is_array($nombres)) $nombres = [$nombres];
+
+    $esSinPatologia = count($tipos) === 1 && strtolower(trim($tipos[0])) === 'no';
+
+    if (!$esSinPatologia) {
+        $total = min(count($tipos), count($nombres));
+        for ($i = 0; $i < $total; $i++) {
+            $tipo = trim($tipos[$i]);
+            $nombre = trim($nombres[$i] ?? '');
+            if ($tipo !== '' && $nombre !== '') {
+                $db->prepare("
+                    INSERT INTO solicitantes_patologia (id_solicitante, tip_patologia, nom_patologia)
+                    VALUES (?, ?, ?)
+                ")->execute([$id, $tipo, ucfirst($nombre)]);
             }
         }
     }
+}
+
 
     public static function filtrar_solicitud($filtro){
         $conexion = DB::conectar();

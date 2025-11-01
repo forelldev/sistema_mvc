@@ -87,7 +87,7 @@
         <label for="cedula" class="form-label">Cédula:</label>
         <input type="text" name="ci" class="form-control" placeholder="Cédula"
           value="<?= htmlspecialchars($datos_beneficiario['solicitante']['ci'] ?? '') ?>"
-          <?= $readonly ? 'readonly' : '' ?> required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <?= $readonly ? 'readonly' : '' ?> required oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
       </div>
 
       <input type="hidden" name="tipo_ayuda" value="Otros">

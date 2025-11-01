@@ -87,65 +87,75 @@ require_once 'conexiondb.php';
     }
 
 
-    public static function mostrar_notificaciones_despacho() {
-        try {
-            $conexion = DB::conectar();
-            $resultadoFinal = [];
+   public static function mostrar_notificaciones_despacho() {
+            try {
+                $conexion = DB::conectar();
+                $resultadoFinal = [];
 
-            $consultaDespacho = "
-                SELECT 
-                    d.*, 
-                    di.*, 
-                    df.*,
-                    dc.*
-                FROM despacho d
-                LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
-                LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
-                LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
-                WHERE df.visto = 0
-                AND d.invalido = 0
-                ORDER BY df.fecha DESC
-            ";
+                $rol = $_SESSION['id_rol'] ?? null;
 
-            $busquedaDespacho = $conexion->prepare($consultaDespacho);
-            $busquedaDespacho->execute();
-            $resultadoDespacho = $busquedaDespacho->fetchAll(PDO::FETCH_ASSOC);
+                // Base de la consulta
+                $consultaDespacho = "
+                    SELECT 
+                        d.*, 
+                        di.*, 
+                        df.*,
+                        dc.*
+                    FROM despacho d
+                    LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+                    LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                    LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                    WHERE df.visto = 0
+                    AND d.invalido = 0
+                ";
 
-            if ($resultadoDespacho) {
-                // Asignar id_doc a cada notificación individual
-                foreach ($resultadoDespacho as &$item) {
-                    $item['id_doc'] = $item['id_despacho'];
+                // Filtro adicional según el rol
+                if ($rol == 3) {
+                    $consultaDespacho .= " AND d.estado = 'En Proceso 2/2 (Sin entregar)'";
                 }
-                unset($item); // buena práctica para evitar referencias residuales
 
-                $resultadoFinal['despacho'] = [
-                    'tabla' => 'despacho_fecha',
-                    'id_name' => 'id_despacho',
-                    'datos' => $resultadoDespacho
-                ];
-            }
+                // Orden final
+                $consultaDespacho .= " ORDER BY df.fecha DESC";
 
+                // Ejecutar
+                $busquedaDespacho = $conexion->prepare($consultaDespacho);
+                $busquedaDespacho->execute();
+                $resultadoDespacho = $busquedaDespacho->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!empty($resultadoFinal)) {
-                return [
-                    'exito' => true,
-                    'datos' => $resultadoFinal
-                ];
-            } else {
+                if ($resultadoDespacho) {
+                    foreach ($resultadoDespacho as &$item) {
+                        $item['id_doc'] = $item['id_despacho'];
+                    }
+                    unset($item);
+
+                    $resultadoFinal['despacho'] = [
+                        'tabla' => 'despacho_fecha',
+                        'id_name' => 'id_despacho',
+                        'datos' => $resultadoDespacho
+                    ];
+                }
+
+                if (!empty($resultadoFinal)) {
+                    return [
+                        'exito' => true,
+                        'datos' => $resultadoFinal
+                    ];
+                } else {
+                    return [
+                        'exito' => false,
+                        'mensaje' => 'No se encontraron notificaciones'
+                    ];
+                }
+
+            } catch (Exception $e) {
+                error_log("Error al obtener notificaciones de despacho: " . $e->getMessage());
                 return [
                     'exito' => false,
-                    'mensaje' => 'No se encontraron notificaciones'
+                    'mensaje' => 'Error al obtener notificaciones: ' . $e->getMessage()
                 ];
             }
-
-        } catch (Exception $e) {
-            error_log("Error al obtener notificaciones de despacho: " . $e->getMessage());
-            return [
-                'exito' => false,
-                'mensaje' => 'Error al obtener notificaciones: ' . $e->getMessage()
-            ];
         }
-    }
+
 
     public static function mostrar_notificaciones_desarrollo() {
         try {

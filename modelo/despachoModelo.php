@@ -3,9 +3,12 @@ require_once 'conexiondb.php';
 require_once 'correoModelo.php';
 class Despacho{
        // MOSTRAR LISTA DE SOLICITUDES DE DESPACHO:
-    public static function buscarLista (){
-        $conexion = DB::conectar();
-        $consulta = "
+    public static function buscarLista() {
+            $conexion = DB::conectar();
+            $rol = $_SESSION['id_rol'] ?? null;
+
+            // Base de la consulta
+            $consulta = "
                 SELECT 
                     d.*, 
                     di.*,
@@ -18,25 +21,34 @@ class Despacho{
                 LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
                 LEFT JOIN solicitantes sol ON d.ci = sol.ci
                 WHERE d.invalido = 0
-                ORDER BY df.fecha DESC
             ";
-        $busqueda = $conexion->prepare($consulta);
-        $busqueda->execute();
-        $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
+
+            // Filtro adicional según el rol
+            if ($rol == 3) {
+                $consulta .= " AND d.estado = 'En Proceso 2/2 (Sin Entregar)'";
+            }
+
+            // Orden final
+            $consulta .= " ORDER BY df.fecha DESC";
+
+            // Ejecutar
+            $busqueda = $conexion->prepare($consulta);
+            $busqueda->execute();
+            $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
+
             if ($resultado) {
-                // Usuario encontrado, devolver datos
                 return [
                     'exito' => true,
                     'datos' => $resultado
                 ];
             } else {
-                // No se encontró el usuario
                 return [
                     'exito' => false,
                     'mensaje' => 'Ocurrió un error realizando la búsqueda'
                 ];
             }
-    }
+        }
+
     // BUSCAR POR CEDULA DE IDENTIDAD CUANDO SE BUSQUE ANTES DE RELLENAR FORMULARIO
     public static function buscarCi($ci) {
             $db = DB::conectar();

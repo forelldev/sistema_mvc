@@ -48,7 +48,7 @@ class LoginControl {
         }
 
         // Notificaciones de despacho y master (solo rol 2 y 4)
-        if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4) {
+        if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 3 || $_SESSION['id_rol'] == 4) {
             $notificaciones_despacho = Notificaciones::mostrar_notificaciones_despacho();
             if ($notificaciones_despacho['exito']) {
                 $datos['despacho'] = $notificaciones_despacho['datos']['despacho'];

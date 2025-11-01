@@ -37,13 +37,13 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="telefono">Teléfono:</label>
-                    <input type="text" id="telefono" name="telefono" value="<?= $datos_beneficiario['info']['telefono'] ?? '' ?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="text" id="telefono" name="telefono" value="<?= $datos_beneficiario['info']['telefono'] ?? '' ?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="12">
                 </div>
             </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="ci">Cedula de Identidad:</label>
-                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos_beneficiario['solicitante']['ci'] ?? '') ?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos_beneficiario['solicitante']['ci'] ?? '') ?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
                 </div>
                 <div class="campo-formulario">
                     <label for="direc_habita">Dirección:</label>
