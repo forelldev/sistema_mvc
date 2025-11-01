@@ -254,7 +254,7 @@ public static function buscarCi($ci) {
 
             return [
                 'exito' => false,
-                'error' => "Error en línea $linea: $mensaje"
+                'error' => "$mensaje"
             ];
         }
 
