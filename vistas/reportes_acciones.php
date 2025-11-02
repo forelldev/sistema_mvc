@@ -49,20 +49,47 @@
                 <th>Fecha de la acción</th>
                 <th>Hora de la acción</th>
                 <th>Acción</th>
+                <th>Número de documento</th>
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($datos)):  ?>
+          <?php if (!empty($datos)): ?>
                 <?php foreach ($datos as $fila): ?>
-                    <tr>
-                        <td class="col-id"><?= htmlspecialchars($fila['id']) ?></td>
-                        <td class="col-ci"><?= htmlspecialchars($fila['ci']) ?></td>
-                        <td class="col-nombre"><?= htmlspecialchars($fila['nombre']) ?></td>
-                        <td class="auditoria-fecha"><?= date('d-m-Y', strtotime($fila['fecha'])) ?></td>
-                        <td class="auditoria-fecha"><?= date('g:i A', strtotime($fila['fecha'])) ?></td>
-                        <td class="text-start"><?= htmlspecialchars($fila['accion']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
+                        <?php
+                            $id = htmlspecialchars($fila['id']);
+                            $ci = htmlspecialchars($fila['ci']);
+                            $nombre = htmlspecialchars($fila['nombre']);
+                            $fecha = date('d-m-Y', strtotime($fila['fecha']));
+                            $hora = date('g:i A', strtotime($fila['fecha']));
+                            $accion = htmlspecialchars($fila['accion']);
+                            $id_manual = htmlspecialchars($fila['id_manual']);
+                            $origen = $fila['origen'] ?? 'solicitud';
+
+                            $direccion = match ($origen) {
+                                'despacho' => 'despacho',
+                                'desarrollo' => 'desarrollo',
+                                default => 'solicitud'
+                            };
+
+                            $queryParams = http_build_query([
+                                'filtro_busqueda' => $id_manual,
+                                'direccion' => $direccion
+                            ]);
+
+                            $url = BASE_URL . "/filtrar_busqueda?" . $queryParams;
+                        ?>
+                        <tr>
+                            <td class="col-id"><?= $id ?></td>
+                            <td class="col-ci"><?= $ci ?></td>
+                            <td class="col-nombre"><?= $nombre ?></td>
+                            <td class="auditoria-fecha"><?= $fecha ?></td>
+                            <td class="auditoria-fecha"><?= $hora ?></td>
+                            <td class="text-start"><?= $accion ?></td>
+                            <td><?= $id_manual ?></td>
+                            <td><a href="<?= htmlspecialchars($url) ?>">Ver Solicitud</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+
             <?php else: ?>
                 <tr>
                 <td colspan="7">No hay información disponible.</td>

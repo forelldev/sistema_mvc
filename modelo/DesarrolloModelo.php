@@ -820,9 +820,12 @@ class Desarrollo {
                     LEFT JOIN solicitantes sol ON sd.ci = sol.ci
                     WHERE 
                         sd.ci LIKE :filtro OR
+                        sd.id_manual LIKE :filtro OR
                         sd.estado LIKE :filtro OR
                         sdt.categoria LIKE :filtro OR
                         sdi.descripcion LIKE :filtro OR
+                        CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
+                        CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
                         sol.nombre LIKE :filtro OR
                         sol.apellido LIKE :filtro
                 ";

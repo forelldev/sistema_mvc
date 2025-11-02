@@ -80,6 +80,7 @@ Router::post('/editar_desarrollo','DesarrolloControl@editar_solicitud');
 Router::get('/filtrar_desarrollo','DesarrolloControl@filtrar_desarrollo');
 Router::get('/mostrar_noti_urgencia','DesarrolloControl@mostrar_noti_urgencia');
 Router::post('/filtro_buscar','SolicitudControl@filtrar_busqueda');
+Router::get('/filtrar_busqueda','SolicitudControl@filtrar_busqueda');
 Router::get('/solicitud_urgencia','SolicitudControl@solicitud_urgencia');
 Router::get('/estadisticas_solicitudes_desarrollo','EstadisticasControl@estadisticas_solicitudes_desarrollo');
 Router::get('/estadisticas_solicitudes_despacho','EstadisticasControl@estadisticas_solicitudes_despacho');
@@ -88,4 +89,6 @@ Router::get('/direccion_solicitud','SolicitudControl@direccion_solicitud');
 Router::get('/filtrar_despacho','DespachoControl@filtrar_despacho');
 Router::get('/noti_urgente_despacho','DespachoControl@mostrar_noti_urgencia');
 Router::post('/filtrar_fechaDespacho','DespachoControl@filtrar_fecha');
+Router::get('/beneficiario_desarrollo','beneficiarioControl@beneficiario_desarrollo');
+Router::get('/beneficiario_despacho','beneficiarioControl@beneficiario_despacho');
 ?>

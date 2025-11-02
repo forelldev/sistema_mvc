@@ -44,15 +44,26 @@
                     </div>
                     <div class="solicitud-actions">
                         <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
-                        <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-                        <a href="<?= BASE_URL.'/editarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="aprobar-btn">Editar</a>
-                        <?php endif; ?>
-                        <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                            <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.$fila['id_despacho'] ?>" class="rechazar-btn">Inhabilitar</a>
-                        <?php endif; ?>
-                        <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.$fila['id_despacho'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
-                            <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
-                        </a>
+                        <?php
+                                $estado_actual = $fila['estado'] ?? '';
+                                $id_rol = $_SESSION['id_rol'] ?? null;
+                                $puedeEditar = ($id_rol == 4) || ($id_rol == 2 && strpos($estado_actual, 'En Revisión 1/2') === 0);
+                                $puedeInhabilitar = ($id_rol == 4) || ($id_rol == 2 && $estado_actual === 'En Revisión 1/2');
+                                $puedeProcesar = $puedeInhabilitar || ($id_rol == 3 && $estado_actual === 'En Proceso 2/2 (Sin entregar)');
+
+                                if ($puedeEditar): ?>
+                                    <a href="<?= BASE_URL.'/editarDespacho?id_despacho='.urlencode($fila['id_despacho']) ?>" class="aprobar-btn">Editar</a>
+                                <?php endif; ?>
+
+                                <?php if ($puedeInhabilitar): ?>
+                                    <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.urlencode($fila['id_despacho']) ?>" class="rechazar-btn">Inhabilitar</a>
+                                <?php endif; ?>
+
+                                <?php if ($puedeProcesar): ?>
+                                    <a href="<?= BASE_URL.'/procesarDespacho?id_despacho='.urlencode($fila['id_despacho']).'&estado='.urlencode($estado_actual) ?>" class="aprobar-btn">
+                                        <?= isset($acciones[$estado_actual]) ? htmlspecialchars($acciones[$estado_actual]) : 'Acción desconocida'; ?>
+                                    </a>
+                                <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>

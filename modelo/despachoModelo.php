@@ -403,9 +403,12 @@ class Despacho{
                 LEFT JOIN solicitantes sol ON d.ci = sol.ci
                 WHERE 
                     d.ci LIKE :filtro OR
+                    d.id_manual LIKE :filtro OR
                     d.estado LIKE :filtro OR
                     dc.categoria LIKE :filtro OR
                     di.descripcion LIKE :filtro OR
+                    CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
+                    CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
                     sol.nombre LIKE :filtro OR
                     sol.apellido LIKE :filtro
             ";

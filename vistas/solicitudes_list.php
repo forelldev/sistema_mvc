@@ -31,7 +31,11 @@
         <?php if($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4){?>
             <a href="<?=BASE_URL?>/inhabilitados_lista"><button class="nav-btn"><i class="fa fa-eye-slash"></i> Ver Solicitudes Inhabilitadas</button></a>
         <?php } ?>
-      <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+        <?php
+            $volver_url = isset($_GET['direccion']) ? BASE_URL . '/reportes_acciones' : BASE_URL . '/main';
+        ?>
+            <a href="<?= $volver_url ?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+
       
          <button class="notificaciones-btn" id="btn-notificaciones">
                 <i class="fas fa-bell"></i> Notificaciones Urgentes

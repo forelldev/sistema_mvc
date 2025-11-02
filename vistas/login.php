@@ -30,12 +30,19 @@
     </section>
 </body>
 <!-- Copiar y pegar para los mensajes de error, se puede cambiar el "error" por "info" -->
-<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
-    <?php if (isset($_GET['msj'])): ?> mostrarMensaje("<?= htmlspecialchars($_GET['msj']) ?>", "info", 6500);
-    <?php endif; ?>
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/contra.js"></script>
 </html>

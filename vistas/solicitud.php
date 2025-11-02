@@ -16,7 +16,6 @@
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
-    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
      <main class="solicitudes-main">
 <section class="solicitudes-lista">
     <?php if (!empty($datos)): ?>
@@ -48,15 +47,35 @@
                     </div>
                     <div class="solicitud-actions">
                         <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
-                        <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-                        <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
-                        <?php endif; ?>
-                        <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                            <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
-                        <?php endif; ?>
-                        <a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
-                            <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
-                        </a>
+                        <?php
+                            $estado_actual = $fila['estado'] ?? '';
+                            $id_rol = $_SESSION['id_rol'] ?? null;
+
+                            // ✅ Condiciones
+                            $puedeEditar = ($id_rol == 4) || ($id_rol == 1 && $estado_actual === 'En espera del documento físico para ser procesado 0/3');
+                            $puedeInhabilitar = ($id_rol == 4) || ($id_rol == 2 && $estado_actual === 'En Proceso 2/3');
+                            $puedeProcesar = (
+                                $id_rol == 4 ||
+                                ($id_rol == 1 && in_array($estado_actual, ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3'])) ||
+                                ($id_rol == 2 && $estado_actual === 'En Proceso 2/3') ||
+                                ($id_rol == 3 && $estado_actual === 'En Proceso 3/3 (Sin entregar)')
+                            );
+                            ?>
+
+                            <?php if ($puedeEditar): ?>
+                                <a href="<?= BASE_URL.'/editar?id_doc='.urlencode($fila['id_doc']) ?>" class="aprobar-btn">Editar</a>
+                            <?php endif; ?>
+
+                            <?php if ($puedeInhabilitar): ?>
+                                <a href="<?= BASE_URL.'/inhabilitar?id_doc='.urlencode($fila['id_doc']) ?>" class="rechazar-btn">Inhabilitar</a>
+                            <?php endif; ?>
+
+                            <?php if ($puedeProcesar): ?>
+                                <a href="<?= BASE_URL.'/procesar?id_doc='.urlencode($fila['id_doc']).'&estado='.urlencode($estado_actual) ?>" class="aprobar-btn">
+                                    <?= isset($acciones[$estado_actual]) ? htmlspecialchars($acciones[$estado_actual]) : 'Acción desconocida'; ?>
+                                </a>
+                            <?php endif; ?>
+
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -75,6 +94,15 @@
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

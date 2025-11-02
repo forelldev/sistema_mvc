@@ -256,34 +256,155 @@ class BeneficiarioModelo{
             ];
         }
     }
+public static function mostrar_solicitudes($ci){
+    try {
+        $conexion = DB::conectar();
 
-    public static function mostrar_solicitudes($ci){
-        try{
-            $conexion = DB::conectar();
-            $stmt = $conexion->prepare("SELECT sa.*,sf.*,si.*,sc.*,sd.*,sol.* FROM solicitud_ayuda sa 
-            LEFT JOIN solicitud_ayuda_fecha sf ON sa.id_doc = sf.id_doc
-            LEFT JOIN solicitud_ayuda_invalido si ON sa.id_doc = si.id_doc
+        $stmt = $conexion->prepare("
+            SELECT 
+                sa.id_doc AS id,
+                sa.id_manual,
+                sa.ci,
+                CONCAT(sa.estado, '. Solicitud General') AS estado,
+                sa.estado AS estado_base,
+                sa.invalido,
+                COALESCE(saf.fecha, NOW()) AS fecha,
+                sad.descripcion,
+                sc.categoria,
+                sc.tipo_ayuda,
+                sol.nombre,
+                sol.apellido,
+                sad.promotor,
+                sad.observaciones
+            FROM solicitud_ayuda sa
+            LEFT JOIN (
+                SELECT id_doc, MAX(fecha) AS fecha
+                FROM solicitud_ayuda_fecha
+                GROUP BY id_doc
+            ) saf ON sa.id_doc = saf.id_doc
+            LEFT JOIN solicitud_descripcion sad ON sa.id_doc = sad.id_doc
             LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
-            LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
-            LEFT JOIN solicitantes sol ON sa.ci = sol.ci 
-            WHERE sa.ci = :ci");
-            $stmt->execute([':ci' => $ci]);
-            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return [
+            LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+            WHERE sa.ci = :ci
+            ORDER BY saf.fecha DESC
+        ");
+
+        $stmt->execute([':ci' => $ci]);
+        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
             'exito' => true,
             'datos' => $resultado
-            ];
-        }
-        catch (Exception $e){
-            error_log("Error en mostrar las solicitudes del beneficiario: ".$e->getMessage());
-            return[
-                'exito' => false,
-                'error' => 'Ocurrió un error en mostrar la solicitud'
-            ];
-        }
+        ];
+    } catch (Exception $e) {
+        error_log("❌ Error en mostrar solicitudes generales: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'error' => 'Ocurrió un error al consultar las solicitudes generales'
+        ];
     }
+}
+    public static function mostrar_solicitudes_despacho($ci){
+    try {
+        $conexion = DB::conectar();
 
+        $stmt = $conexion->prepare("
+            SELECT 
+                d.id_despacho AS id,
+                d.id_manual,
+                d.ci,
+                CONCAT(d.estado, '. Despacho') AS estado,
+                d.estado AS estado_base,
+                d.invalido,
+                COALESCE(df.fecha, NOW()) AS fecha,
+                di.descripcion,
+                dc.categoria,
+                dc.tipo_ayuda,
+                sol.nombre,
+                sol.apellido,
+                di.creador AS promotor,
+                '' AS observaciones
+            FROM despacho d
+            LEFT JOIN (
+                SELECT id_despacho, MAX(fecha) AS fecha
+                FROM despacho_fecha
+                GROUP BY id_despacho
+            ) df ON d.id_despacho = df.id_despacho
+            LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
+            LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+            LEFT JOIN solicitantes sol ON d.ci = sol.ci
+            WHERE d.ci = :ci
+            ORDER BY df.fecha DESC
+        ");
+
+        $stmt->execute([':ci' => $ci]);
+        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'exito' => true,
+            'datos' => $resultado
+        ];
+    } catch (Exception $e) {
+        error_log("❌ Error en mostrar solicitudes de despacho: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'error' => 'Ocurrió un error al consultar las solicitudes de despacho'
+        ];
+    }
+}
+
+public static function mostrar_solicitudes_desarrollo($ci){
+    try {
+        $conexion = DB::conectar();
+
+        $stmt = $conexion->prepare("
+            SELECT 
+                sd.id_des AS id,
+                sd.id_manual,
+                sd.ci,
+                CONCAT(sd.estado, '. Solicitud Desarrollo') AS estado,
+                sd.estado AS estado_base,
+                sd.invalido,
+                COALESCE(sdf.fecha, NOW()) AS fecha,
+                sdi.descripcion,
+                sdt.categoria,
+                'Desarrollo Social' AS tipo_ayuda,
+                sol.nombre,
+                sol.apellido,
+                sdi.creador AS promotor,
+                '' AS observaciones
+            FROM solicitud_desarrollo sd
+            LEFT JOIN (
+                SELECT id_des, MAX(fecha) AS fecha
+                FROM solicitud_desarrollo_fecha
+                GROUP BY id_des
+            ) sdf ON sd.id_des = sdf.id_des
+            LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+            LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+            LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+            WHERE sd.ci = :ci
+            ORDER BY sdf.fecha DESC
+        ");
+
+        $stmt->execute([':ci' => $ci]);
+        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'exito' => true,
+            'datos' => $resultado
+        ];
+    } catch (Exception $e) {
+        error_log("❌ Error en mostrar solicitudes de desarrollo: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'error' => 'Ocurrió un error al consultar las solicitudes de desarrollo'
+        ];
+    }
+}
 
 
 }
+
+
+
 ?>

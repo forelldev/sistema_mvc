@@ -39,11 +39,11 @@ class reportesModelo{
             $conexion = DB::conectar();
             $offset = ($pagina - 1) * $porPagina;
 
-            // Obtener total de registros
+            // Total de registros
             $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
             $totalRegistros = $totalConsulta->fetchColumn();
 
-            // Obtener registros paginados
+            // Registros paginados
             $consulta = "
                 SELECT ra.*, ui.nombre
                 FROM reportes_acciones ra
@@ -57,10 +57,51 @@ class reportesModelo{
             $stmt->execute();
             $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+            $datosFiltrados = [];
+
+            foreach ($datos as $fila) {
+                $id_doc = $fila['id_doc'];
+                $accion = strtolower($fila['accion']);
+
+                // Extraer tipo entre paréntesis
+                preg_match('/\((.*?)\)/', $accion, $match);
+                $tipo = strtolower(trim($match[1] ?? 'general'));
+
+                switch ($tipo) {
+                    case 'despacho':
+                        $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
+                        $fila['origen'] = 'despacho';
+                        break;
+                    case 'desarrollo':
+                        $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
+                        $fila['origen'] = 'desarrollo';
+                        break;
+                    default:
+                        $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
+                        $fila['origen'] = 'general';
+                        break;
+                }
+
+                $stmtManual = $conexion->prepare($query);
+                $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
+                $stmtManual->execute();
+                $id_manual = $stmtManual->fetchColumn();
+
+                if ($id_manual) {
+                    $fila['id_manual'] = $id_manual;
+                    $datosFiltrados[] = $fila;
+                } else {
+                    // Eliminar el reporte si no se encontró id_manual
+                    $stmtDelete = $conexion->prepare("DELETE FROM reportes_acciones WHERE id = :id");
+                    $stmtDelete->bindValue(':id', $fila['id'], PDO::PARAM_INT);
+                    $stmtDelete->execute();
+                }
+            }
+
             return [
                 'exito' => true,
-                'datos' => $datos,
-                'total' => $totalRegistros,
+                'datos' => $datosFiltrados,
+                'total' => count($datosFiltrados),
                 'pagina' => $pagina,
                 'porPagina' => $porPagina
             ];
@@ -68,6 +109,8 @@ class reportesModelo{
             return ['exito' => false, 'mensaje' => $e->getMessage()];
         }
     }
+
+
 
 
     public static function mostrarLimites() {

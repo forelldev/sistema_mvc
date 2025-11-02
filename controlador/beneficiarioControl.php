@@ -89,5 +89,39 @@ Class BeneficiarioControl {
         require_once 'vistas/beneficiario_solicitudes.php';
     }
 
+    public static function beneficiario_desarrollo(){
+        if(isset($_GET['ci'])){
+            $ci = $_GET['ci'];
+            $res = BeneficiarioModelo::mostrar_solicitudes_desarrollo($ci);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+        }
+        else{
+            $msj = 'Error al recibir "CI"';
+        }
+        require_once 'vistas/beneficiario_solicitudes_desarrollo.php';
+    }
+
+    public static function beneficiario_despacho(){
+        if(isset($_GET['ci'])){
+            $ci = $_GET['ci'];
+            $res = BeneficiarioModelo::mostrar_solicitudes_despacho($ci);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'Ocurrió un error: '.$res['error'];
+            }
+        }
+        else{
+            $msj = 'Error al recibir "CI"';
+        }
+        require_once 'vistas/beneficiario_solicitudes_despacho.php';
+    }
+
 }
 ?>

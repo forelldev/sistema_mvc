@@ -114,6 +114,10 @@ require_once 'conexiondb.php';
                     $consultaDespacho .= " AND d.estado = 'En Proceso 2/2 (Sin entregar)'";
                 }
 
+                 if ($rol == 2) {
+                    $consultaDespacho .= " AND (d.estado = 'En Revisión 1/2' OR d.estado = 'Solicitud Finalizada (Ayuda Entregada)')";
+                }
+
                 // Orden final
                 $consultaDespacho .= " ORDER BY df.fecha DESC";
 
@@ -166,13 +170,9 @@ require_once 'conexiondb.php';
                 SELECT 
                     sd.*, 
                     sdi.*,
-                    sdt.*,
-                    sdl.*,
                     sdf.*
                 FROM solicitud_desarrollo sd
                 LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
-                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
-                LEFT JOIN solicitud_desarrollo_laboratorio sdl ON sd.id_des = sdl.id_des
                 LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
                 WHERE sdf.visto = 0
                 AND sd.invalido = 0

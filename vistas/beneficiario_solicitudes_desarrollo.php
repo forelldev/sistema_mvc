@@ -50,8 +50,8 @@ function procesarSolicitud($fila, $acciones) {
 </head>
 <body class="solicitud-body">
     <header class="header">
-        <div class="titulo-header">Lista de solicitudes generales del beneficiario: <?= htmlspecialchars(($datos[0]['nombre'] ?? '') . ' ' . ($datos[0]['apellido'] ?? '')) ?></div>
-            <a href="<?= BASE_URL ?>/beneficiario_desarrollo?ci=<?=$datos[0]['ci']?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes de desarrollo</button></a>
+        <div class="titulo-header">Lista de solicitudes del beneficiario: <?= htmlspecialchars(($datos[0]['nombre'] ?? '') . ' ' . ($datos[0]['apellido'] ?? '')) ?></div>
+            <a href="<?= BASE_URL ?>/solicitudes_beneficiario?ci=<?=$datos[0]['ci']?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes generales</button></a>
             <a href="<?= BASE_URL ?>/beneficiario_despacho?ci=<?=$datos[0]['ci']?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes de despacho</button></a>
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
@@ -86,12 +86,12 @@ function procesarSolicitud($fila, $acciones) {
                     <div class="solicitud-actions">
                         <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= urlencode($fila['ci']) ?>" class="aprobar-btn">Ver Información del beneficiario</a>
                         <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-                            <a href="<?= BASE_URL.'/editar?id_doc='.urlencode($info['id']) ?>" class="aprobar-btn">Editar</a>
+                            <a href="<?= BASE_URL.'/editarDesarrollo?id_doc='.urlencode($info['id']) ?>" class="aprobar-btn">Editar</a>
                         <?php endif; ?>
                         <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                            <a href="<?= BASE_URL.'/inhabilitar?id_doc='.urlencode($info['id']) ?>" class="rechazar-btn">Inhabilitar</a>
+                            <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_doc='.urlencode($info['id']) ?>" class="rechazar-btn">Inhabilitar</a>
                         <?php endif; ?>
-                        <a href="<?= BASE_URL.'/procesar?id_doc='.urlencode($info['id']).'&estado='.urlencode($info['estado_base']) ?>" class="aprobar-btn">
+                        <a href="<?= BASE_URL.'/procesarDesarrollo?id_doc='.urlencode($info['id']).'&estado='.urlencode($info['estado_base']) ?>" class="aprobar-btn">
                             <?= htmlspecialchars($info['accion']) ?>
                         </a>
                     </div>

@@ -810,30 +810,36 @@ private static function insertarSolicitante($db, $id, $data) {
             $conexion = DB::conectar();
 
             $consulta = "
-                SELECT 
-                    sa.*,
-                    sai.*,
-                    sac.correo_enviado,
-                    sc.*,
-                    sd.*,
-                    saf.*,
-                    sol.nombre AS nombre,
-                    sol.apellido AS apellido
-                FROM solicitud_ayuda sa
-                LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
-                LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
-                LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
-                LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
-                LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
-                LEFT JOIN solicitantes sol ON sa.ci = sol.ci
-                WHERE 
-                    sa.ci LIKE :filtro OR
-                    sa.estado LIKE :filtro OR
-                    sc.categoria LIKE :filtro OR
-                    sd.descripcion LIKE :filtro OR
-                    sol.nombre LIKE :filtro OR
-                    sol.apellido LIKE :filtro
-            ";
+                            SELECT 
+                                sa.*,
+                                sai.*,
+                                sac.correo_enviado,
+                                sc.*,
+                                sd.*,
+                                saf.*,
+                                sol.nombre AS nombre,
+                                sol.apellido AS apellido
+                            FROM solicitud_ayuda sa
+                            LEFT JOIN solicitud_ayuda_invalido sai ON sa.id_doc = sai.id_doc
+                            LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+                            LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+                            LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+                            LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+                            LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+                            WHERE (
+                                sa.ci LIKE :filtro OR
+                                sa.id_manual LIKE :filtro OR
+                                sa.estado LIKE :filtro OR
+                                sc.categoria LIKE :filtro OR
+                                sc.tipo_ayuda LIKE :filtro OR
+                                sd.descripcion LIKE :filtro OR
+                                sd.promotor LIKE :filtro OR
+                                CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
+                                CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
+                                sol.nombre LIKE :filtro OR
+                                sol.apellido LIKE :filtro
+                            )
+                        ";
 
             $stmt = $conexion->prepare($consulta);
             $busqueda = '%' . $filtro . '%';

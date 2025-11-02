@@ -126,7 +126,6 @@
     
     <main>
         <section class="main-content">
-            <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
             <div class="card desc-section">
                 <h1>Descripción del Programa</h1>
                 <p>
@@ -152,6 +151,15 @@
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/dropdown.js"></script>
 <script src="<?= BASE_URL ?>/public/js/notificacionAdministrador.js"></script>

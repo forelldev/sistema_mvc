@@ -44,6 +44,10 @@
         </select>
       </div>
 
+      <!-- Campo dinámico para exámenes -->
+      <div id="campo_examen" class="mb-3" style="display: none;"></div>
+
+
       <!-- Campos de texto -->
       <div class="mb-3">
         <label for="id_manual" class="form-label">Número de documento:</label>
@@ -94,7 +98,7 @@
       </div>
     </form>
   </div>
-<script src="<?= BASE_URL?>/public/reenvio_form.js"></script>
+<script src="<?= BASE_URL?>/public/js/reenvio_form.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
@@ -107,6 +111,6 @@ if ($mensaje):
     mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 6000);
 </script>
 <?php endif; ?>
-<script src="<?= BASE_URL ?>/public/js/solicitud_urgencia.js"></script>
+<script src="<?= BASE_URL?>/public/js/laboratorio_desarrollo.js"></script>
 </body>
 </html>

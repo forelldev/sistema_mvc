@@ -316,10 +316,9 @@ class SolicitudControl {
     }
 
     public static function filtrar_busqueda() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $filtro_busqueda = $_POST['filtro_busqueda'] ?? '';
-            $direccion = $_POST['direccion'] ?? '';
-
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+            $filtro_busqueda = $_POST['filtro_busqueda'] ?? $_GET['filtro_busqueda'] ?? '';
+            $direccion = $_POST['direccion'] ?? $_GET['direccion'] ?? '';
             switch ($direccion) {
                 case 'despacho':
                     $resultado = Despacho::buscar_filtro($filtro_busqueda);
@@ -328,7 +327,7 @@ class SolicitudControl {
 
                 case 'desarrollo':
                     $resultado = Desarrollo::buscar_filtro($filtro_busqueda);
-                    $vista = 'vistas/desarrollo_list.php';
+                    $vista = 'vistas/solicitudes_desarrollo.php';
                     break;
 
                 case 'solicitud':

@@ -1,6 +1,7 @@
 <?php 
 require_once 'modelo/loginModel.php';
 require_once 'modelo/notificacionesModelo.php';
+require_once 'modelo/procesarModelo.php';
 class LoginControl {
     public function ingresar() {
         // Verifica si la sesión ya está iniciada antes de llamar a session_start
@@ -171,101 +172,140 @@ public function validarSesionAjax() {
             require_once 'vistas/registro.php';
         }
 
-        public static function solicitud_notificacion(){
-            if(isset($_GET['id_doc'])){
-                $id_doc = $_GET['id_doc'];
-                if(isset($_GET['id_name'])){
-                $id_name = $_GET['id_name'];
-                $tabla = $_GET['tabla'];
-                // Extraer los datos si la búsqueda fue exitosa
-                switch($id_name){
-                    case 'id_doc':
-                        $notificaciones = Notificaciones::mostrar_notis($id_doc);
-                            if($notificaciones['exito']){
-                                $datos = $notificaciones['datos'];
-                                foreach ($datos as $fila) {
-                                    if (isset($fila['visto']) && $fila['visto'] == 0) {
-                                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
-                                        break; // Si solo necesitas marcar una vez
-                                    }
-                                }
-                            }
-                            // Validar si hubo error
-                            else {
-                                $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
-                            }
-                        $acciones = [
-                            'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
-                            'En Proceso 1/3' => 'Enviar a despacho',
-                            'En Proceso 2/3' => 'Enviar a Administración',
-                            'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
-                            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-                        ];
-                        require_once 'vistas/solicitud.php';
-                        break;
-                    case 'id_des':
-                        $notificaciones = Notificaciones::mostrar_notis_desarrollo($id_doc);
-                            if($notificaciones['exito']){
-                                $datos = $notificaciones['datos'];
-                                foreach ($datos as $fila) {
-                                    if (isset($fila['visto']) && $fila['visto'] == 0) {
-                                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
-                                        break; // Si solo necesitas marcar una vez
-                                    }
-                                }
-                            }
-                            // Validar si hubo error
-                            else {
-                                $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
-                            }
-                        $acciones = [
-                            'En espera del documento físico para ser procesado 0/2' => 'Aprobar para su procedimiento',
-                            'En Proceso 1/2' => 'Aprobar Ayuda',
-                            'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
-                            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-                        ];
-                        require_once 'vistas/solicitud_notificacion_desarrollo.php';
-                        break;
-                    case 'id_despacho':
-                        $notificaciones = Notificaciones::mostrar_notis_despacho($id_doc);
-                            if($notificaciones['exito']){
-                                $datos = $notificaciones['datos'];
-                                foreach ($datos as $fila) {
-                                    if (isset($fila['visto']) && $fila['visto'] == 0) {
-                                        $marcar_vista = Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
-                                        break; // Si solo necesitas marcar una vez
-                                    }
-                                }
-                            }
-                            // Validar si hubo error
-                            else {
-                                $msj = 'Ocurrió un error '.$notificaciones['mensaje'];
-                            }
-                        $acciones = [
-                            'En Revisión 1/2' => 'Enviar a Administración',
-                            'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
-                            'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
-                        ];
-                        require_once 'vistas/solicitud_notificacion_despacho.php';
-                        break;
-                }
+        public static function solicitud_notificacion() {
+            if (!isset($_GET['id_doc'])) {
+                $msj = 'Ocurrió un error al recibir los datos (GET)';
+                header("Location: " . BASE_URL . "/main");
+                exit;
             }
-            else{
-                $res = Notificaciones::mostrar_notis($id_doc);
-                if($res['exito']){
-                    $datos = $res['datos'];
-                }
-                else{   
-                    $msj = 'Ocurrió un error en la urgencia';
-                }
-                require_once 'vistas/solicitud_urgencia.php';
+            date_default_timezone_set('America/Caracas');
+            $id_doc = $_GET['id_doc'];
+            $id_name = $_GET['id_name'] ?? null;
+            $tabla = $_GET['tabla'] ?? null;
+            $rol = $_SESSION['id_rol'] ?? null;
+
+            // Función auxiliar para validar acceso por rol y estado
+            function tieneAcceso($estado, $rol) {
+                $mapa = [
+                    'En espera del documento físico para ser procesado 0/3' => [1, 4],
+                    'En Proceso 1/3' => [1, 4],
+                    'En Proceso 2/3' => [2, 4],
+                    'En Proceso 3/3 (Sin entregar)' => [3, 4],
+                    'Solicitud Finalizada (Ayuda Entregada)' => [1, 2, 4],
+                    'En espera del documento físico para ser procesado 0/2' => [1, 4],
+                    'En Proceso 1/2' => [1, 4],
+                    'En Proceso 2/2 (Sin entregar)' => [1, 3, 4],
+                    'En Revisión 1/2' => [2, 4]
+                ];
+                return isset($mapa[$estado]) && in_array($rol, $mapa[$estado]);
             }
 
-            }else{
-                $msj = 'Ocurrió un error al recibir los datos (GET)';
-                header("Location: ".BASE_URL."/main");
+            switch ($id_name) {
+                case 'id_doc':
+                    $notificaciones = Notificaciones::mostrar_notis($id_doc);
+                    if ($notificaciones['exito']) {
+                        $datos = $notificaciones['datos'];
+                        foreach ($datos as $fila) {
+                            $estado = $fila['estado'] ?? '';
+                            if (!tieneAcceso($estado, $rol)) {
+                                header('Location: ' . BASE_URL . '/main?msj=La solicitud ya ha sido procesada!');
+                                exit;
+                            }
+                            if (isset($fila['visto']) && $fila['visto'] == 0) {
+                                Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
+                                $fecha = date('Y-m-d H:i:s');
+                                $accion = "Hizo click sobre la notificación, marcó visto (General)";
+                                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                                break;
+                            }
+                        }
+                    } else {
+                        $msj = 'Ocurrió un error ' . $notificaciones['mensaje'];
+                    }
+
+                    $acciones = [
+                        'En espera del documento físico para ser procesado 0/3' => 'Aprobar para su procedimiento',
+                        'En Proceso 1/3' => 'Enviar a despacho',
+                        'En Proceso 2/3' => 'Enviar a Administración',
+                        'En Proceso 3/3 (Sin entregar)' => 'Finalizar Solicitud (Se Entregó la ayuda)',
+                        'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+                    ];
+                    require_once 'vistas/solicitud.php';
+                    break;
+
+                case 'id_des':
+                    $notificaciones = Notificaciones::mostrar_notis_desarrollo($id_doc);
+                    if ($notificaciones['exito']) {
+                        $datos = $notificaciones['datos'];
+                        foreach ($datos as $fila) {
+                            $estado = $fila['estado'] ?? '';
+                            if (!tieneAcceso($estado, $rol)) {
+                                header('Location: ' . BASE_URL . '/main');
+                                exit;
+                            }
+                            if (isset($fila['visto']) && $fila['visto'] == 0) {
+                                Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
+                                $fecha = date('Y-m-d H:i:s');
+                                $accion = "Hizo click sobre la notificación, marcó visto (Desarrollo)";
+                                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                                break;
+                            }
+                        }
+                    } else {
+                        $msj = 'Ocurrió un error ' . $notificaciones['mensaje'];
+                    }
+
+                    $acciones = [
+                        'En espera del documento físico para ser procesado 0/2' => 'Aprobar para su procedimiento',
+                        'En Proceso 1/2' => 'Aprobar Ayuda',
+                        'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
+                        'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+                    ];
+                    require_once 'vistas/solicitud_notificacion_desarrollo.php';
+                    break;
+
+                case 'id_despacho':
+                    $notificaciones = Notificaciones::mostrar_notis_despacho($id_doc);
+                    if ($notificaciones['exito']) {
+                        $datos = $notificaciones['datos'];
+                        foreach ($datos as $fila) {
+                            $estado = $fila['estado'] ?? '';
+                            if (!tieneAcceso($estado, $rol)) {
+                                header('Location: ' . BASE_URL . '/main?msj=La solicitud ya ha sido procesada!');
+                                exit;
+                            }
+                            if (isset($fila['visto']) && $fila['visto'] == 0) {
+                                Notificaciones::marcar_vista_uno($id_doc, $id_name, $tabla);
+                                $fecha = date('Y-m-d H:i:s');
+                                $accion = "Hizo click sobre la notificación, marcó visto (Despacho)";
+                                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                                break;
+                            }
+                        }
+                    } else {
+                        $msj = 'Ocurrió un error ' . $notificaciones['mensaje'];
+                    }
+
+                    $acciones = [
+                        'En Revisión 1/2' => 'Enviar a Administración',
+                        'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
+                        'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
+                    ];
+                    require_once 'vistas/solicitud_notificacion_despacho.php';
+                    break;
+
+                default:
+                    $res = Notificaciones::mostrar_notis($id_doc);
+                    if ($res['exito']) {
+                        $datos = $res['datos'];
+                    } else {
+                        $msj = 'Ocurrió un error en la urgencia';
+                    }
+                    require_once 'vistas/solicitud_urgencia.php';
+                    break;
             }
         }
+
 
         public static function marcar_vistas(){
             Notificaciones::marcar_vista($_SESSION['id_rol']);

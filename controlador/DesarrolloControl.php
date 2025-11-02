@@ -76,7 +76,7 @@ class DesarrolloControl {
             if ($resultado['exito']) {
                 header('Location: ' . BASE_URL . '/felicidades_desarrollo');
                 $fecha = $_POST['fecha'];
-                $accion = 'Registró solicitud (Desarrollo Social)';
+                $accion = 'Registró solicitud (Desarrollo)';
                 $id_des = $resultado['id_des'];
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
@@ -106,19 +106,19 @@ class DesarrolloControl {
             switch($estado_buscar){
                 case 'En espera del documento físico para ser procesado 0/2':
                     $estado_new = 'En Proceso 1/2';
-                    $accion = 'Aprobó la solicitud para su procedimiento. (Desarrollo Social)';
+                    $accion = 'Aprobó la solicitud para su procedimiento. (Desarrollo)';
                     break;
                 case 'En Proceso 1/2':
                     $estado_new = 'En Proceso 2/2 (Sin entregar)';
-                    $accion = 'Envió la solicitud a Administración. (Desarrollo Social)';
+                    $accion = 'Envió la solicitud a Administración. (Desarrollo)';
                     break;
                 case 'En Proceso 2/2 (Sin entregar)':
                     $estado_new = 'Solicitud Finalizada (Ayuda Entregada)';
-                    $accion = 'Confirmó que se entregó la ayuda. (Desarrollo Social)';
+                    $accion = 'Confirmó que se entregó la ayuda. (Desarrollo)';
                     break;
                 case 'Solicitud Finalizada (Ayuda Entregada)':
                     $estado_new = 'En Proceso 1/2';
-                    $accion = 'Reinició la solicitud. (Desarrollo Social)';
+                    $accion = 'Reinició la solicitud. (Desarrollo)';
                     break;
                 default:
                     $msj = 'Ocurrió un error!';
@@ -156,7 +156,7 @@ class DesarrolloControl {
                 header('Location: '.BASE_URL.'/desarrollo_invalidos');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Desarrollo Social)';
+                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Desarrollo)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -181,7 +181,7 @@ class DesarrolloControl {
                 header('Location: '.BASE_URL.'/solicitudes_desarrollo');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Habilitó la solicitud. (Desarrollo Social)';
+                $accion = 'Habilitó la solicitud. (Desarrollo)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
@@ -216,7 +216,7 @@ class DesarrolloControl {
                 header('Location: '.BASE_URL.'/solicitudes_desarrollo');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Editó la solicitud de Desarrollo Social';
+                $accion = 'Editó la solicitud (Desarrollo)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
             }
             else{
