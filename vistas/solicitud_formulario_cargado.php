@@ -285,11 +285,15 @@
             mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
         </script>
 <?php endif; ?>
-
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/edad.js"></script>
 <script src="<?= BASE_URL ?>/public/js/trabajo.js"></script>
+<script>
+    const data_exists = "<?= $data['data_exists'] ? '1' : '0' ?>";
+    const tiposPatologiaGuardados = <?= json_encode(explode('|', $data['tiposJS'])) ?>;
+    const nombresPatologiaGuardados = <?= json_encode(explode('|', $data['nombresJS'])) ?>;
+</script>
 <script src="<?= BASE_URL ?>/public/js/patologia.js"></script>
 <script src="<?= BASE_URL ?>/public/js/tipo_ayuda.js"></script>
 </html>

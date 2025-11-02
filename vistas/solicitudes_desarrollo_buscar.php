@@ -15,7 +15,7 @@
     <div class="header-right">
       <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
       <?php
-            $url = isset($direccion) && $direccion ? '/nueva_solicitud' : '/solicitudes_list';
+            $url = isset($direccion) && $direccion ? '/nueva_solicitud' : '/solicitudes_desarrollo';
         ?>
         <a href="<?= BASE_URL . $url ?>">
             <button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button>
@@ -36,6 +36,15 @@
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $_GET['msj'] ?? $msj ?? null;
+if ($mensaje):
+?>
+<script>
+    mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 6000);
+</script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

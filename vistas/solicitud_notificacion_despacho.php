@@ -16,7 +16,6 @@
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
-    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
      <main class="solicitudes-main">
 <section class="solicitudes-lista">
     <?php if (!empty($datos)): ?>
@@ -72,6 +71,15 @@
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

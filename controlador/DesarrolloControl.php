@@ -40,7 +40,6 @@ class DesarrolloControl {
                 $data = self::obtenerDatosBeneficiario($ci);
                 extract($data); // crea $data_exists, $datos_beneficiario, etc.
                 // Verificar si el solicitante existe para bloquear edición
-                $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
                 require_once 'vistas/solicitudes_desarrollo_formulario.php';
             }
         }
@@ -51,8 +50,8 @@ class DesarrolloControl {
         if($ci){
             $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
+            $msj = 'El beneficiario ya está registrado!';
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-            $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
             require_once 'vistas/solicitudes_desarrollo_formulario.php';
         }
     }
@@ -92,7 +91,6 @@ class DesarrolloControl {
                     extract($data);
                 }
                 // Verificar si el solicitante existe para bloquear edición
-                $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
                 require_once 'vistas/solicitudes_desarrollo_formulario.php';
             }
         }

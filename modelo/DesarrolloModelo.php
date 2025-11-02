@@ -22,8 +22,8 @@ class Desarrollo {
                         sdf.fecha_modificacion,
                         sdf.visto,
 
-                        s.nombre AS nombre,
-                        s.apellido AS apellido
+                        s.nombre AS remitente_nombre,
+                        s.apellido AS remitente_apellido
 
                     FROM solicitud_desarrollo sd
                     LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des

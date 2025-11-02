@@ -47,7 +47,7 @@
                         <div><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></div>
                     </div>
                     <div class="solicitud-actions">
-                        <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
+                        <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
                         <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
                         <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
                         <?php endif; ?>

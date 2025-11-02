@@ -96,7 +96,7 @@
                name="filtro_busqueda"
                id="filtro_busqueda"
                placeholder="Escribe aquí..."
-               value="<?= $filtro ?? '' ?>"
+               value="<?= $filtro_busqueda ?? '' ?>"
                required
                style="flex: 1 1 auto !important; padding: 0.375rem 0.75rem !important; border: 1px solid #ced4da !important; border-radius: 0.375rem 0 0 0.375rem !important; font-size: 1rem !important; line-height: 1.5 !important; background-color: #fff !important; box-sizing: border-box !important;">
         <input type="submit"
@@ -219,13 +219,14 @@
 </main>
 </body>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php
-$mensaje = $msj ?? ($_GET['msj'] ?? null);
+$mensaje = $_GET['msj'] ?? $msj ?? null;
 if ($mensaje):
 ?>
-    <script>
-        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
-    </script>
+<script>
+    mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 6000);
+</script>
 <?php endif; ?>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
