@@ -26,6 +26,10 @@
                     <input type="text" id="nombre" name="nombre" value="<?= $datos_beneficiario['solicitante']['nombre'] ?? '' ?>" required placeholder="Nombre del Beneficiario">
                 </div>
                 <div class="campo-formulario">
+                    <label for="ci">Cédula:</label>
+                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos['solicitante']['ci'] ?? $ci ?? '')?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
+                <div class="campo-formulario">
                     <label for="apellido">Apellido:</label>
                     <input type="text" id="apellido" name="apellido" value="<?= $datos_beneficiario['solicitante']['apellido'] ?? '' ?>" required placeholder="Apellido del Beneficiario">
                 </div>
@@ -88,11 +92,15 @@
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="trabajo1">¿Trabaja?</label>
-                    <select name="trabajo1" id="trabajo1" required onchange="mostrarCampoTrabajo()">
-                        <option value="">Seleccione</option>
-                        <option value="Si" <?= (isset($datos_beneficiario['trabajo']['trabajo']) && strtolower($datos_beneficiario['trabajo']['trabajo']) !== 'No tiene') ? 'selected' : '' ?>>Sí</option>
-                        <option value="No" <?= (isset($datos_beneficiario['trabajo']['trabajo']) && strtolower($datos_beneficiario['trabajo']['trabajo']) === 'No tiene') ? 'selected' : '' ?>>No</option>
-                    </select>
+                    <?php
+                        $trabajoValor = strtolower($datos_beneficiario['trabajo']['trabajo'] ?? '');
+                        ?>
+                        <select name="trabajo1" id="trabajo1" required onchange="mostrarCampoTrabajo()">
+                            <option value="">Seleccione</option>
+                            <option value="Si" <?= ($trabajoValor === 'si') ? 'selected' : '' ?>>Sí</option>
+                            <option value="No" <?= ($trabajoValor === 'no') ? 'selected' : '' ?>>No</option>
+                        </select>
+
                 </div>
                 <div class="campo-formulario" id="campoTrabajo" style="display:none; margin-top:10px;">
                     <label for="trabajo">Trabajo:</label>
@@ -202,7 +210,6 @@
                         <option value="">Seleccione</option>
                         <option value="si" <?= (isset($datos_beneficiario['cantidad']) && $datos_beneficiario['cantidad'] != 0) ? 'selected' : '' ?>>Sí</option>
                         <option value="no" <?= (isset($datos_beneficiario['cantidad']) && $datos_beneficiario['cantidad'] == 0) ? 'selected' : '' ?>>No</option>
-
                     </select>
                 </div>
             <?php $cantidad = isset($datos_beneficiario['cantidad']) ? $datos_beneficiario['cantidad'] : 0; ?>
@@ -219,6 +226,7 @@
                 </div>
             </div>
             <div id="camposFamiliares" style="margin-top:10px;"></div>
+
             <div class="titulo-seccion"><i class="fa fa-hand-holding-heart"></i> Datos de la Solicitud</div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
@@ -272,7 +280,6 @@
         </form>
     </main>
 </body>
-<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
@@ -290,9 +297,10 @@ if ($mensaje):
 <script src="<?= BASE_URL ?>/public/js/edad.js"></script>
 <script src="<?= BASE_URL ?>/public/js/trabajo.js"></script>
 <script>
-    const data_exists = <?= isset($data['data_exists']) && $data['data_exists'] ? '1' : '0' ?>;
-    const tiposPatologiaGuardados = <?= json_encode(explode('|', $data['tiposJS'])) ?>;
-    const nombresPatologiaGuardados = <?= json_encode(explode('|', $data['nombresJS'])) ?>;
+// Datos precargados desde PHP
+const data_exists = "<?= isset($data['data_exists']) && $data['data_exists'] ? '1' : '0' ?>";
+const tiposPatologiaGuardados = "<?= $data['tiposJS'] ?? '' ?>".split('|');
+const nombresPatologiaGuardados = "<?= $data['nombresJS'] ?? '' ?>".split('|');
 </script>
 <script src="<?= BASE_URL ?>/public/js/patologia.js"></script>
 <script src="<?= BASE_URL ?>/public/js/tipo_ayuda.js"></script>
