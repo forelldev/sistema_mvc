@@ -50,9 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // ✅ Precargar si ya hay categoría seleccionada
-  if (categoriaSelect.value) {
+  // ✅ Precarga al cargar el DOM
+  if (categoriaSelect.value && opcionesPorCategoria[categoriaSelect.value]) {
     tipoAyudaContainer.style.display = "block";
     renderTipoAyuda(categoriaSelect.value);
+  } else {
+    tipoAyudaContainer.style.display = "none";
+    tipoAyudaSelect.innerHTML = "";
   }
 });

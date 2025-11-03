@@ -35,7 +35,7 @@
                             <div><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
                             <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
                             <div><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda'] ?? '') ?></div>
-                            <div><strong>Beneficiario:</strong> <?= htmlspecialchars($fila[''] ?? '') ?></div>
+                            <div><strong>Beneficiario:</strong> <?= htmlspecialchars($fila['nombre'].' '.$fila['apellido'] ?? '') ?></div>
                         </div>
                         <div class="solicitud-actions">
                             <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>

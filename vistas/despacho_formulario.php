@@ -113,14 +113,12 @@
     </div>
 
     <div class="fila-formulario" id="tipoAyudaContainer">
-        <div class="campo-formulario">
+        <div class="campo-formulario" id="tipoAyudaContainer">
             <label for="tipo_ayuda">Tipo de ayuda:</label>
-            <select name="tipo_ayuda" id="tipo_ayuda" required>
-                <?php if (!empty($_POST['tipo_ayuda'])): ?>
-                    <option selected><?= htmlspecialchars($_POST['tipo_ayuda']) ?></option>
-                <?php endif; ?>
-            </select>
+            <select name="tipo_ayuda" id="tipo_ayuda" required></select>
+            <input type="hidden" id="tipo_ayuda_precargado" value="<?= htmlspecialchars($_POST['tipo_ayuda'] ?? '') ?>">
         </div>
+
     </div>
 
     <div class="fila-formulario">

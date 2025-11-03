@@ -1,6 +1,5 @@
 <?php
 // routes.php
-
 Router::get('/', 'LoginControl@index'); // RUTA PARA LOGIN CUANDO NO ESTÁS LOGEADO ES LO PRIMERO
 Router::post('/login', 'LoginControl@ingresar'); //RUTA PARA CUANDO SE PRESIONE LOGIN, ESTA ES LA FUNCIÓN DE LOGEARSE
 Router::get('/registro', 'LoginControl@registroIndex'); //RUTA PARA REGISTRO VISTA

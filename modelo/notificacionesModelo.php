@@ -404,7 +404,7 @@ require_once 'conexiondb.php';
             $consulta2 = "UPDATE despacho_fecha df
                         JOIN despacho d ON d.id_despacho = df.id_despacho
                         SET df.visto = 1
-                        WHERE df.visto = 0 AND d.estado = 'En Revisión 1/2'";
+                        WHERE df.visto = 0 AND d.estado = 'En Revisión 1/2' OR d.estado = 'Solicitud Finalizada (Ayuda Entregada)'";
         } elseif ($rol == 3) {
             $consulta2 = "UPDATE despacho_fecha df
                         JOIN despacho d ON d.id_despacho = df.id_despacho

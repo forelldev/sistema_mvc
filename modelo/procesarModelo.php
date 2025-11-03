@@ -627,11 +627,15 @@ public static function solicitud($id_doc, $estado) {
                         d.*, 
                         dd.descripcion, dd.creador,
                         df.fecha, df.fecha_modificacion, df.visto,
-                        di.razon
+                        di.razon,
+                        dc.categoria,dc.tipo_ayuda,
+                        sol.nombre,sol.apellido
                     FROM despacho d
                     LEFT JOIN despacho_info dd ON d.id_despacho = dd.id_despacho
                     LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
                     LEFT JOIN despacho_invalido di ON d.id_despacho = di.id_despacho
+                    LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
+                    LEFT JOIN solicitantes sol ON d.ci = sol.ci
                     WHERE d.invalido = 1
                     ORDER BY df.fecha DESC
                 ";
