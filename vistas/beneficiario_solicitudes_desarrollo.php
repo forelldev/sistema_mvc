@@ -51,8 +51,8 @@ function procesarSolicitud($fila, $acciones) {
 <body class="solicitud-body">
     <header class="header">
         <div class="titulo-header">Lista de solicitudes del beneficiario: <?= htmlspecialchars(($datos[0]['nombre'] ?? '') . ' ' . ($datos[0]['apellido'] ?? '')) ?></div>
-            <a href="<?= BASE_URL ?>/solicitudes_beneficiario?ci=<?=$datos[0]['ci']?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes generales</button></a>
-            <a href="<?= BASE_URL ?>/beneficiario_despacho?ci=<?=$datos[0]['ci']?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes de despacho</button></a>
+            <a href="<?= BASE_URL ?>/solicitudes_beneficiario?ci=<?=$ci ?? $datos[0]['ci'] ?? null ?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes generales</button></a>
+            <a href="<?= BASE_URL ?>/beneficiario_despacho?ci=<?=$ci ?? $datos[0]['ci'] ?? null ?>"><button class="nav-btn"><i class="fa fa-arrow-left"></i>Ver Solicitudes de despacho</button></a>
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
   </header>

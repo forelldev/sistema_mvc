@@ -82,186 +82,206 @@ class Despacho{
     }
 
     // PROCESAR FORMULARIO UNA VEZ ENVIADO:
-    public static function enviarForm($data) {
-        $db = DB::conectar();
-        $db->beginTransaction();
-        try {
-            // Verificar si el id_manual ya existe
-            $checkStmt = $db->prepare("SELECT COUNT(*) FROM despacho WHERE id_manual = :id_manual");
-            $checkStmt->execute([':id_manual' => $data['id_manual']]);
-            $exists = $checkStmt->fetchColumn();
-            if ($exists > 0) {
-                throw new Exception("❌ El número de documento ya está registrado.");
+  public static function enviarForm($data) {
+    $db = DB::conectar();
+    $db->beginTransaction();
+    try {
+        // Verificar si el id_manual ya existe
+        $checkStmt = $db->prepare("SELECT COUNT(*) FROM despacho WHERE id_manual = :id_manual");
+        $checkStmt->execute([':id_manual' => $data['id_manual']]);
+        $exists = $checkStmt->fetchColumn();
+        if ($exists > 0) {
+            throw new Exception("❌ El número de documento ya está registrado.");
+        }
+
+        // Validar campos obligatorios
+        $camposObligatorios = [
+            'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita','tipo_ayuda','categoria'
+        ];
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || $data[$campo] === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
             }
-            // ✅ 1. Validar campos obligatorios
-            $camposObligatorios = [
-                'id_manual', 'ci', 'descripcion', 'fecha','nombre','apellido','telefono','direc_habita','tipo_ayuda','categoria'
-            ];
+        }
 
-            foreach ($camposObligatorios as $campo) {
-                if (!isset($data[$campo]) || $data[$campo] === '') {
-                    throw new Exception("Falta el campo obligatorio: $campo");
-                }
-            }
+        // Obtener datos del promotor
+        $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
+        $stmt->execute([':ci' => $data['ci_user']]);
+        $promotor = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$promotor) {
+            throw new Exception("No se encontró el promotor con CI: " . $data['ci_user']);
+        }
+        $nombrePromotor = $promotor['nombre'] . ' ' . $promotor['apellido'];
 
-            // ✅ 2. Obtener datos del promotor
-            $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
-            $stmt->execute([':ci' => $data['ci_user']]);
-            $promotor = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Insertar solicitud de ayuda
+        $stmt = $db->prepare("
+            INSERT INTO despacho (
+                id_manual, ci, estado, invalido
+            ) VALUES (
+                :id_manual, :ci, :estado, :invalido
+            )
+        ");
+        $stmt->execute([
+            ':id_manual' => $data['id_manual'],
+            ':ci' => $data['ci'],
+            ':estado' => 'En Revisión 1/2',
+            ':invalido' => 0
+        ]);
+        $id_despacho = $db->lastInsertId();
 
-            if (!$promotor) {
-                throw new Exception("No se encontró el promotor con CI: " . $data['ci_user']);
-            }
+        // Descripción y creador
+        $stmt = $db->prepare("
+            INSERT INTO despacho_info (
+                id_despacho, descripcion, creador
+            ) VALUES (
+                :id_despacho, :descripcion, :creador
+            )
+        ");
+        $stmt->execute([
+            ':id_despacho' => $id_despacho,
+            ':descripcion' => $data['descripcion'],
+            ':creador' => $nombrePromotor
+        ]);
 
-            $nombrePromotor = $promotor['nombre'] . ' ' . $promotor['apellido'];
+        // Fechas y visto
+        $stmt = $db->prepare("
+            INSERT INTO despacho_fecha (
+                id_despacho, fecha, fecha_modificacion, fecha_renovacion, visto
+            ) VALUES (
+                :id_despacho, :fecha, :fecha_modificacion, :fecha_renovacion, :visto
+            )
+        ");
+        $stmt->execute([
+            ':id_despacho' => $id_despacho,
+            ':fecha' => $data['fecha'],
+            ':fecha_modificacion' => $data['fecha'],
+            ':fecha_renovacion' => $data['fecha'],
+            ':visto' => 0
+        ]);
 
-            // ✅ 3. Insertar solicitud de ayuda
-            $stmt = $db->prepare("
-                INSERT INTO despacho (
-                    id_manual, ci, estado, invalido
-                ) VALUES (
-                    :id_manual, :ci, :estado, :invalido
-                )
-            ");
-            $stmt->execute([
-                ':id_manual' => $data['id_manual'],
-                ':ci' => $data['ci'],
-                ':estado' => 'En Revisión 1/2',
-                ':invalido' => 0
-            ]);
+        // Categoría y tipo de ayuda
+        $stmt = $db->prepare("
+            INSERT INTO despacho_categoria (
+                id_despacho, categoria, tipo_ayuda
+            ) VALUES (
+                :id_despacho, :categoria, :tipo_ayuda 
+            )
+        ");
+        $stmt->execute([
+            ':id_despacho' => $id_despacho,
+            ':categoria' => $data['categoria'],
+            ':tipo_ayuda' => $data['tipo_ayuda']
+        ]);
 
-            $id_despacho = $db->lastInsertId(); // Obtener el ID generado
-            
-            // Descripcion y creador
+        // Estado de correo
+        $stmt = $db->prepare("
+            INSERT INTO despacho_correo (
+                id_despacho, correo_enviado
+            ) VALUES (
+                :id_despacho, :correo_enviado
+            )
+        ");
+        $stmt->execute([
+            ':id_despacho' => $id_despacho,
+            ':correo_enviado' => 0,
+        ]);
 
-            $stmt = $db->prepare("
-                INSERT INTO despacho_info (
-                    id_despacho, descripcion, creador
-                ) VALUES (
-                    :id_despacho, :descripcion, :creador
-                )
-            ");
-            $stmt->execute([
-                ':id_despacho' => $id_despacho,
-                ':descripcion' => $data['descripcion'],
-                ':creador' => $nombrePromotor
-            ]);
+        $mensaje_nuevo = null;
+        $id_solicitante = $data['id_solicitante'] ?? null;
 
-            // Fechas, y visto
+        if ($id_solicitante) {
+            self::actualizarSolicitante($db, $id_solicitante, $data);
+        } else {
+            // Buscar por CI si no se proporcionó id_solicitante
+            $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = ?");
+            $stmt->execute([$data['ci']]);
+            $id_solicitante = $stmt->fetchColumn();
 
-            $stmt = $db->prepare("
-                INSERT INTO despacho_fecha (
-                    id_despacho, fecha, fecha_modificacion, fecha_renovacion, visto
-                ) VALUES (
-                    :id_despacho, :fecha, :fecha_modificacion,:fecha_renovacion, :visto
-                )
-            ");
-            $stmt->execute([
-                ':id_despacho' => $id_despacho,
-                ':fecha' => $data['fecha'],
-                ':fecha_modificacion' => $data['fecha'],
-                ':fecha_renovacion' => $data['fecha'],
-                ':visto' => 0
-            ]);
-
-            $stmt = $db->prepare("
-                INSERT INTO despacho_categoria (
-                    id_despacho, categoria, tipo_ayuda
-                ) VALUES (
-                    :id_despacho, :categoria, :tipo_ayuda 
-                )
-            ");
-            $stmt->execute([
-                ':id_despacho' => $id_despacho,
-                ':categoria' => $data['categoria'],
-                ':tipo_ayuda' => $data['tipo_ayuda']
-            ]);
-
-            $stmt = $db->prepare("
-                INSERT INTO despacho_correo (
-                    id_despacho, correo_enviado
-                ) VALUES (
-                    :id_despacho, :correo_enviado
-                )
-            ");
-            $stmt->execute([
-                ':id_despacho' => $id_despacho,
-                ':correo_enviado' => 0,
-            ]);
-
-
-
-
-            // ✅ 4. Verificar si el solicitante ya existe
-            $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = :ci");
-            $stmt->execute([':ci' => $data['ci']]);
-            $solicitante = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($solicitante) {
-                $id_solicitante = $solicitante['id_solicitante'];
-
-                // 🔄 Actualizar datos
+            if ($id_solicitante) {
                 self::actualizarSolicitante($db, $id_solicitante, $data);
             } else {
-                // 🆕 Insertar nuevo solicitante
-                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci) VALUES (?, ?, ?)");
-                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci']]);
+                // Insertar nuevo solicitante
+                $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo']]);
                 $id_solicitante = $db->lastInsertId();
 
                 self::insertarSolicitante($db, $id_solicitante, $data);
+                $mensaje_nuevo = "Se ha registrado un nuevo beneficiario.";
             }
-
-            $db->commit();
-            return ['exito' => true,'id_despacho' => $id_despacho];
-
-        } catch (Exception $e) {
-            $db->rollBack();
-            error_log("Error al registrar solicitud: " . $e->getMessage());
-            return ['exito' => false, 'error' => $e->getMessage()];
         }
+
+        $db->commit();
+        return ['exito' => true, 'id_despacho' => $id_despacho, 'mensaje_nuevo' => $mensaje_nuevo];
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log("Error al registrar solicitud: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
     }
+}
 
-    private static function actualizarSolicitante($db, $id, $data) {
-        // Actualizar solicitante
-        $db->prepare("
-            UPDATE solicitantes
-            SET nombre = ?, apellido = ?
-            WHERE id_solicitante = ?
-        ")->execute([$data['nombre'], $data['apellido'], $id]);
-        // Actualizar comunidad
-        $db->prepare("
-            UPDATE solicitantes_comunidad 
-            SET  direc_habita = ?
-            WHERE id_solicitante = ?
-        ")->execute([$data['direc_habita'], $id]);
+private static function actualizarSolicitante($db, $id, $data) {
+    $db->prepare("
+        UPDATE solicitantes
+        SET nombre = ?, apellido = ?, correo = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['nombre'], $data['apellido'],$data['correo'], $id]);
 
-        // Actualizar info personal
-        $db->prepare("
-            UPDATE solicitantes_info 
-            SET telefono = ?
-            WHERE id_solicitante = ?
-        ")->execute([
-            $data['telefono'],
-            $id
-        ]);
+    $db->prepare("
+        UPDATE solicitantes_comunidad 
+        SET direc_habita = ?, comunidad = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['direc_habita'], $data['comunidad'], $id]);
 
-    }
+    $db->prepare("
+        UPDATE solicitantes_info 
+        SET telefono = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['telefono'], $id]);
+}
 
-    private static function insertarSolicitante($db, $id, $data) {
-        // Insertar comunidad
+private static function insertarSolicitante($db, $id, $data) {
+    // Insertar comunidad
         $db->prepare("
-            INSERT INTO solicitantes_comunidad (id_solicitante, direc_habita)
-            VALUES (?, ?)
-        ")->execute([$id, $data['direc_habita']]);
+            INSERT INTO solicitantes_comunidad (id_solicitante, direc_habita, comunidad)
+            VALUES (?, ?, ?)
+        ")->execute([$id, $data['direc_habita'], $data['comunidad']]);
 
         // Insertar info personal
         $db->prepare("
             INSERT INTO solicitantes_info (id_solicitante, telefono)
             VALUES (?, ?)
-        ")->execute([
-            $id,
-            $data['telefono']
-        ]);
+        ")->execute([$id, $data['telefono']]);
+
+        // Insertar registros vacíos en las demás tablas
+        $db->prepare("INSERT INTO solicitantes_conocimiento (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_extra (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_propiedad (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_trabajo (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_ingresos (id_solicitante) VALUES (?)")->execute([$id]);
+}
+
+    private static function actualizarCI($db, $ci_antiguo, $ci_nuevo) {
+        // Verificar si el nuevo CI ya existe
+        $stmt = $db->prepare("SELECT COUNT(*) FROM solicitantes WHERE ci = ?");
+        $stmt->execute([$ci_nuevo]);
+        if ($stmt->fetchColumn() > 0) {
+            throw new Exception("❌ No se puede actualizar la cédula: ya está registrada.");
+        }
+
+        // Actualizar en cascada
+        $tablas = [
+            'solicitantes',
+            'despacho',
+            'solicitud_ayuda',
+            'solicitud_desarrollo',
+            'reportes_acciones',
+            'reportes_entradas'
+        ];
+        foreach ($tablas as $tabla) {
+            $db->prepare("UPDATE $tabla SET ci = ? WHERE ci = ?")
+            ->execute([$ci_nuevo, $ci_antiguo]);
+        }
     }
 
     public static function notificacion_urgencia() {
@@ -395,7 +415,8 @@ class Despacho{
                     di.*, 
                     df.*, 
                     dc.*, 
-                    sol.*
+                    sol.nombre AS nombre,
+                    sol.apellido AS apellido
                 FROM despacho d
                 LEFT JOIN despacho_info di ON d.id_despacho = di.id_despacho
                 LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
@@ -407,6 +428,7 @@ class Despacho{
                     d.estado LIKE :filtro OR
                     dc.categoria LIKE :filtro OR
                     di.descripcion LIKE :filtro OR
+                    di.creador LIKE :filtro OR
                     CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
                     CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
                     sol.nombre LIKE :filtro OR

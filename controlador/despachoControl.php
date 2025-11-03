@@ -1,6 +1,7 @@
 <?php 
     require_once 'modelo/despachoModelo.php';
     require_once 'modelo/procesarModelo.php';
+    require_once 'modelo/solicitudModelo.php';
     class DespachoControl{
         public static function despacho_list(){
             $resultado = Despacho::buscarLista();
@@ -27,28 +28,32 @@
                 require_once 'vistas/despacho_anteriores.php';
             }
             else{
-                $data = self::obtenerDatosBeneficiario($ci);
-                extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                // Verificar si el solicitante existe para bloquear edición
-                $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
-                require_once 'vistas/despacho_formulario.php';
+                $resultado = Solicitud::verificar_solicitante($ci);
+                if($resultado['exito']){
+                    $msj = 'El solicitante ya está registrado!';
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.         
+                }
+                else{
+                    $msj = 'Registra al Solicitante';
+                }
+                require_once 'vistas/despacho_formulario.php';    
             }
         }
     }
 
     public static function registrar(){
-        $ci = $_POST['ci'] ?? null;
-        if($ci){
+        if(isset($_POST['ci'])){
             $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-            $readonly = !empty($datos_beneficiario['solicitante']['nombre']);
-            require_once 'vistas/despacho_formulario.php';
+            $msj = 'El solicitante ya está registrado!';
         }
+        else{
+            $msj = 'Ocurrió un error o el Solicitante no existe';
+        }
+        require_once 'vistas/despacho_formulario.php';
     }
-
-
-
 
     private static function obtenerDatosBeneficiario($ci) {
         $data = [
@@ -67,27 +72,42 @@
             date_default_timezone_set('America/Caracas');
             $_POST['fecha'] = date('Y-m-d H:i:s');
             $_POST['ci_user'] = $_SESSION['ci'];
+
             $resultado = Despacho::enviarForm($_POST);
+
             if ($resultado['exito']) {
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Registró solicitud. (Despacho)';
                 $id_doc = $resultado['id_despacho'];
-                Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
-                header('Location: ' . BASE_URL . '/felicidades_despacho');
+                Procesar::registrarReporte($id_doc, $fecha, $accion, $_SESSION['ci']);
+
+                // Determinar mensaje único
+                $msj = '';
+                if (!empty($resultado['mensaje_ci'])) {
+                    $msj = $resultado['mensaje_ci'];
+                } elseif (!empty($resultado['mensaje_nuevo'])) {
+                    $msj = $resultado['mensaje_nuevo'];
+                }
+
+                // Redirigir con mensaje si existe
+                $queryString = $msj ? '?msj=' . urlencode($msj) : '';
+                header('Location: ' . BASE_URL . '/felicidades_despacho' . $queryString);
                 exit;
             } else {
                 $msj = "Error al registrar la solicitud: " . $resultado['error'];
                 $ci = $_POST['ci'] ?? null;
                 $data_exists = false;
-                $datos_beneficiario = $_POST; // mantener datos del intento fallido
-                // Rebuscar datos si es necesario
+                $datos_beneficiario = $_POST;
+
                 if ($ci) {
                     $data = self::obtenerDatosBeneficiario($ci);
                     extract($data);
                 }
+
                 require_once 'vistas/despacho_formulario.php';
             }
         }
+
 
         public static function felicidades_despacho(){
             require_once 'vistas/felicidades_despacho.php';

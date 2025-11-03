@@ -94,7 +94,7 @@ $acciones = [
                         name="filtro_busqueda"
                         id="filtro_busqueda"
                         placeholder="Escribe aquí..."
-                        value="<?= $filtro ?? '' ?>"
+                        value="<?= $filtro_busqueda ?? '' ?>"
                         required
                         style="flex: 1 1 auto !important; padding: 0.375rem 0.75rem !important; border: 1px solid #ced4da !important; border-radius: 0.375rem 0 0 0.375rem !important; font-size: 1rem !important; line-height: 1.5 !important; background-color: #fff !important; box-sizing: border-box !important;">
                     <input type="submit"

@@ -191,128 +191,164 @@ class Desarrollo {
     }
 
     public static function enviar_formulario($data) {
-        $db = DB::conectar();
-        $db->beginTransaction();
+    $db = DB::conectar();
+    $db->beginTransaction();
 
-        try {
-            // Validar campos obligatorios
-            $camposObligatorios = [
-                'id_manual', 'ci', 'descripcion', 'fecha',
-                'categoria', 'ci_user', 'nombre', 'apellido', 'correo'
-            ];
-            foreach ($camposObligatorios as $campo) {
-                if (!isset($data[$campo]) || trim($data[$campo]) === '') {
-                    throw new Exception("Falta el campo obligatorio: $campo");
-                }
+    try {
+        // Verificar si el número de documento ya existe
+        $stmt = $db->prepare("SELECT COUNT(*) FROM solicitud_desarrollo WHERE id_manual = :id_manual");
+        $stmt->execute([':id_manual' => $data['id_manual']]);
+        if ($stmt->fetchColumn() > 0) {
+            throw new Exception("❌ El número de documento ya está registrado.");
+        }
+
+        // Validar campos obligatorios
+        $camposObligatorios = [
+            'id_manual', 'ci', 'descripcion', 'fecha', 'categoria', 'ci_user',
+            'nombre', 'apellido', 'correo', 'telefono', 'direc_habita', 'comunidad'
+        ];
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || trim($data[$campo]) === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
             }
+        }
 
-            // Verificar si el solicitante ya existe
-                $checkSolicitante = $db->prepare("SELECT COUNT(*) FROM solicitantes WHERE ci = :ci");
-                $checkSolicitante->execute([':ci' => $data['ci']]);
-                $existeSolicitante = $checkSolicitante->fetchColumn();
+        // Obtener nombre del promotor
+        $stmt = $db->prepare("SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci");
+        $stmt->execute([':ci' => $data['ci_user']]);
+        $promotor = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$promotor) {
+            throw new Exception("No se encontró el promotor con CI: " . $data['ci_user']);
+        }
+        $nombrePromotor = $promotor['nombre'] . ' ' . $promotor['apellido'];
 
-                if ($existeSolicitante == 0) {
-                    // Insertar nuevo solicitante
-                    $insertSolicitante = $db->prepare("INSERT INTO solicitantes (ci, nombre, apellido, correo, fecha_creacion) 
-                        VALUES (:ci, :nombre, :apellido, :correo, :fecha_creacion)");
-                    $insertSolicitante->execute([
-                        ':ci' => $data['ci'],
-                        ':nombre' => $data['nombre'],
-                        ':apellido' => $data['apellido'],
-                        ':correo' => $data['correo'],
-                        ':fecha_creacion' => $data['fecha']
-                    ]);
-                }
+        // Insertar solicitud base
+        $stmt = $db->prepare("INSERT INTO solicitud_desarrollo (id_manual, ci, estado, invalido) VALUES (:id_manual, :ci, :estado, :invalido)");
+        $stmt->execute([
+            ':id_manual' => $data['id_manual'],
+            ':ci' => $data['ci'],
+            ':estado' => 'En espera del documento físico para ser procesado 0/2',
+            ':invalido' => 0
+        ]);
+        $id_des = $db->lastInsertId();
 
+        // Insertar descripción y creador
+        $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_info (id_des, descripcion, creador) VALUES (:id_des, :descripcion, :creador)");
+        $stmt->execute([
+            ':id_des' => $id_des,
+            ':descripcion' => $data['descripcion'],
+            ':creador' => $nombrePromotor
+        ]);
 
-            // Verificar si el id_manual ya existe
-            $check = $db->prepare("SELECT COUNT(*) FROM solicitud_desarrollo WHERE id_manual = :id_manual");
-            $check->execute([':id_manual' => $data['id_manual']]);
-            if ($check->fetchColumn() > 0) {
-                throw new Exception("El número de documento ya está registrado.");
+        // Insertar categoría
+        $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_tipo (id_des, categoria) VALUES (:id_des, :categoria)");
+        $stmt->execute([
+            ':id_des' => $id_des,
+            ':categoria' => $data['categoria']
+        ]);
+
+        // Insertar exámenes si aplica
+        if ($data['categoria'] === 'Laboratorio' && !empty($data['examen'])) {
+            $examenes = is_array($data['examen']) ? $data['examen'] : [$data['examen']];
+            $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (:id_des, :examen)");
+            foreach ($examenes as $examen) {
+                $stmt->execute([':id_des' => $id_des, ':examen' => $examen]);
             }
+        } elseif (in_array($data['categoria'], ['Ecosonograma', 'Eco-Doppler'])) {
+            $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (:id_des, :examen)");
+            $stmt->execute([':id_des' => $id_des, ':examen' => $data['categoria']]);
+        }
 
-            // Insertar en solicitud_desarrollo
-            $insertSD = $db->prepare("INSERT INTO solicitud_desarrollo 
-                (id_manual, ci, estado, invalido) 
-                VALUES (:id_manual, :ci, 'En espera del documento físico para ser procesado 0/2', 0)");
-            $insertSD->execute([
-                ':id_manual' => $data['id_manual'],
-                ':ci' => $data['ci']
-            ]);
-            $id_des = $db->lastInsertId();
+        // Insertar fechas
+        $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_fecha (id_des, fecha, fecha_modificacion, fecha_renovacion, visto) VALUES (:id_des, :fecha, :fecha_modificacion, :fecha_renovacion, :visto)");
+        $stmt->execute([
+            ':id_des' => $id_des,
+            ':fecha' => $data['fecha'],
+            ':fecha_modificacion' => $data['fecha'],
+            ':fecha_renovacion' => $data['fecha'],
+            ':visto' => 0
+        ]);
 
-            $creador = self::obtenerNombreCreador($data['ci_user']);
+        // Estado de correo
+        $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_correo (id_des, correo_enviado) VALUES (:id_des, :correo_enviado)");
+        $stmt->execute([
+            ':id_des' => $id_des,
+            ':correo_enviado' => 0
+        ]);
 
-            // Insertar en solicitud_desarrollo_info
-            $insertInfo = $db->prepare("INSERT INTO solicitud_desarrollo_info 
-                (id_des, descripcion, creador) 
-                VALUES (:id_des, :descripcion, :creador)");
-            $insertInfo->execute([
-                ':id_des' => $id_des,
-                ':descripcion' => $data['descripcion'],
-                ':creador' => $creador
-            ]);
+        // Manejo del solicitante
+        $mensaje_nuevo = null;
+        $id_solicitante = $data['id_solicitante'] ?? null;
 
-            // Insertar en solicitud_desarrollo_tipo
-            $insertTipo = $db->prepare("INSERT INTO solicitud_desarrollo_tipo 
-                (id_des, categoria) 
-                VALUES (:id_des, :categoria)");
-            $insertTipo->execute([
-                ':id_des' => $id_des,
-                ':categoria' => $data['categoria']
-            ]);
+        if ($id_solicitante) {
+            self::actualizarSolicitante($db, $id_solicitante, $data);
+        } else {
+            $stmt = $db->prepare("SELECT id_solicitante FROM solicitantes WHERE ci = ?");
+            $stmt->execute([$data['ci']]);
+            $id_solicitante = $stmt->fetchColumn();
 
-            // Insertar en solicitud_desarrollo_laboratorio solo si la categoría es Laboratorio
-                if ($data['categoria'] === 'Laboratorio' && !empty($data['examen'])) {
-                    $examenes = is_array($data['examen']) ? $data['examen'] : [$data['examen']];
-                    $insertLab = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio 
-                        (id_des, examen) 
-                        VALUES (:id_des, :examen)");
-                    foreach ($examenes as $examen) {
-                        $insertLab->execute([
-                            ':id_des' => $id_des,
-                            ':examen' => $examen
-                        ]);
-                    }
-                } elseif (in_array($data['categoria'], ['Ecosonograma', 'Eco-Doppler'])) {
-                    // Tratar estas categorías como exámenes individuales
-                    $insertLab = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio 
-                        (id_des, examen) 
-                        VALUES (:id_des, :examen)");
-                    $insertLab->execute([
-                        ':id_des' => $id_des,
-                        ':examen' => $data['categoria']
-                    ]);
+            if ($id_solicitante) {
+                self::actualizarSolicitante($db, $id_solicitante, $data);
+            } else {
+                $stmt = $db->prepare("INSERT INTO solicitantes (ci, nombre, apellido, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$data['ci'], $data['nombre'], $data['apellido'], $data['correo'], $data['fecha']]);
+                $id_solicitante = $db->lastInsertId();
+
+                self::insertarSolicitante($db, $id_solicitante, $data);
+                $mensaje_nuevo = "Se ha registrado un nuevo beneficiario.";
+            }
+        }
+
+        $db->commit();
+        return ['exito' => true, 'id_des' => $id_des, 'mensaje_nuevo' => $mensaje_nuevo];
+
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log("Error al registrar solicitud de desarrollo: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+    private static function actualizarSolicitante($db, $id, $data) {
+    $db->prepare("
+        UPDATE solicitantes
+        SET nombre = ?, apellido = ?, correo = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['nombre'], $data['apellido'],$data['correo'], $id]);
+
+    $db->prepare("
+        UPDATE solicitantes_comunidad 
+        SET direc_habita = ?, comunidad = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['direc_habita'], $data['comunidad'], $id]);
+
+    $db->prepare("
+        UPDATE solicitantes_info 
+        SET telefono = ?
+        WHERE id_solicitante = ?
+    ")->execute([$data['telefono'], $id]);
 }
 
+private static function insertarSolicitante($db, $id, $data) {
+    // Insertar comunidad
+        $db->prepare("
+            INSERT INTO solicitantes_comunidad (id_solicitante, direc_habita, comunidad)
+            VALUES (?, ?, ?)
+        ")->execute([$id, $data['direc_habita'], $data['comunidad']]);
 
+        // Insertar info personal
+        $db->prepare("
+            INSERT INTO solicitantes_info (id_solicitante, telefono)
+            VALUES (?, ?)
+        ")->execute([$id, $data['telefono']]);
 
-            // Insertar en solicitud_fecha
-            $insertFecha = $db->prepare("INSERT INTO solicitud_desarrollo_fecha 
-                (id_des, fecha, fecha_modificacion,fecha_renovacion, visto) 
-                VALUES (:id_des, :fecha, :fecha_modificacion, :fecha_renovacion, 0)");
-            $insertFecha->execute([
-                ':id_des' => $id_des,
-                ':fecha' => $data['fecha'],
-                ':fecha_modificacion' => $data['fecha'],
-                ':fecha_renovacion' => $data['fecha']
-            ]);
+        // Insertar registros vacíos en las demás tablas
+        $db->prepare("INSERT INTO solicitantes_conocimiento (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_extra (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_propiedad (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_trabajo (id_solicitante) VALUES (?)")->execute([$id]);
+        $db->prepare("INSERT INTO solicitantes_ingresos (id_solicitante) VALUES (?)")->execute([$id]);
+}
 
-            $insertCorreo = $db->prepare("INSERT INTO solicitud_desarrollo_correo (id_des,correo_enviado) VALUES (:id_des,0)");
-            $insertCorreo->execute([
-                ':id_des' => $id_des
-            ]);
-
-            $db->commit();
-            return ['exito' => true, 'id_des' => $id_des];
-
-        } catch (Exception $e) {
-            $db->rollBack();
-            error_log("Error al registrar solicitud de desarrollo: " . $e->getMessage());
-            return ['exito' => false, 'error' => $e->getMessage()];
-        }
-    }
 
     private static function obtenerNombreCreador($ci_user) {
         $db = DB::conectar();
@@ -811,7 +847,8 @@ class Desarrollo {
                         sdc.correo_enviado, 
                         sdt.*, 
                         sdi.*, 
-                        sol.*
+                        sol.nombre AS remitente_nombre,
+                        sol.apellido AS remitente_apellido
                     FROM solicitud_desarrollo sd
                     LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
                     LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
@@ -824,6 +861,7 @@ class Desarrollo {
                         sd.estado LIKE :filtro OR
                         sdt.categoria LIKE :filtro OR
                         sdi.descripcion LIKE :filtro OR
+                        sdi.creador LIKE :filtro OR
                         CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
                         CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
                         sol.nombre LIKE :filtro OR

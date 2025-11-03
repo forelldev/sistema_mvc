@@ -8,7 +8,7 @@ require_once 'conexiondb.php';
             // Definir estados según el rol
             switch ($rol) {
                 case 1:
-                    $estado = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3'];
+                    $estado = ['En espera del documento físico para ser procesado 0/3', 'En Proceso 1/3','Solicitud Finalizada (Ayuda Entregada)'];
                     break;
                 case 2:
                     $estado = ['En Proceso 2/3'];

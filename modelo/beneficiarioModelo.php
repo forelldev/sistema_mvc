@@ -232,13 +232,16 @@ class BeneficiarioModelo{
             $filtro = "%$filtro%"; // Para búsqueda parcial con LIKE
 
             // Preparar la consulta
-            $stmt = $conexion->prepare("
+           $stmt = $conexion->prepare("
                 SELECT * FROM solicitantes 
                 WHERE nombre LIKE :filtro 
                 OR apellido LIKE :filtro 
                 OR ci LIKE :filtro
+                OR CONCAT(nombre, ' ', apellido) LIKE :filtro
+                OR CONCAT(apellido, ' ', nombre) LIKE :filtro
                 ORDER BY nombre ASC
             ");
+
 
             // Ejecutar con parámetro seguro
             $stmt->execute([':filtro' => $filtro]);

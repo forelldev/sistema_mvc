@@ -42,7 +42,18 @@
                     <td><?= htmlspecialchars($beneficiario['ci'] ?? '') ?></td>
                     <td><?= htmlspecialchars($beneficiario['telefono'] ?? 'No tiene o aún no se ha registrado') ?></td>
                     <td><?= htmlspecialchars($beneficiario['comunidad'] ?? 'Sin registrar') ?></td>
-                    <td><?= htmlspecialchars($beneficiario['edad'] ?? 'Sin registrar') ?></td>
+                    <td>
+                        <?php
+                        if (!empty($beneficiario['fecha_nacimiento'])) {
+                            $fechaNacimiento = new DateTime($beneficiario['fecha_nacimiento']);
+                            $hoy = new DateTime();
+                            $edad = $fechaNacimiento->diff($hoy)->y;
+                            echo htmlspecialchars($edad);
+                        } else {
+                            echo 'Sin registrar';
+                        }
+                        ?>
+                    </td>
                     <td>
                         <?= isset($beneficiario['fecha_nacimiento']) && trim($beneficiario['fecha_nacimiento']) !== '' 
                                 ? htmlspecialchars(date('d-m-Y', strtotime($beneficiario['fecha_nacimiento']))) 

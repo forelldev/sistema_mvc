@@ -36,13 +36,12 @@ class SolicitudControl {
                 if($resultado['exito']){
                     $msj = 'El solicitante ya está registrado!';
                     $data = self::obtenerDatosBeneficiario($ci);
-                    extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                    require_once 'vistas/solicitud_formulario_cargado.php';                
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.             
                 }
                 else{
                     $msj = 'Registra al Solicitante';
-                    require_once 'vistas/solicitud_formulario.php';
                 }
+                require_once 'vistas/solicitud_formulario_cargado.php';
                 
             }
         }
@@ -54,12 +53,11 @@ class SolicitudControl {
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
             $msj = 'El solicitante ya está registrado!';
-            require_once 'vistas/solicitud_formulario_cargado.php';
         }
         else{
             $msj = 'Ocurrió un error o el Solicitante no existe';
-            require_once 'vistas/solicitud_formulario.php';
         }
+        require_once 'vistas/solicitud_formulario_cargado.php';
     }
     
     private static function obtenerDatosBeneficiario($ci) {

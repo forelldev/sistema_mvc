@@ -833,6 +833,7 @@ private static function insertarSolicitante($db, $id, $data) {
                                 sc.categoria LIKE :filtro OR
                                 sc.tipo_ayuda LIKE :filtro OR
                                 sd.descripcion LIKE :filtro OR
+                                sd.observaciones LIKE :filtro OR
                                 sd.promotor LIKE :filtro OR
                                 CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
                                 CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR

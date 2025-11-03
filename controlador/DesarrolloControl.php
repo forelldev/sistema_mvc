@@ -1,6 +1,7 @@
 <?php 
 require_once 'modelo/DesarrolloModelo.php';
 require_once 'modelo/procesarModelo.php';
+require_once 'modelo/solicitudModelo.php';
 class DesarrolloControl {
     public static function lista (){
         if(isset($_GET['msj'])){
@@ -27,6 +28,7 @@ class DesarrolloControl {
         }
         require_once 'vistas/solicitudes_desarrollo_buscar.php';
     }
+
     public static function formulario_desarrollo() {
         $ci = $_POST['ci'] ?? null;
         if ($ci) {
@@ -37,23 +39,32 @@ class DesarrolloControl {
                 require_once 'vistas/solicitud_desarrollo_encontrada.php';
             }
             else{
-                $data = self::obtenerDatosBeneficiario($ci);
-                extract($data); // crea $data_exists, $datos_beneficiario, etc.
-                // Verificar si el solicitante existe para bloquear edición
+                $resultado = Solicitud::verificar_solicitante($ci);
+                if($resultado['exito']){
+                    $msj = 'El solicitante ya está registrado!';
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.             
+                }
+                else{
+                    $msj = 'Registra al Solicitante';
+                }
                 require_once 'vistas/solicitudes_desarrollo_formulario.php';
             }
         }
     }
 
     public static function registrar(){
-        $ci = $_POST['ci'] ?? null;
-        if($ci){
+        if(isset($_POST['ci'])){
             $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
-            $msj = 'El beneficiario ya está registrado!';
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-            require_once 'vistas/solicitudes_desarrollo_formulario.php';
+            $msj = 'El solicitante ya está registrado!';
         }
+        else{
+            $msj = 'Ocurrió un error o el Solicitante no existe';
+            
+        }
+        require_once 'vistas/solicitudes_desarrollo_formulario.php';
     }
 
     private static function obtenerDatosBeneficiario($ci) {

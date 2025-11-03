@@ -231,7 +231,7 @@
                 </div>
                 <div class="campo-formulario">
                     <label for="ci">Cedula de Identidad:</label>
-                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($ci ?? '')?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos_beneficiario['solicitante']['ci'] ?? $ci ?? '')?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
             </div>
             <div class="fila-formulario">
@@ -280,10 +280,14 @@
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
-<?php if (isset($msj)): ?>
-        <script>
-            mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 3000);
-        </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
 <?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
