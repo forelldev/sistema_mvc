@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const tipoAyudaDiv = tipoAyudaSelect.closest('.campo-formulario');
 
     function toggleTipoAyuda() {
-        if (categoriaSelect.value === 'Ayudas Tecnicas') {
+        if (categoriaSelect.value === 'Ayudas Técnicas') {
             tipoAyudaDiv.style.display = 'block';
             tipoAyudaSelect.setAttribute('required', 'required');
         } else {

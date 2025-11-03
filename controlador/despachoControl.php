@@ -205,15 +205,18 @@
     }
 
     public static function editar(){
-        if(isset($_GET['id_doc'])){
-            $id_doc = $_GET['id_doc'];
+        if(isset($_GET['id_despacho'])){
+            $id_doc = $_GET['id_despacho'];
             $resultado = Procesar::edit_vistaDespacho($id_doc);
-            if($resultado){
+            if($resultado['exito']){
                 $datos = $resultado['datos'];
             }
             else{
-                $msj = 'Ocurrió un  en el precesamiento del id_doc';
+                $msj = 'Ocurrió un error: '.$resultado['error'];
             }
+        }
+        else{
+            $msj = "No se recibió el ID correctamente (GET).";
         }
         require_once 'vistas/editarDespacho.php';
     }
@@ -225,16 +228,17 @@
         $_POST['ci_user'] = $_SESSION['ci'];
         $resultado = Procesar::editar_consultaDespacho($_POST);
             if($resultado['exito']){
-                header('Location: '.BASE_URL.'/'.$direccion);
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $id_doc = $_POST['id_despacho'];
                 $accion = 'Editó la solicitud de Despacho';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
+                header('Location: '.BASE_URL.'/'.$direccion.'?msj=Solicitud actualizada con éxito');
 
             }
             else{
                 $msj = "Error" . $resultado['error'];
+                require_once 'vistas/editarDespacho.php';
             }
     }
 

@@ -514,7 +514,7 @@ private static function insertarSolicitante($db, $id, $data) {
             } else {
                 return [
                     'exito' => false,
-                    'mensaje' => 'No se encontró la solicitud.'
+                    'error' => 'No se encontró la solicitud.'
                 ];
             }
         } catch (PDOException $e) {
@@ -527,67 +527,123 @@ private static function insertarSolicitante($db, $id, $data) {
     }
 
 
-    public static function editar($data) {
-        $conexion = DB::conectar();
+  public static function editar($data) {
+    $conexion = DB::conectar();
 
-        try {
-            $conexion->beginTransaction();
+    try {
+        $conexion->beginTransaction();
 
-            $camposObligatorios = [
-                'id_des', 'id_manual', 'ci', 'descripcion','categoria'
-            ];
+        $camposObligatorios = [
+            'id_des', 'id_manual', 'descripcion', 'categoria'
+        ];
 
-            foreach ($camposObligatorios as $campo) {
-                if (!isset($data[$campo]) || $data[$campo] === '') {
-                    throw new Exception("Falta el campo obligatorio: $campo");
-                }
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || $data[$campo] === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
+            }
+        }
+
+        // Obtener el id_manual actual para este id_des
+        $actual = $conexion->prepare("
+            SELECT id_manual FROM solicitud_desarrollo WHERE id_des = ?
+        ");
+        $actual->execute([$data['id_des']]);
+        $idManualActual = $actual->fetchColumn();
+
+        // Si el id_manual ha cambiado, verificar disponibilidad
+        if ($idManualActual !== $data['id_manual']) {
+            $verificar = $conexion->prepare("
+                SELECT COUNT(*) FROM solicitud_desarrollo 
+                WHERE id_manual = ? AND id_des != ?
+            ");
+            $verificar->execute([$data['id_manual'], $data['id_des']]);
+            $existe = $verificar->fetchColumn();
+
+            if ($existe > 0) {
+                $conexion->rollBack();
+                return ['exito' => false, 'error' => 'El ID manual ya está asignado a otra solicitud.'];
             }
 
-            // Actualizar solicitud_desarrollo
             $stmt1 = $conexion->prepare("
                 UPDATE solicitud_desarrollo 
-                SET id_manual = ?, ci = ? 
+                SET id_manual = ? 
                 WHERE id_des = ?
             ");
             $stmt1->execute([
                 $data['id_manual'],
-                $data['ci'],
                 $data['id_des']
             ]);
-
-            // Actualizar solicitud_desarrollo_info
-            $stmt2 = $conexion->prepare("
-                UPDATE solicitud_desarrollo_info 
-                SET descripcion = ?
-                WHERE id_des = ?
-            ");
-            $stmt2->execute([
-                $data['descripcion'],
-                $data['id_des']
-            ]);
-
-            // Actualizar solicitud_desarrollo_tipo
-            $stmt3 = $conexion->prepare("
-                UPDATE solicitud_desarrollo_tipo 
-                SET categoria = ? 
-                WHERE id_des = ?
-            ");
-            $stmt3->execute([
-                $data['categoria'],
-                $data['id_des']
-            ]);
-
-            $conexion->commit();
-            return ['exito' => true];
-
-        } catch (Exception $e) {
-            if ($conexion->inTransaction()) {
-                $conexion->rollBack();
-            }
-            error_log("Error al editar solicitud de desarrollo: " . $e->getMessage());
-            return ['exito' => false, 'error' => $e->getMessage()];
         }
+
+        // Actualizar solicitud_desarrollo_info
+        $stmt2 = $conexion->prepare("
+            UPDATE solicitud_desarrollo_info 
+            SET descripcion = ?
+            WHERE id_des = ?
+        ");
+        $stmt2->execute([
+            $data['descripcion'],
+            $data['id_des']
+        ]);
+
+        // Actualizar solicitud_desarrollo_tipo
+        $stmt3 = $conexion->prepare("
+            UPDATE solicitud_desarrollo_tipo 
+            SET categoria = ? 
+            WHERE id_des = ?
+        ");
+        $stmt3->execute([
+            $data['categoria'],
+            $data['id_des']
+        ]);
+
+        // Manejo de exámenes según categoría y subcategoría
+        $stmtDel = $conexion->prepare("
+            DELETE FROM solicitud_desarrollo_laboratorio WHERE id_des = ?
+        ");
+        $stmtDel->execute([$data['id_des']]);
+
+        if ($data['categoria'] === 'Laboratorio') {
+            $subcategoria = $data['subcategoria'] ?? '';
+
+            if ($subcategoria === 'Exámenes de Laboratorio') {
+                if (!empty($data['examen']) && is_array($data['examen'])) {
+                    $stmtIns = $conexion->prepare("
+                        INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (?, ?)
+                    ");
+                    foreach ($data['examen'] as $examen) {
+                        $stmtIns->execute([$data['id_des'], $examen]);
+                    }
+                }
+            } elseif ($subcategoria === 'Eco-Doppler' || $subcategoria === 'Ecosonograma') {
+                $stmtIns = $conexion->prepare("
+                    INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (?, ?)
+                ");
+                $stmtIns->execute([$data['id_des'], $subcategoria]);
+            }
+        }
+
+        // Actualizar fecha_modificacion
+        $stmt4 = $conexion->prepare("
+            UPDATE solicitud_desarrollo_fecha 
+            SET fecha_modificacion = NOW() 
+            WHERE id_des = ?
+        ");
+        $stmt4->execute([$data['id_des']]);
+
+        $conexion->commit();
+        return ['exito' => true];
+
+    } catch (Exception $e) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+        error_log("Error al editar solicitud de desarrollo: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
     }
+}
+
+
 
     public static function filtrar($filtro){
         try {

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const categoriaSelect = document.getElementById("categoria");
   const tipoAyudaSelect = document.getElementById("tipo_ayuda");
   const tipoAyudaContainer = document.getElementById("tipoAyudaContainer");
+  const tipoAyudaPrecargado = document.getElementById("tipo_ayuda_precargado")?.value || "";
 
   const opcionesPorCategoria = {
     "Salud": ["Medicamentos", "Ayudas Técnicas", "Operaciones", "Exámenes", "Estudios", "Consultas"],
@@ -10,23 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
     "Varios": ["Tanques de Agua"]
   };
 
-  // Ocultar al cargar
-  tipoAyudaContainer.style.display = "none";
-
-  categoriaSelect.addEventListener("change", function () {
-    const categoria = categoriaSelect.value;
+  const renderTipoAyuda = (categoria) => {
     const opciones = opcionesPorCategoria[categoria] || [];
 
-    if (categoria === "") {
-      tipoAyudaContainer.style.display = "none";
-      tipoAyudaSelect.innerHTML = "";
-      return;
-    }
-
-    // Mostrar el contenedor
-    tipoAyudaContainer.style.display = "block";
-
-    // Limpiar y agregar opciones
     tipoAyudaSelect.innerHTML = "";
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
@@ -37,8 +24,24 @@ document.addEventListener("DOMContentLoaded", function () {
       const optionElement = document.createElement("option");
       optionElement.value = opcion;
       optionElement.textContent = opcion;
+      if (opcion === tipoAyudaPrecargado) {
+        optionElement.selected = true;
+      }
       tipoAyudaSelect.appendChild(optionElement);
     });
+  };
+
+  categoriaSelect.addEventListener("change", function () {
+    const categoria = categoriaSelect.value;
+
+    if (categoria === "") {
+      tipoAyudaContainer.style.display = "none";
+      tipoAyudaSelect.innerHTML = "";
+      return;
+    }
+
+    tipoAyudaContainer.style.display = "block";
+    renderTipoAyuda(categoria);
   });
 
   tipoAyudaSelect.addEventListener("change", function () {
@@ -47,7 +50,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // ✅ Precargar si ya hay categoría seleccionada
+  if (categoriaSelect.value) {
+    tipoAyudaContainer.style.display = "block";
+    renderTipoAyuda(categoriaSelect.value);
+  }
 });
-
-
-

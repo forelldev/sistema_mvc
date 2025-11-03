@@ -100,10 +100,8 @@ function validarEstadoInicialPatologia() {
         datosTemporales = [];
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     validarEstadoInicialPatologia();
-
     if (data_exists === "1" &&
         Array.isArray(tiposPatologiaGuardados) &&
         tiposPatologiaGuardados.length > 0 &&

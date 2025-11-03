@@ -34,12 +34,14 @@ class SolicitudControl {
             else{
                 $resultado = Solicitud::verificar_solicitante($ci);
                 if($resultado['exito']){
-                    $msj = 'El solicitante ya está registrado!';
+                    $msj = 'El beneficiario ya está registrado!';
                     $data = self::obtenerDatosBeneficiario($ci);
                     extract($data); // crea $data_exists, $datos_beneficiario, etc.             
                 }
                 else{
-                    $msj = 'Registra al Solicitante';
+                    $msj ='Registra al beneficiario!';
+                    $data = self::obtenerDatosBeneficiario($ci);
+                    extract($data); // crea $data_exists, $datos_beneficiario, etc.        
                 }
                 require_once 'vistas/solicitud_formulario_cargado.php';
                 
@@ -52,10 +54,10 @@ class SolicitudControl {
             $ci = $_POST['ci'];
             $data = self::obtenerDatosBeneficiario($ci);
             extract($data); // crea $data_exists, $datos_beneficiario, etc.
-            $msj = 'El solicitante ya está registrado!';
+            $msj = 'El beneficiaroi ya está registrado!';
         }
         else{
-            $msj = 'Ocurrió un error o el Solicitante no existe';
+            $msj = 'Ocurrió un error o el beneficiaroi no existe';
         }
         require_once 'vistas/solicitud_formulario_cargado.php';
     }
@@ -256,25 +258,28 @@ class SolicitudControl {
     }
 
     public static function editar_solicitud(){
+        if(isset($_POST['id_doc'])){
         date_default_timezone_set('America/Caracas');
         $direccion = 'solicitudes_list';
         $_POST['fecha'] = date('Y-m-d H:i:s');
         $_POST['ci_user'] = $_SESSION['ci'];
-        $_POST['id_doc'] = $_SESSION['id_doc'];
         $resultado = Procesar::editar_consulta($_POST);
             if($resultado['exito']){
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Editó la solicitud';
-                Procesar::registrarReporte($_SESSION['id_doc'],$fecha,$accion,$_SESSION['ci']);
-                unset($_SESSION['id_doc']);
-                header('Location: '.BASE_URL.'/'.$direccion);
+                $accion = 'Editó la solicitud (General)';
+                Procesar::registrarReporte($_POST['id_doc'],$fecha,$accion,$_SESSION['ci']);
+                header('Location: '.BASE_URL.'/'.$direccion.'?msj=Solicitud actualizada con éxito!');
                 exit;
             }
             else{
                 $msj = 'Ocurrió un error: '.$resultado['error'];
-                unset($_SESSION['id_doc']);
-                require_once 'vistas/editar.php';
-            }
+                header('Location: '.BASE_URL.'/editar?id_doc='.$_POST['id_doc'].'&&msj='.$msj);
+            }               
+        }
+        else{
+            $msj = 'Ocurrió un error (POST)';
+            header('Location: '.BASE_URL.'/editar?msj='.$msj);
+        }
     }
 
   public static function filtrar(){

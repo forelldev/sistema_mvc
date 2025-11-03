@@ -210,7 +210,7 @@ class DesarrolloControl {
                 $datos = $resultado['datos'];
             }
             else{
-                $msj = 'Ocurrió un  en el precesamiento del id_des';
+                $msj = 'Error:'.$resultado['error'];
             }
         }
         require_once 'vistas/solicitudes_desarrollo_editar.php';
@@ -224,14 +224,14 @@ class DesarrolloControl {
         $id_des = $_POST['id_des'];
         $resultado = Desarrollo::editar($_POST);
             if($resultado['exito']){
-                header('Location: '.BASE_URL.'/solicitudes_desarrollo');
+                header('Location: '.BASE_URL.'/solicitudes_desarrollo?msj=Solicitud actualizada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Editó la solicitud (Desarrollo)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
             }
             else{
-                $msj = "Error" . $resultado['error'];
+                $msj = "Error:" . $resultado['error'];
                 $id_des = $_POST['id_des'] ?? null;
                 if($id_des){
                     $resultado = Desarrollo::edicion_vista($id_des);
@@ -243,7 +243,8 @@ class DesarrolloControl {
             }               
         }
         else{
-            $msj = 'Surgió un error obteniendo datos (POST)';
+            $msj = 'Surgió un error obteniendo datos (POST, id)';
+            require_once 'vistas/solicitudes_desarrollo_editar.php';
         }
     }
 

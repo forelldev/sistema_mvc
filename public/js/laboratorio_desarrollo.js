@@ -11,16 +11,24 @@ const renderSubcategoria = (valor) => {
     campoExamen.innerHTML = `<input type="hidden" name="examen[]" value="${valor}">`;
     campoExamen.style.display = 'block';
   } else if (valor === 'Exámenes de Laboratorio') {
-    campoExamen.innerHTML = `
-      <label>Seleccione uno o más exámenes:</label><br>
-      <label><input type="checkbox" name="examen[]" value="Hematología Completa"> Hematología Completa</label><br>
-      <label><input type="checkbox" name="examen[]" value="Glicemia"> Glicemia</label><br>
-      <label><input type="checkbox" name="examen[]" value="Orina"> Orina</label><br>
-      <label><input type="checkbox" name="examen[]" value="Heces"> Heces</label><br>
-    `;
+    const opciones = [
+      'Hematología Completa',
+      'Glicemia',
+      'Orina',
+      'Heces'
+    ];
+
+    let html = `<label>Seleccione uno o más exámenes:</label><br>`;
+    opciones.forEach(opcion => {
+      const checked = examenSeleccionado.includes(opcion) ? 'checked' : '';
+      html += `<label><input type="checkbox" name="examen[]" value="${opcion}" ${checked}> ${opcion}</label><br>`;
+    });
+
+    campoExamen.innerHTML = html;
     campoExamen.style.display = 'block';
   }
 };
+
 
 tipoAyudaSelect.addEventListener('change', (e) => {
   const valor = e.target.value;

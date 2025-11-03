@@ -13,7 +13,7 @@
     <header class="header">
         <div class="titulo-header">Formulario de solicitud de ayuda</div>
         <div class="header-right">
-            <a href="<?=BASE_URL?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver</button></a>
+            <a href="<?=BASE_URL?>/solicitudes_list?msj=Has cancelado la creación de solicitud!"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver</button></a>
         </div>
     </header>
     <main>
@@ -223,15 +223,11 @@
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="id_manual">Número de documento:</label>
-                    <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="text" id="id_manual" name="id_manual" placeholder="00004578" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?= $_POST['id_manual'] ?? ''?>">
                 </div>
                 <div class="campo-formulario">
                     <label for="descripcion">Descripción:</label>
-                    <input type="text" id="descripcion" name="descripcion" placeholder="Ejem: Ayuda para silla de ruedas" required>
-                </div>
-                <div class="campo-formulario">
-                    <label for="ci">Cedula de Identidad:</label>
-                    <input type="text" id="ci" name="ci" placeholder="Ejem: V-12345678" value="<?= htmlspecialchars($datos_beneficiario['solicitante']['ci'] ?? $ci ?? '')?>" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <input type="text" id="descripcion" name="descripcion" placeholder="Ejem: Ayuda para silla de ruedas" required value="<?= $_POST['descripcion'] ?? ''?>">
                 </div>
             </div>
             <div class="fila-formulario">
@@ -239,37 +235,37 @@
                     <label for="categoria">Categoría</label>
                     <select name="categoria" id="categoria" required>
                         <option value="">Seleccione</option>
-                        <option value="Ayudas Tecnicas" <?= ($categoria ?? '') == 'Ayudas Tecnicas' ? 'selected' : '' ?>>Ayudas Técnicas</option>
-                        <option value="Medicamentos" <?= ($categoria ?? '') == 'Medicamentos' ? 'selected' : '' ?>>Medicamentos</option>
-                        <option value="Laboratorio" <?= ($categoria ?? '') == 'Laboratorio' ? 'selected' : '' ?>>Laboratorio</option>
-                        <option value="Enseres" <?= ($categoria ?? '') == 'Enseres' ? 'selected' : '' ?>>Enseres</option>
-                        <option value="Economica" <?= ($categoria ?? '') == 'Economica' ? 'selected' : '' ?>>Económica</option>
-                        <option value="Otros" <?= ($categoria ?? '') == 'Otros' ? 'selected' : '' ?>>Otros</option>
+                        <option value="Ayudas Técnicas" <?= ($_POST['categoria'] ?? '') == 'Ayudas Técnicas' ? 'selected' : '' ?>>Ayudas Técnicas</option>
+                        <option value="Medicamentos" <?= ($_POST['categoria'] ?? '') == 'Medicamentos' ? 'selected' : '' ?>>Medicamentos</option>
+                        <option value="Laboratorio" <?= ($_POST['categoria'] ?? '') == 'Laboratorio' ? 'selected' : '' ?>>Laboratorio</option>
+                        <option value="Enseres" <?= ($_POST['categoria'] ?? '') == 'Enseres' ? 'selected' : '' ?>>Enseres</option>
+                        <option value="Economica" <?= ($_POST['categoria'] ?? '') == 'Economica' ? 'selected' : '' ?>>Económica</option>
+                        <option value="Otros" <?= ($_POST['categoria'] ?? '') == 'Otros' ? 'selected' : '' ?>>Otros</option>
                     </select>
                 </div>
-                <div class="campo-formulario">
+                <div class="campo-formulario" id="select-dinamico">
                     <label for="tipo_ayuda">Tipo de Ayuda:</label>
                     <select name="tipo_ayuda" id="tipo_ayuda" required>
                         <option value="">Seleccione</option>
-                        <option value="Silla de Ruedas">Silla de Ruedas</option>
-                        <option value="Silla de Ruedas(Niño)">Silla de Ruedas(Niño)</option>
-                        <option value="Andadera">Andadera</option>
-                        <option value="Andadera (Niño)">Andadera (Niño)</option>
-                        <option value="Bastón 1 Punta">Bastón 1 Punta</option>
-                        <option value="Bastón 3 Puntas">Bastón 3 Puntas</option>
-                        <option value="Bastón 4 Puntas">Bastón 4 Puntas</option>
-                        <option value="Muletas">Muletas</option>
-                        <option value="Muletas (Niño)">Muletas (Niño)</option>
-                        <option value="Collarín">Collarín</option>
-                        <option value="Colchón Anti-escaras">Colchón Anti-escaras</option>
-                        <option value="Otros">Otros</option>
+                        <option value="Silla de Ruedas" <?= ($_POST['tipo_ayuda'] ?? '') == 'Silla de Ruedas' ? 'selected' : '' ?>>Silla de Ruedas</option>
+                        <option value="Silla de Ruedas(Niño)" <?= ($_POST['tipo_ayuda'] ?? '') == 'Silla de Ruedas(Niño)' ? 'selected' : '' ?>>Silla de Ruedas(Niño)</option>
+                        <option value="Andadera" <?= ($_POST['tipo_ayuda'] ?? '') == 'Andadera' ? 'selected' : '' ?>>Andadera</option>
+                        <option value="Andadera (Niño)" <?= ($_POST['tipo_ayuda'] ?? '') == 'Andadera (Niño)' ? 'selected' : '' ?>>Andadera (Niño)</option>
+                        <option value="Bastón 1 Punta" <?= ($_POST['tipo_ayuda'] ?? '') == 'Bastón 1 Punta' ? 'selected' : '' ?>>Bastón 1 Punta</option>
+                        <option value="Bastón 3 Puntas" <?= ($_POST['tipo_ayuda'] ?? '') == 'Bastón 3 Puntas' ? 'selected' : '' ?>>Bastón 3 Puntas</option>
+                        <option value="Bastón 4 Puntas" <?= ($_POST['tipo_ayuda'] ?? '') == 'Bastón 4 Puntas' ? 'selected' : '' ?>>Bastón 4 Puntas</option>
+                        <option value="Muletas" <?= ($_POST['tipo_ayuda'] ?? '') == 'Muletas' ? 'selected' : '' ?>>Muletas</option>
+                        <option value="Muletas (Niño)" <?= ($_POST['tipo_ayuda'] ?? '') == 'Muletas (Niño)' ? 'selected' : '' ?>>Muletas (Niño)</option>
+                        <option value="Collarín" <?= ($_POST['tipo_ayuda'] ?? '') == 'Collarín' ? 'selected' : '' ?>>Collarín</option>
+                        <option value="Colchón Anti-escaras" <?= ($_POST['tipo_ayuda'] ?? '') == 'Colchón Anti-escaras' ? 'selected' : '' ?>>Colchón Anti-escaras</option>
+                        <option value="Otros" <?= ($_POST['tipo_ayuda'] ?? '') == 'Otros' ? 'selected' : '' ?>>Otros</option>
                     </select>
                 </div>
             </div>
             <div class="fila-formulario">
                 <div class="campo-formulario">
                     <label for="observaciones">Observaciones:</label>
-                    <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)">
+                    <input type="text" id="observaciones_ayuda" name="observaciones" placeholder="Detalles relevantes (Opcional)" value="<?=$_POST['observaciones'] ?? '' ?>">
                 </div>
             </div>
             <button type="submit" class="boton-enviar-ayuda"><i class="fa fa-paper-plane"></i> Enviar</button>
@@ -294,7 +290,7 @@ if ($mensaje):
 <script src="<?= BASE_URL ?>/public/js/edad.js"></script>
 <script src="<?= BASE_URL ?>/public/js/trabajo.js"></script>
 <script>
-    const data_exists = "<?= $data['data_exists'] ? '1' : '0' ?>";
+    const data_exists = <?= isset($data['data_exists']) && $data['data_exists'] ? '1' : '0' ?>;
     const tiposPatologiaGuardados = <?= json_encode(explode('|', $data['tiposJS'])) ?>;
     const nombresPatologiaGuardados = <?= json_encode(explode('|', $data['nombresJS'])) ?>;
 </script>

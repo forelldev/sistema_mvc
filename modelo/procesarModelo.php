@@ -367,7 +367,7 @@ public static function solicitud($id_doc, $estado) {
                 } else {
                     return [
                         'exito' => false,
-                        'mensaje' => 'No se encontró la solicitud.'
+                        'error' => 'No se encontró la solicitud.'
                     ];
                 }
             } catch (PDOException $e) {
@@ -380,69 +380,100 @@ public static function solicitud($id_doc, $estado) {
         }
 
 
-        public static function editar_consulta($data) {
-            $conexion = DB::conectar();
+     public static function editar_consulta($data) {
+    $conexion = DB::conectar();
 
-            try {
-                $conexion->beginTransaction();
+    try {
+        $conexion->beginTransaction();
 
-                $camposObligatorios = [
-                    'id_doc', 'id_manual', 'ci', 'descripcion','observaciones', 'tipo_ayuda', 'categoria'
-                ];
+        $camposObligatorios = [
+            'id_doc', 'id_manual', 'descripcion', 'observaciones', 'tipo_ayuda', 'categoria'
+        ];
 
-                foreach ($camposObligatorios as $campo) {
-                    if (!isset($data[$campo]) || $data[$campo] === '') {
-                        throw new Exception("Falta el campo obligatorio: $campo");
-                    }
-                }
-
-                // Actualizar solicitud_ayuda
-                $stmt1 = $conexion->prepare("
-                    UPDATE solicitud_ayuda 
-                    SET id_manual = ?, ci = ? 
-                    WHERE id_doc = ?
-                ");
-                $stmt1->execute([
-                    $data['id_manual'],
-                    $data['ci'],
-                    $data['id_doc']
-                ]);
-
-                // Actualizar solicitud_descripcion
-                $stmt2 = $conexion->prepare("
-                    UPDATE solicitud_descripcion 
-                    SET descripcion = ?,observaciones = ? 
-                    WHERE id_doc = ?
-                ");
-                $stmt2->execute([
-                    $data['descripcion'],
-                    $data['observaciones'],
-                    $data['id_doc']
-                ]);
-
-                // Actualizar solicitud_categoria
-                $stmt3 = $conexion->prepare("
-                    UPDATE solicitud_categoria 
-                    SET tipo_ayuda = ?, categoria = ? 
-                    WHERE id_doc = ?
-                ");
-                $stmt3->execute([
-                    $data['tipo_ayuda'],
-                    $data['categoria'],
-                    $data['id_doc']
-                ]);
-
-                $conexion->commit();
-                return ['exito' => true];
-
-            } catch (Exception $e) {
-                if ($conexion->inTransaction()) {
-                    $conexion->rollBack();
-                }
-                error_log("Error al editar la solicitud: " . $e->getMessage());
-                return ['exito' => false, 'error' => $e->getMessage()];
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || $data[$campo] === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
             }
         }
+
+        // Obtener el id_manual actual para este id_doc
+        $actual = $conexion->prepare("
+            SELECT id_manual FROM solicitud_ayuda WHERE id_doc = ?
+        ");
+        $actual->execute([$data['id_doc']]);
+        $idManualActual = $actual->fetchColumn();
+
+        // Si el id_manual ha cambiado, verificar disponibilidad
+        if ($idManualActual !== $data['id_manual']) {
+            $verificar = $conexion->prepare("
+                SELECT COUNT(*) FROM solicitud_ayuda 
+                WHERE id_manual = ? AND id_doc != ?
+            ");
+            $verificar->execute([$data['id_manual'], $data['id_doc']]);
+            $existe = $verificar->fetchColumn();
+
+            if ($existe > 0) {
+                $conexion->rollBack();
+                return ['exito' => false, 'error' => 'El ID manual ya está asignado a otra solicitud.'];
+            }
+
+            // Actualizar id_manual si cambió
+            $stmt1 = $conexion->prepare("
+                UPDATE solicitud_ayuda 
+                SET id_manual = ?
+                WHERE id_doc = ?
+            ");
+            $stmt1->execute([
+                $data['id_manual'],
+                $data['id_doc']
+            ]);
+        }
+
+        // Actualizar solicitud_descripcion
+        $stmt2 = $conexion->prepare("
+            UPDATE solicitud_descripcion 
+            SET descripcion = ?, observaciones = ? 
+            WHERE id_doc = ?
+        ");
+        $stmt2->execute([
+            $data['descripcion'],
+            $data['observaciones'],
+            $data['id_doc']
+        ]);
+
+        // Actualizar solicitud_categoria
+        $stmt3 = $conexion->prepare("
+            UPDATE solicitud_categoria 
+            SET tipo_ayuda = ?, categoria = ? 
+            WHERE id_doc = ?
+        ");
+        $stmt3->execute([
+            $data['tipo_ayuda'],
+            $data['categoria'],
+            $data['id_doc']
+        ]);
+
+        // Actualizar fecha_modificacion
+        $stmt4 = $conexion->prepare("
+            UPDATE solicitud_ayuda_fecha 
+            SET fecha_modificacion = NOW() 
+            WHERE id_doc = ?
+        ");
+        $stmt4->execute([$data['id_doc']]);
+
+        $conexion->commit();
+        return ['exito' => true];
+
+    } catch (Exception $e) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+        error_log("Error al editar la solicitud: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+
+
 
 
 
@@ -605,11 +636,11 @@ public static function solicitud($id_doc, $estado) {
                 $consulta = "
                     SELECT 
                         d.*, 
-                        dd.asunto, dd.creador,
+                        dd.descripcion, dd.creador,
                         df.fecha, df.fecha_modificacion, df.visto,
                         di.razon
                     FROM despacho d
-                    LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                    LEFT JOIN despacho_info dd ON d.id_despacho = dd.id_despacho
                     LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
                     LEFT JOIN despacho_invalido di ON d.id_despacho = di.id_despacho
                     WHERE d.invalido = 1
@@ -648,12 +679,14 @@ public static function solicitud($id_doc, $estado) {
                 $stmt = $conexion->prepare("
                     SELECT 
                         d.*, 
-                        dd.asunto, dd.creador,
+                        dd.descripcion, dd.creador,
                         df.fecha, df.fecha_modificacion, df.visto,
+                        dc.categoria,dc.tipo_ayuda,
                         di.razon
                     FROM despacho d
-                    LEFT JOIN despacho_descripcion dd ON d.id_despacho = dd.id_despacho
+                    LEFT JOIN despacho_info dd ON d.id_despacho = dd.id_despacho
                     LEFT JOIN despacho_fecha df ON d.id_despacho = df.id_despacho
+                    LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
                     LEFT JOIN despacho_invalido di ON d.id_despacho = di.id_despacho
                     WHERE d.id_despacho = ?
                 ");
@@ -668,7 +701,7 @@ public static function solicitud($id_doc, $estado) {
                 } else {
                     return [
                         'exito' => false,
-                        'mensaje' => 'No se encontró el despacho.'
+                        'error' => 'No se encontró la solicitud.'
                     ];
                 }
             } catch (PDOException $e) {
@@ -681,70 +714,89 @@ public static function solicitud($id_doc, $estado) {
         }
 
 
-        public static function editar_consultaDespacho($data) {
-            $conexion = DB::conectar();
+    public static function editar_consultaDespacho($data) {
+    $conexion = DB::conectar();
 
-            try {
-                $conexion->beginTransaction();
+    try {
+        $conexion->beginTransaction();
 
-                $camposObligatorios = [
-                    'id_despacho', 'id_manual', 'ci', 'asunto', 'creador'
-                ];
+        $camposObligatorios = [
+            'id_despacho', 'id_manual', 'descripcion'
+        ];
 
-                foreach ($camposObligatorios as $campo) {
-                    if (!isset($data[$campo]) || $data[$campo] === '') {
-                        throw new Exception("Falta el campo obligatorio: $campo");
-                    }
-                }
-
-                // Actualizar despacho
-                $stmt1 = $conexion->prepare("
-                    UPDATE despacho 
-                    SET id_manual = ?, ci = ? 
-                    WHERE id_despacho = ?
-                ");
-                $stmt1->execute([
-                    $data['id_manual'],
-                    $data['ci'],
-                    $data['id_despacho']
-                ]);
-
-                // Actualizar despacho_descripcion
-                $stmt2 = $conexion->prepare("
-                    UPDATE despacho_descripcion 
-                    SET asunto = ?, creador = ? 
-                    WHERE id_despacho = ?
-                ");
-                $stmt2->execute([
-                    $data['asunto'],
-                    $data['creador'],
-                    $data['id_despacho']
-                ]);
-
-                // (Opcional) Actualizar fecha_modificacion en despacho_fecha
-                if (!empty($data['actualizar_fecha'])) {
-                    date_default_timezone_set('America/Caracas');
-                    $fecha = date('Y-m-d H:i:s');
-
-                    $stmt3 = $conexion->prepare("
-                        UPDATE despacho_fecha 
-                        SET fecha_modificacion = ? 
-                        WHERE id_despacho = ?
-                    ");
-                    $stmt3->execute([$fecha, $data['id_despacho']]);
-                }
-
-                $conexion->commit();
-                return ['exito' => true];
-
-            } catch (Exception $e) {
-                if ($conexion->inTransaction()) {
-                    $conexion->rollBack();
-                }
-                error_log("Error al editar el despacho: " . $e->getMessage());
-                return ['exito' => false, 'error' => $e->getMessage()];
+        foreach ($camposObligatorios as $campo) {
+            if (!isset($data[$campo]) || $data[$campo] === '') {
+                throw new Exception("Falta el campo obligatorio: $campo");
             }
         }
+
+        // Obtener el id_manual actual
+        $actual = $conexion->prepare("
+            SELECT id_manual FROM despacho WHERE id_despacho = ?
+        ");
+        $actual->execute([$data['id_despacho']]);
+        $idManualActual = $actual->fetchColumn();
+
+        // Si el id_manual ha cambiado, verificar duplicado
+        if ($idManualActual !== $data['id_manual']) {
+            $verificar = $conexion->prepare("
+                SELECT COUNT(*) FROM despacho 
+                WHERE id_manual = ? AND id_despacho != ?
+            ");
+            $verificar->execute([$data['id_manual'], $data['id_despacho']]);
+            $existe = $verificar->fetchColumn();
+
+            if ($existe > 0) {
+                $conexion->rollBack();
+                return ['exito' => false, 'error' => 'El ID manual ya está asignado a otro despacho.'];
+            }
+
+            // Actualizar id_manual si cambió
+            $stmt1 = $conexion->prepare("
+                UPDATE despacho 
+                SET id_manual = ? 
+                WHERE id_despacho = ?
+            ");
+            $stmt1->execute([
+                $data['id_manual'],
+                $data['id_despacho']
+            ]);
+        }
+
+        // Actualizar despacho_info
+        $stmt2 = $conexion->prepare("
+            UPDATE despacho_info
+            SET descripcion = ?
+            WHERE id_despacho = ?
+        ");
+        $stmt2->execute([
+            $data['descripcion'],
+            $data['id_despacho']
+        ]);
+
+        // Actualizar fecha_modificacion en despacho_fecha
+        $stmt3 = $conexion->prepare("
+            UPDATE despacho_fecha 
+            SET fecha_modificacion = NOW() 
+            WHERE id_despacho = ?
+        ");
+        $stmt3->execute([$data['id_despacho']]);
+
+        $stmt4 = $conexion->prepare("UPDATE despacho_categoria SET categoria = ?, tipo_ayuda = ? WHERE id_despacho = ?");
+        $stmt4->execute([$data['categoria'],$data['tipo_ayuda'],$data['id_despacho']]);
+
+        $conexion->commit();
+        return ['exito' => true];
+
+    } catch (Exception $e) {
+        if ($conexion->inTransaction()) {
+            $conexion->rollBack();
+        }
+        error_log("Error al editar el despacho: " . $e->getMessage());
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+
 
 }
 ?>
