@@ -29,15 +29,18 @@
                             <div><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></div>
                         </div>
                         <div class="solicitud-info">
-                            <div><strong>Asunto:</strong> <?= htmlspecialchars($fila['asunto']) ?></div>
+                            <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
                             <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual']) ?></div>
-                            <div><strong>Cédula de Identidad:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
+                            <div><strong>Cédula de Identidad del Beneficiario:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
                             <div><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
+                            <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
+                            <div><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda'] ?? '') ?></div>
+                            <div><strong>Beneficiario:</strong> <?= htmlspecialchars($fila[''] ?? '') ?></div>
                         </div>
                         <div class="solicitud-actions">
                             <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
-                            <a href="<?= BASE_URL.'/editarDespacho?id_doc='.$fila['id_doc']  ?>" class="aprobar-btn">Editar</a>
-                            <a href="<?= BASE_URL.'/habilitarDespacho?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Habilitar</a>
+                            <a href="<?= BASE_URL.'/editarDespacho?id_doc='.$fila['id_despacho']  ?>" class="aprobar-btn">Editar</a>
+                            <a href="<?= BASE_URL.'/habilitarDespacho?id_doc='.$fila['id_despacho'] ?>" class="aprobar-btn">Habilitar</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -57,6 +60,15 @@
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

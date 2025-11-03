@@ -153,18 +153,23 @@
         }
 
     public static function inhabilitar(){
-        if(isset($_GET['id_doc'])){
-            $id_doc = $_GET['id_doc'];
+        if(isset($_GET['id_despacho'])){
+            $id_despacho = $_GET['id_despacho'];
         }
-        require_once 'vistas/inhabilitar.php';
+        else{
+            $msj = 'No se recibió ID (GET)';
+        }
+        require_once 'vistas/despacho_inhabilitar.php';
     }
+
     public static function inhabilitar_solicitud(){
-        if(isset($_POST['id_doc'])){
+        if(isset($_POST['id_despacho'])){
             $estado = 'Inhabilitado';
-            $id_doc = $_POST['id_doc'];
+            $id_doc = $_POST['id_despacho'];
             $razon = $_POST['razon'];
-            if(Procesar::inhabilitarDespacho($id_doc,$estado,$razon)){
-                header('Location: '.BASE_URL.'/inhabilitados_despacho');
+            $res = Procesar::inhabilitarDespacho($id_doc,$estado,$razon);
+            if($res['exito']){
+                header('Location: '.BASE_URL.'/inhabilitados_despacho?msj=Solicitud actualizada con éxito');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Despacho)';
@@ -172,8 +177,13 @@
                 exit;
             }
             else{
-                $msj = 'Ocurrió un error inesperado';
+                $msj = 'Ocurrió un error inesperado '.$res['error'];
+                header('Location: '.BASE_URL.'/despacho_list?msj='.$msj);
             }
+        }
+        else{
+            $msj = "No se recibió el ID (POST)";
+            header('Location: '.BASE_URL.'/despacho_list?msj='.$msj);
         }
     }
 

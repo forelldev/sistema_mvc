@@ -90,16 +90,13 @@
                 </div>
             </div>
             <div class="fila-formulario">
-                <div class="campo-formulario">
+                 <div class="campo-formulario">
                     <label for="trabajo1">¿Trabaja?</label>
-                    <?php
-                        $trabajoValor = strtolower($datos_beneficiario['trabajo']['trabajo'] ?? '');
-                        ?>
-                        <select name="trabajo1" id="trabajo1" required onchange="mostrarCampoTrabajo()">
-                            <option value="">Seleccione</option>
-                            <option value="Si" <?= ($trabajoValor === 'si') ? 'selected' : '' ?>>Sí</option>
-                            <option value="No" <?= ($trabajoValor === 'no') ? 'selected' : '' ?>>No</option>
-                        </select>
+                    <select name="trabajo1" id="trabajo1" required onchange="mostrarCampoTrabajo()">
+                        <option value="">Seleccione</option>
+                        <option value="Si" <?= (isset($datos_beneficiario['trabajo']['trabajo']) && strtolower($datos_beneficiario['trabajo']['trabajo']) !== 'No tiene') ? 'selected' : '' ?>>Sí</option>
+                        <option value="No" <?= (isset($datos_beneficiario['trabajo']['trabajo']) && strtolower($datos_beneficiario['trabajo']['trabajo']) === 'No tiene') ? 'selected' : '' ?>>No</option>
+                    </select>
 
                 </div>
                 <div class="campo-formulario" id="campoTrabajo" style="display:none; margin-top:10px;">

@@ -61,7 +61,6 @@ function generarCamposFamiliares(cantidad, precargar = false) {
             ? nombresPatologiaGuardados[i].trim()
             : datosTemporales[i]?.nombre || '';
 
-        console.log(`Familiar ${i + 1}: tipo="${tipoPatologia}", nombre="${nombrePatologia}"`);
 
         const opciones = tipos.map(tipo =>
             `<option value="${tipo}" ${tipo === tipoPatologia ? 'selected' : ''}>${tipo}</option>`
@@ -101,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
             nombre: nombresPatologiaGuardados[i]?.trim() || ''
         }));
 
-        console.log("Precargando datos:", datosTemporales);
 
         mostrarNumeroFamiliares(true);
     } else {

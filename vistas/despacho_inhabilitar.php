@@ -13,13 +13,13 @@
         <div class="titulo-header">Inhabilitar solicitud</div>
         <div class="header-right">
             <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
-            <a href="<?= BASE_URL ?>/solicitudes_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+            <a href="<?= BASE_URL ?>/despacho_list"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
         </div>
     </header>
     <main>
-            <form action="inhabilitar_solicitud" method="POST" class="registro-card form-user" autocomplete="off">
+            <form action="inhabilitar_solicitudDespacho" method="POST" class="registro-card form-user" autocomplete="off">
                 <h2><i class="fa fa-ban"></i> Inhabilitar solicitud</h2>
-                <input type="hidden" name="id_doc" value="<?= $id_doc ?? 'No hay ID' ?>">
+                    <input type="hidden" name="id_despacho" value="<?= htmlspecialchars($id_despacho) ?>">
                 <div class="campo-user">
                     <label for="razon">Razón por la cual será inhabilitada esta solicitud</label>
                     <input type="text" name="razon" id="razon" placeholder="Razón por la cual será inhabilitada esta solicitud" required>

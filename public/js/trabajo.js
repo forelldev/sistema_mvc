@@ -1,5 +1,5 @@
-   //PARA TRABAJO CUADROS DE TRABAJOS
 
+// Mostrar u ocultar campos relacionados al trabajo
 function mostrarCampoTrabajo() {
     const trabaja = document.getElementById('trabajo1').value;
     const campo = document.getElementById('campoTrabajo');
@@ -14,24 +14,30 @@ function mostrarCampoTrabajo() {
     if (trabaja === 'Si') {
         campo.style.display = 'block';
         campos.forEach(id => {
-            document.getElementById(id).setAttribute('required', 'required');
+            const input = document.getElementById(id);
+            if (input) input.setAttribute('required', 'required');
         });
     } else {
         campo.style.display = 'none';
         campos.forEach(id => {
             const input = document.getElementById(id);
-            input.removeAttribute('required');
-            input.value = '';
+            if (input) {
+                input.removeAttribute('required');
+                input.value = '';
+            }
         });
 
         // Ocultar también el campo de institución
         campoInstitucion.style.display = 'none';
         const institucionInput = document.getElementById('nombre_insti');
-        institucionInput.removeAttribute('required');
-        institucionInput.value = '';
+        if (institucionInput) {
+            institucionInput.removeAttribute('required');
+            institucionInput.value = '';
+        }
     }
 }
 
+// Mostrar u ocultar campo de institución si trabaja en sector público
 function mostrarInstitucion() {
     const trabajaPublico = document.getElementById('trabaja_public').value;
     const campoInstitucion = document.getElementById('campoInstitucion');
@@ -47,26 +53,22 @@ function mostrarInstitucion() {
     }
 }
 
+// Inicializar comportamiento al cargar la página
 window.addEventListener('DOMContentLoaded', () => {
-    const trabajoInput = document.getElementById('trabajo');
     const trabajoSelect = document.getElementById('trabajo1');
+    const trabajaPublico = document.getElementById('trabaja_public');
 
-    if (trabajoInput && trabajoSelect) {
-        const valorTrabajo = trabajoInput.value.trim().toLowerCase();
-
-        if (valorTrabajo && valorTrabajo !== 'no tiene') {
-            trabajoSelect.value = 'Si';
-            mostrarCampoTrabajo(); // activa campos relacionados
-        } else {
-            trabajoSelect.value = 'No';
-            trabajoInput.value = 'No tiene';
-            mostrarCampoTrabajo(); // desactiva campos relacionados
-        }
+    // Activar campos si ya hay una selección previa
+    if (trabajoSelect) {
+        mostrarCampoTrabajo();
     }
 
-    // También inicializa el campo de institución si aplica
-    const trabajaPublico = document.getElementById('trabaja_public');
     if (trabajaPublico && trabajaPublico.value === 'Si') {
         mostrarInstitucion();
     }
+
+    // Listeners para cambios manuales
+    trabajoSelect?.addEventListener('change', mostrarCampoTrabajo);
+    trabajaPublico?.addEventListener('change', mostrarInstitucion);
 });
+
