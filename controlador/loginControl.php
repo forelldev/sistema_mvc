@@ -322,20 +322,7 @@ public function validarSesionAjax() {
             require_once 'vistas/main.php';
         }
 
-        // public static function marcar_vistasDespacho(){
-        //     Notificaciones::marcar_vistaDespacho();
-        //     // Capturar el resultado de las notificaciones
-        //     $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
-
-        //     // Validar si hubo error
-        //     if ($notificaciones === false || !isset($notificaciones['exito'])) {
-        //         echo 'false error';
-        //         return;
-        //     }
-        //     // Extraer los datos si la búsqueda fue exitosa
-        //     $datos = $notificaciones['exito'] ? $notificaciones['datos'] : [];
-        //     require_once 'vistas/main.php';
-        // }
+        
 
         public static function recuperacion_clave(){
             require_once 'vistas/recuperacion_clave.php';
@@ -403,5 +390,87 @@ public function validarSesionAjax() {
                 }
             }
         }
+
+        public static function config_user(){
+            $ci = $_SESSION['ci'] ?? null;
+            $res = UserModel::datos_usuario($ci);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'No se ha encontrado al usuario';
+            }
+            require_once 'vistas/config_user.php';
+        }
+
+        public static function configurar_usuario(){
+            if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+                $res = UserModel::config_usuario($_POST);
+                if($res['exito']){
+                    $msj = 'Los datos se han cambiado con éxito!';
+                    header("Location: ".BASE_URL."/main?msj=$msj");
+                }
+                else{
+                    $msj = 'Ocurrió un error:'.$res['error'];
+                }
+            }   
+            else{
+                $msj = 'No se recibió POST';
+            }
+        }
+
+        public static function config_avanzada(){
+            $ci = $_SESSION['ci'] ?? null;
+            $res = UserModel::datos_avanzada($ci);
+            if($res['exito']){
+                $datos = $res['datos'];
+            }
+            else{
+                $msj = 'No se ha encontrado al usuario';
+            }
+            require_once 'vistas/config_avanzada.php';
+        }
+
+        public static function avanzada_codigo() {
+            header('Content-Type: application/json');
+
+            $res = UserModel::generar_codigo_temporal();
+
+            echo json_encode([
+                'success' => $res['exito'],
+                'codigo' => $res['codigo'] ?? null,
+                'msj' => $res['msj']
+            ]);
+        }
+
+        public static function verificar_avanzada() {
+            header('Content-Type: application/json');
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                echo json_encode(['success' => false, 'msj' => 'No se recibió POST']);
+                return;
+            }
+
+            $ci_actual = $_SESSION['ci'] ?? null;
+            $ci_nuevo = $_POST['ci'] ?? null;
+            $nueva_clave = $_POST['nueva_clave'] ?? null;
+            $correo = $_POST['correo'] ?? null;
+
+            if (!$ci_actual || !$ci_nuevo || !$nueva_clave || !$correo) {
+                echo json_encode(['success' => false, 'msj' => 'Faltan datos obligatorios']);
+                return;
+            }
+
+            $res = UserModel::actualizar_configuracion_avanzada($ci_actual, $ci_nuevo, $nueva_clave, $correo);
+
+            echo json_encode([
+                'success' => $res['exito'],
+                'msj' => $res['msj']
+            ]);
+        }
+
+
+
+        
     }
 ?>

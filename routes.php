@@ -90,4 +90,9 @@ Router::get('/noti_urgente_despacho','DespachoControl@mostrar_noti_urgencia');
 Router::post('/filtrar_fechaDespacho','DespachoControl@filtrar_fecha');
 Router::get('/beneficiario_desarrollo','beneficiarioControl@beneficiario_desarrollo');
 Router::get('/beneficiario_despacho','beneficiarioControl@beneficiario_despacho');
+Router::get('/config_user','LoginControl@config_user');
+Router::post('/configurar_usuario','LoginControl@configurar_usuario');
+Router::get('/config_avanzada','LoginControl@config_avanzada');
+Router::post('/avanzada_codigo','LoginControl@avanzada_codigo');
+Router::post('/verificar_avanzada','LoginControl@verificar_avanzada');
 ?>

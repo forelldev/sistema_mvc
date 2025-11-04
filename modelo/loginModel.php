@@ -182,46 +182,55 @@ class UserModel {
 
 
 
-    public static function generar_codigo($ci){
-        $conexion = DB::conectar();
-        // Verificar si ya existe un intento de recuperación
-        $verificar = $conexion->prepare("SELECT intentos FROM usuarios_recuperacion WHERE ci = :ci");
-        $verificar->bindParam(':ci', $ci);
-        $verificar->execute();
+   public static function generar_codigo($ci){
+    $conexion = DB::conectar();
 
-        if ($verificar->rowCount() > 0) {
-            $datos = $verificar->fetch(PDO::FETCH_ASSOC);
-            $intentos = $datos['intentos'];
-            $msj = "Ya hay un intento de recuperación! te quedan $intentos intentos.";
-            return ['success' => false, 'msj' => $msj, 'retorno' => 'retorno'];
-        }
+    // Verificar si ya existe un intento de recuperación
+    $verificar = $conexion->prepare("SELECT intentos FROM usuarios_recuperacion WHERE ci = :ci");
+    $verificar->bindParam(':ci', $ci);
+    $verificar->execute();
 
-        // Obtener correo y nombre desde usuarios_info
-        $datos_usuario = self::obtener_datos_por_ci($ci);
-        if (!$datos_usuario) {
-            return ['success' => false, 'msj' => 'No se encontró el usuario con esa CI.'];
-        }
-        $correo = $datos_usuario['correo'];
-        $nombre = $datos_usuario['nombre'];
-
-        // Generar código y registrar intento
-        $codigo = rand(100000, 999999);
-        $intentos = 3;
-        $insertar = $conexion->prepare("INSERT INTO usuarios_recuperacion (ci, codigo, intentos) VALUES (:ci, :codigo, :intentos)");
-        $insertar->bindParam(':ci', $ci);
-        $insertar->bindParam(':codigo', $codigo);
-        $insertar->bindParam(':intentos', $intentos);
-        $insertar->execute();
-
-        // Enviar el código por correo
-        $res = Correo::correoClave($correo, $nombre, $codigo);
-
-        if ($res) {
-            return ['success' => true, 'msj' => 'Se ha enviado un código a tu correo!'];
-        } else {
-            return ['success' => false, 'msj' => 'Error al enviar el correo.'];
-        }
+    if ($verificar->rowCount() > 0) {
+        $datos = $verificar->fetch(PDO::FETCH_ASSOC);
+        $intentos = $datos['intentos'];
+        $msj = "Ya hay un intento de recuperación! te quedan $intentos intentos.";
+        return ['success' => false, 'msj' => $msj, 'retorno' => 'retorno'];
     }
+
+    // Obtener correo y nombre desde usuarios_info
+    $datos_usuario = self::obtener_datos_por_ci($ci);
+    if (!$datos_usuario) {
+        return ['success' => false, 'msj' => 'No se encontró el usuario con esa CI.'];
+    }
+    $correo = $datos_usuario['correo'];
+    $nombre = $datos_usuario['nombre'];
+
+    // Generar código único
+    do {
+        $codigo = rand(100000, 999999);
+        $check = $conexion->prepare("SELECT 1 FROM usuarios_recuperacion WHERE codigo = :codigo");
+        $check->bindParam(':codigo', $codigo);
+        $check->execute();
+    } while ($check->rowCount() > 0);
+
+    // Registrar intento
+    $intentos = 3;
+    $insertar = $conexion->prepare("INSERT INTO usuarios_recuperacion (ci, codigo, intentos) VALUES (:ci, :codigo, :intentos)");
+    $insertar->bindParam(':ci', $ci);
+    $insertar->bindParam(':codigo', $codigo);
+    $insertar->bindParam(':intentos', $intentos);
+    $insertar->execute();
+
+    // Enviar el código por correo
+    $res = Correo::correoClave($correo, $nombre, $codigo);
+
+    if ($res) {
+        return ['success' => true, 'msj' => 'Se ha enviado un código a tu correo!'];
+    } else {
+        return ['success' => false, 'msj' => 'Error al enviar el correo.'];
+    }
+}
+
 
 
     public static function obtener_datos_por_ci($ci){
@@ -310,5 +319,158 @@ class UserModel {
         $borrar->bindParam(':ci', $ci);
         $borrar->execute();
     }
+
+    public static function datos_usuario($ci) {
+        $db = DB::conectar();
+        $sql = "SELECT nombre, apellido FROM usuarios_info WHERE ci = :ci";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':ci', $ci);
+
+        if ($stmt->execute()) {
+            $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($datos) {
+                return ['exito' => true, 'datos' => $datos];
+            } else {
+                return ['exito' => false, 'error' => 'Usuario no encontrado'];
+            }
+        } else {
+            return ['exito' => false, 'error' => 'Error en la consulta'];
+        }
+    }
+
+    public static function config_usuario($post) {
+        $db = DB::conectar();
+        $ci = $_SESSION['ci'] ?? null;
+        $nombre = trim($post['nombre'] ?? '');
+        $apellido = trim($post['apellido'] ?? '');
+
+        if (!$ci || !$nombre || !$apellido) {
+            return ['exito' => false, 'error' => 'Datos incompletos'];
+        }
+
+        $sql = "UPDATE usuarios_info SET nombre = :nombre, apellido = :apellido WHERE ci = :ci";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':nombre', $nombre);
+        $stmt->bindParam(':apellido', $apellido);
+        $stmt->bindParam(':ci', $ci);
+
+        if ($stmt->execute()) {
+            return ['exito' => true];
+        } else {
+            return ['exito' => false, 'error' => 'No se pudo actualizar'];
+        }
+    }
+
+     public static function datos_avanzada($ci) {
+        $db = DB::conectar();
+        $sql = "SELECT u.ci,ui.correo FROM usuarios u LEFT JOIN usuarios_info ui ON u.ci = ui.ci WHERE u.ci = :ci";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':ci', $ci);
+        if ($stmt->execute()) {
+            $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($datos) {
+                return ['exito' => true, 'datos' => $datos];
+            } else {
+                return ['exito' => false, 'error' => 'Usuario no encontrado'];
+            }
+        } else {
+            return ['exito' => false, 'error' => 'Error en la consulta'];
+        }
+    }
+
+    public static function generar_codigo_temporal() {
+        $ci = $_SESSION['ci'] ?? null;
+        if (!$ci) return ['exito' => false, 'msj' => 'No se encontró CI en sesión'];
+
+        $db = DB::conectar();
+        $sql = "SELECT nombre, correo FROM usuarios_info WHERE ci = :ci";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':ci', $ci);
+        if (!$stmt->execute()) return ['exito' => false, 'msj' => 'Error en la consulta'];
+
+        $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$datos) return ['exito' => false, 'msj' => 'Usuario no encontrado'];
+
+        $codigo = rand(100000, 999999);
+        $correo = $datos['correo'];
+        $nombre = $datos['nombre'];
+
+        $enviado = Correo::correoEdit($correo, $nombre, $codigo);
+
+        return [
+            'exito' => $enviado,
+            'codigo' => $enviado ? $codigo : null,
+            'msj' => $enviado ? 'Se ha enviado un código a tu correo electrónico' : 'Error al enviar el correo'
+        ];
+    }
+
+
+    public static function config_avanzada($post) {
+            $db = DB::conectar();
+            $ci = $_SESSION['ci'] ?? null;
+            $nombre = trim($post['nombre'] ?? '');
+            $apellido = trim($post['apellido'] ?? '');
+
+            if (!$ci || !$nombre || !$apellido) {
+                return ['exito' => false, 'error' => 'Datos incompletos'];
+            }
+
+            $sql = "UPDATE usuarios_info SET nombre = :nombre, apellido = :apellido WHERE ci = :ci";
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':nombre', $nombre);
+            $stmt->bindParam(':apellido', $apellido);
+            $stmt->bindParam(':ci', $ci);
+
+            if ($stmt->execute()) {
+                return ['exito' => true];
+            } else {
+                return ['exito' => false, 'error' => 'No se pudo actualizar'];
+            }
+        }
+
+   public static function actualizar_configuracion_avanzada($ci_actual, $ci_nuevo, $nueva_clave, $correo) {
+    $db = DB::conectar();
+
+    // Hashear la nueva clave
+    $clave_final = password_hash($nueva_clave, PASSWORD_DEFAULT);
+
+    try {
+        $db->beginTransaction();
+
+        // Actualizar tabla usuarios (ci y clave)
+        $updateUsuarios = $db->prepare("UPDATE usuarios SET ci = :nuevo_ci, clave = :clave WHERE ci = :ci_actual");
+        $updateUsuarios->bindParam(':nuevo_ci', $ci_nuevo);
+        $updateUsuarios->bindParam(':clave', $clave_final);
+        $updateUsuarios->bindParam(':ci_actual', $ci_actual);
+        $okUsuarios = $updateUsuarios->execute();
+
+        // Actualizar tabla usuarios_info (correo)
+        $updateInfo = $db->prepare("UPDATE usuarios_info SET correo = :correo WHERE ci = :ci_actual");
+        $updateInfo->bindParam(':correo', $correo);
+        $updateInfo->bindParam(':ci_actual', $ci_actual);
+        $okInfo = $updateInfo->execute();
+
+        if ($okUsuarios && $okInfo) {
+            $db->commit();
+
+            if ($ci_nuevo !== $ci_actual) {
+                $_SESSION['ci'] = $ci_nuevo;
+            }
+
+            return ['exito' => true, 'msj' => 'Datos actualizados correctamente'];
+        } else {
+            $db->rollBack();
+            return ['exito' => false, 'msj' => 'No se pudo actualizar todos los datos'];
+        }
+    } catch (PDOException $e) {
+        $db->rollBack();
+        return ['exito' => false, 'msj' => 'Error en la base de datos: ' . $e->getMessage()];
+    }
+}
+
+
+
+
+
 }
 ?>

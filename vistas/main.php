@@ -118,6 +118,7 @@
             <i class="fas fa-user"></i> Usuario
         </button>
         <div class="dropdown-menu" id="usuarioDropdown">
+            <a href="<?= BASE_URL ?>/config_user"><i class="fas fa-sign-out-alt"></i>Configuración de Usuario</a>
             <a href="<?= BASE_URL ?>/logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
         </div>
     </div>

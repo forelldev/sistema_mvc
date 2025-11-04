@@ -50,6 +50,23 @@ class Correo {
         self::configurarMailer($correo, $nombre, $asunto, $mensaje);
         return true;
     }
+    public static function correoEdit($correo, $nombre, $codigo) {
+        $asunto = 'Código de verificación para configuración avanzada';
+        
+        $mensaje = "
+            Hola {$nombre},<br><br>
+            Has solicitado realizar cambios importantes en tu configuración de usuario.<br>
+            Para continuar, ingresa el siguiente código de verificación en la plataforma:<br><br>
+            <strong style='font-size: 1.5em;'>{$codigo}</strong><br><br>
+            Si no solicitaste esta acción, puedes ignorar este mensaje.<br><br>
+            Saludos,<br>
+            Equipo de soporte
+        ";
+
+        self::configurarMailer($correo, $nombre, $asunto, $mensaje);
+        return true;
+    }
+
 }
 
 ?>
