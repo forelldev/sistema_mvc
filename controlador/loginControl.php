@@ -64,6 +64,16 @@ class LoginControl {
             }
         }
 
+        $res = UserModel::ultima_entrada($_SESSION['ci']);
+        if($res['exito']){
+            $dia = $res['datos'];
+            $dia_ordenado = date('d-m-Y', strtotime($dia));
+            $datos = UserModel::solicitante($_SESSION['ci']);
+            if($datos){
+                $nombre = $datos['nombre']. ' '.$datos['apellido'];
+            }
+        }
+
         // if(!$notificaciones['exito'] && !$notificaciones_despacho['exito'] && !$notificaciones_desarrollo['exito']){
         //     $msj = 'No se encontraron notificaciones';
         // }
@@ -469,6 +479,64 @@ public function validarSesionAjax() {
             ]);
         }
 
+       public static function api_chat() {
+            header('Content-Type: application/json');
+
+            try {
+                $input = json_decode(file_get_contents('php://input'), true);
+                $mensaje = $input['mensaje'] ?? '';
+
+                if (!$mensaje) {
+                    echo json_encode(['respuesta' => 'Mensaje vacío.']);
+                    return;
+                }
+
+                $apiKey = 'SHEt6LzRzpZay5KGvsV6fVeY7yAV8xsPjLZJtLzs'; // reemplaza con tu clave real
+
+                $payload = json_encode([
+                    'message' => $mensaje,
+                    'model' => 'command-a-03-2025',
+                    'temperature' => 0.7,
+                    'chat_history' => [],
+                    'stream' => false
+                ]);
+
+                $ch = curl_init('https://api.cohere.ai/v1/chat');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $apiKey
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+                $response = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlError = curl_error($ch);
+                curl_close($ch);
+
+                if ($curlError) {
+                    echo json_encode(['respuesta' => 'Error de conexión: ' . $curlError]);
+                    return;
+                }
+
+                $data = json_decode($response, true);
+
+                if ($httpCode !== 200) {
+                    $errorMsg = $data['message'] ?? 'Error desconocido de Cohere';
+                    echo json_encode(['respuesta' => 'Error de Cohere: ' . $errorMsg]);
+                    return;
+                }
+
+                if (!isset($data['text'])) {
+                    echo json_encode(['respuesta' => 'Respuesta inesperada de la IA.']);
+                    return;
+                }
+
+                echo json_encode(['respuesta' => $data['text']]);
+
+            } catch (Exception $e) {
+                echo json_encode(['respuesta' => 'Error interno: ' . $e->getMessage()]);
+            }
+        }
 
 
         

@@ -5,25 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Se han encontrado otras solicitudes</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/estilo_anteriores.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/busqueda.css?v=<?= time(); ?>">
 </head>
-<body>
-    <header class="header">
-        <div class="titulo-header">Antecedentes de Solicitudes</div>
-      <a href="<?= BASE_URL ?>/busqueda"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
-      </div>
+<body class="solicitud-body bg-dark text-white">
+
+  <!-- Header -->
+  <header class="bg-secondary border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 fw-semibold">Antecedentes de Solicitudes</h5>
+    <a href="<?= BASE_URL ?>/busqueda" class="btn btn-sm btn-outline-light">
+      <i class="fa fa-arrow-left me-1"></i> Volver atrás
+    </a>
   </header>
-    <body style="background-color: #f1f3f5;">
-  <div class="container my-5 px-4">
+
+  <!-- Contenido -->
+  <main class="container py-5">
     <section class="solicitudes-lista">
       <?php if (!empty($datos)): ?>
-        <div class="row justify-content-center g-0">
+        <div class="row justify-content-center g-4">
           <?php foreach ($datos as $fila): ?>
-            <div class="col-12 mb-4 d-flex justify-content-center">
-              <div class="card border-0 shadow rounded-4 fs-5" style="width: 100% !important; max-width: 36rem !important;">
-                <!-- Encabezado de tarjeta -->
-                <div class="card-header bg-white text-center border-bottom">
+            <div class="col-md-8">
+              <div class="card solicitud-card text-white shadow-sm border-0 rounded-4">
+                <div class="card-header bg-gradient border-bottom text-center py-3">
                   <?php
                     $estado = htmlspecialchars($fila['estado'] ?? '');
                     $badgeClass = 'bg-secondary';
@@ -34,26 +37,26 @@
                     else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') $badgeClass = 'bg-success';
                     else if ($estado == 'Documento inválido') $badgeClass = 'bg-danger';
                   ?>
-                  <span class="badge rounded-pill <?= $badgeClass ?> px-3 py-2 mb-2 d-inline-block text-center" style="max-width: 100%; font-size: 1rem;">
-                     <?= $estado ?>
-                  </span>
-                  <div>
-                    <small class="text-muted">
-                      📅 <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?>
-                    </small>
+                  <div class="mb-2">
+                    <span class="badge estado-badge <?= $badgeClass ?>">
+                      <?= $estado ?>
+                    </span>
                   </div>
+                  <small class="text-white-50 d-block">
+                    📅 <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?>
+                  </small>
                 </div>
 
-                <!-- Cuerpo de tarjeta -->
+
                 <div class="card-body">
                   <ul class="list-unstyled mb-0">
-                    <li><strong>📝 Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></li>
-                    <li><strong>🎯 Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda']) ?></li>
-                    <li><strong>📂 Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></li>
-                    <li><strong>🆔 Número de documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></li>
-                    <li><strong>🧾 CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></li>
-                    <li><strong>👤 Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></li>
-                    <li><strong>🗒️ Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></li>
+                    <li><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></li>
+                    <li><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda']) ?></li>
+                    <li><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></li>
+                    <li><strong>Número de documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></li>
+                    <li><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></li>
+                    <li><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></li>
+                    <li><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></li>
                   </ul>
                 </div>
               </div>
@@ -61,36 +64,35 @@
           <?php endforeach; ?>
         </div>
       <?php else: ?>
-        <div class="col-auto d-flex justify-content-center">
-          <div class="card border-0 shadow rounded-4 fs-5 text-center" style="width: 100% !important; max-width: 36rem !important;">
-            <div class="card-header bg-white border-bottom">
-              <span class="badge rounded-pill bg-secondary px-3 py-2 mb-2 d-inline-block">
-                Sin información
-              </span>
-            </div>
-            <div class="card-body">
-              No hay información disponible.
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card solicitud-card text-white text-center shadow-sm border-0 rounded-4">
+              <div class="card-header bg-dark border-bottom">
+                <span class="badge rounded-pill bg-secondary px-3 py-2 mb-2">Sin información</span>
+              </div>
+              <div class="card-body">
+                No hay información disponible.
+              </div>
             </div>
           </div>
         </div>
       <?php endif; ?>
     </section>
 
-    <!-- Botones de acción -->
+    <!-- Botones -->
     <div class="text-center mt-5">
-    <a href="<?=BASE_URL?>/" class="btn btn-outline-dark px-4 rounded-pill">
-        ⬅️ Volver sin registrar
+      <a href="<?= BASE_URL ?>/" class="btn btn-outline-light px-4 rounded-pill me-2">
+        Volver sin registrar
       </a>
-      <form action="solicitudes_ci" method="POST" class="d-inline-block me-2">
+      <form action="solicitudes_ci" method="POST" class="d-inline-block">
         <input type="hidden" name="ci" value="<?= $ci ?>">
         <button type="submit" class="btn btn-success px-4 rounded-pill">
-          ➕ Registrar Solicitud
+          Registrar Solicitud
         </button>
       </form>
     </div>
-  </div>
+  </main>
 </body>
-
 </body>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <script>

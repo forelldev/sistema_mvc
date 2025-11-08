@@ -465,84 +465,90 @@ private static function insertarSolicitante($db, $id, $data) {
 }
 
 
-    public static function filtrar_solicitud($filtro){
-        $conexion = DB::conectar();
-        try {
-            $baseQuery = "
-                SELECT 
-                    sa.*, 
-                    saf.*,
-                    sac.*,
-                    sc.*,
-                    sd.*,
-                    sol.nombre AS nombre,
-                    sol.apellido AS apellido
-                FROM solicitud_ayuda sa
-                LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
-                LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
-                LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
-                LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
-                LEFT JOIN solicitantes sol ON sa.ci = sol.ci
-                WHERE sa.invalido = 0
-            ";
+    public static function filtrar_solicitud($filtro) {
+    $conexion = DB::conectar();
+    try {
+        $baseQuery = "
+            SELECT 
+                sa.*, 
+                saf.*,
+                sac.*,
+                sc.*,
+                sd.*,
+                sol.nombre AS nombre,
+                sol.apellido AS apellido
+            FROM solicitud_ayuda sa
+            LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+            LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+            LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+            LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+            LEFT JOIN solicitantes sol ON sa.ci = sol.ci
+            WHERE sa.invalido = 0
+        ";
 
-            $order = "DESC";
-            $categoria = null;
+        $order = "DESC";
+        $categorias = [];
 
-            switch ($filtro) {
-                case "economica":
-                    $categoria = "Economica";
-                    break;
-                case "otros":
-                    $categoria = "Otros";
-                    break;
-                case "medicinas":
-                    $categoria = "Medicamentos";
-                    break;
-                case "laboratorio":
-                    $categoria = "Laboratorio";
-                    break;
-                case "ayuda_tecnica":
-                    $categoria = "Ayudas Técnicas";
-                    break;
-                case "enseres":
-                    $categoria = "Enseres";
-                    break;
-                case "urgentes":
-                    $categoria = "Urgentes";
-                    break;
-                case "antiguos":
-                    $order = "ASC";
-                    break;
-                case "recientes":
-                default:
-                    // No se modifica categoría ni orden (DESC por defecto)
-                    break;
-            }
-
-            if ($categoria !== null) {
-                $baseQuery .= " AND sc.categoria = :categoria";
-            }
-
-            $baseQuery .= " ORDER BY saf.fecha $order";
-
-            $stmt = $conexion->prepare($baseQuery);
-
-            if ($categoria !== null) {
-                $stmt->bindParam(':categoria', $categoria);
-            }
-
-            $stmt->execute();
-            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            return ['exito' => true,
-                    'datos' => $resultados];
-
-        } catch (PDOException $e) {
-            error_log("Error al filtrar solicitud: " . $e->getMessage());
-            return [];
+        switch ($filtro) {
+            case "economica":
+                $categorias = ["Economica"];
+                break;
+            case "otros":
+                $categorias = ["Otros"];
+                break;
+            case "medicinas":
+                $categorias = ["Medicamentos"];
+                break;
+            case "laboratorio":
+                $categorias = ["Laboratorio"];
+                break;
+            case "ayuda_tecnica":
+                $categorias = ["Ayudas Técnicas"];
+                break;
+            case "enseres":
+                $categorias = ["Enseres"];
+                break;
+            case "urgentes":
+                $categorias = ["Laboratorio", "Medicamentos"];
+                break;
+            case "antiguos":
+                $order = "ASC";
+                break;
+            case "recientes":
+            default:
+                // No se modifica categoría ni orden
+                break;
         }
+
+        if (!empty($categorias)) {
+            $placeholders = implode(',', array_fill(0, count($categorias), '?'));
+            $baseQuery .= " AND sc.categoria IN ($placeholders)";
+        }
+
+        $baseQuery .= " ORDER BY saf.fecha $order";
+
+        $stmt = $conexion->prepare($baseQuery);
+
+        if (!empty($categorias)) {
+            foreach ($categorias as $i => $cat) {
+                $stmt->bindValue($i + 1, $cat);
+            }
+        }
+
+        $stmt->execute();
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'exito' => true,
+            'datos' => $resultados
+        ];
+
+    } catch (PDOException $e) {
+        error_log("Error al filtrar solicitud: " . $e->getMessage());
+        return [];
     }
+}
+
 
 
     public static function fecha_filtro($datos) {

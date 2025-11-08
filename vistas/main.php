@@ -4,154 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Principal</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/style.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=<?= time(); ?>">
 </head>
-<body class="body-main">
-    <header class="header">
-        <div class="titulo-header">Sistema de Solicitud de Ayudas</div> 
-        <div class="header-right">
-            <div class="rol">Rol: <?= $_SESSION['rol'] ?></div>
-            <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
-                <a href="<?= BASE_URL ?>/nueva_solicitud" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
-            <?php } if($_SESSION['id_rol'] == 2){ ?>
-                <a href="<?= BASE_URL ?>/despacho_busqueda" class="nueva-solicitud-btn"><i class="fas fa-plus"></i> Nueva Solicitud</a>
-            <?php } ?>
-          <div class="notification-dropdown">
-                <button class="notificaciones-btn" id="btn-notificaciones">
-                    <i class="fas fa-bell"></i> Notificaciones
-                    <?php
-                    $total = 0;
-                    foreach ($datos as $grupo) {
-                        if (isset($grupo['datos']) && is_array($grupo['datos'])) {
-                            $total += count($grupo['datos']);
-                        }
-                    }
-                    ?>
-                    <?php if ($total > 0): ?>
-                        <span class="badge"><?= $total ?></span>
-                    <?php endif; ?>
-                </button>
-                <div id="barra-notificaciones" class="barra-notificaciones oculto">
-                    <ul id="lista-notificaciones" class="notificaciones-lista">
-                        <?php if ($total > 0): ?>
-                            <?php foreach ($datos as $tipo => $grupo): ?>
-                            <?php foreach ($grupo['datos'] as $noti): ?>
-                                <li class="notificacion-item">
-                                    <strong><?= ucfirst($tipo) ?>:</strong>
-                                    <a href="<?= BASE_URL ?>/noti?id_doc=<?= htmlspecialchars($noti['id_doc']) ?>&tabla=<?= urlencode($grupo['tabla']) ?>&id_name=<?= urlencode($grupo['id_name']) ?>">
-                                        <?= htmlspecialchars($noti['descripcion']) ?><br>
-                                        <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
-                                        <span class="fecha"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></span>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
-                            <a href="<?=BASE_URL?>/marcar_vistas">Marcar todas como vistas</a>
-                        <?php else: ?>
-                            <li class="notificacion-item">No hay notificaciones nuevas.</li>
-                        <?php endif; ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <nav class="navbar" aria-label="Menú principal">
-    <div class="dropdown">
-        <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-folder-open"></i> Solicitudes
-        </button>
-        <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>/solicitudes_list"><i class="fas fa-folder-open"></i> Solicitudes de Ayuda</a>
-            <?php if ($_SESSION['id_rol'] == 4 || $_SESSION['id_rol'] == 1 ) { ?>
-                <a href="<?= BASE_URL ?>/solicitudes_desarrollo"><i class="fas fa-folder-open"></i> Solicitudes de Desarrollo Social</a>
-            <?php } ?>
-            <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4 || $_SESSION['id_rol'] == 3) { ?>
-                <a href="<?= BASE_URL ?>/despacho_list"><i class="fas fa-folder-open"></i> Solicitudes Despacho</a>
-                
-            <?php } ?>
-        </div>
-    </div>
+<body style="background-color: #e9ecef;" class="body-main">
 
+  <!-- Header -->
+  <?php
+$total = 0;
+foreach ($datos as $grupo) {
+  if (isset($grupo['datos']) && is_array($grupo['datos'])) {
+    $total += count($grupo['datos']);
+  }
+}
+?>
 
+<header class="header-main d-flex justify-content-between align-items-center px-4 py-3">
+  <div class="d-flex flex-column">
+    <h5 class="mb-0 fw-semibold">Sistema de Solicitud de Ayudas</h5>
+    <span class="rol-label small">Rol: <?= $_SESSION['rol'] ?></span>
+  </div>
 
-        <?php if ($_SESSION['id_rol'] == 4) { ?>
-        <div class="dropdown">
-            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-bars"></i> Menú
-        </button>
-        <div class="dropdown-menu" id="menuDropdown">
-                <a href="<?= BASE_URL ?>/beneficiarios_lista"><i class="fas fa-users"></i> Lista de beneficiarios</a>
-                <a href="<?= BASE_URL ?>/registro"><i class="fas fa-user-plus"></i> Registrar Usuario</a>
-                <a href="<?= BASE_URL ?>/reportes_acciones"><i class="fas fa-file-alt"></i> Reportes de Acciones</a>
-                <a href="<?= BASE_URL ?>/reportes"><i class="fas fa-chart-bar"></i> Reportes</a>
-                <a href="<?= BASE_URL ?>/limites"><i class="fas fa-user-shield"></i> Límite por rol</a>
-        </div>
-    </div>
-        <div class="dropdown">
-            <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-                <i class="fas fa-chart-bar"></i> Estadísticas
-            </button>
-            
-            <div class="dropdown-menu" id="menuDropdown">
-            <a href="<?= BASE_URL ?>/estadisticas"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes (Generales)</a>
-            <a href="<?= BASE_URL ?>/estadisticas_solicitudes_desarrollo"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes de Desarrollo</a>
-            <a href="<?= BASE_URL ?>/estadisticas_solicitudes_despacho"><i class="fas fa-chart-bar"></i> Estadísticas de Solicitudes de Despacho</a>
-            <!-- <a href="">Estadísticas de Usuarios</a>  -->
-            </div>
-        </div>
+  <div class="d-flex align-items-center gap-3">
+    <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
+      <a href="<?= BASE_URL ?>/nueva_solicitud" class="btn btn-sm btn-outline-primary">
+        <i class="fas fa-plus"></i> Nueva Solicitud
+      </a>
+    <?php } elseif ($_SESSION['id_rol'] == 2) { ?>
+      <a href="<?= BASE_URL ?>/despacho_busqueda" class="btn btn-sm btn-outline-primary">
+        <i class="fas fa-plus"></i> Nueva Solicitud
+      </a>
     <?php } ?>
 
-    <!-- <div class="dropdown">
-        <button class="nav-btn dropdown-toggle" aria-label="Menú" id="menuDropdownBtn">
-            <i class="fas fa-file-alt"></i> Constancias
-        </button>
-        <div class="dropdown-menu" id="menuDropdown">
-            
-        </div>
-    </div> -->
-    
-    <div class="dropdown">
-        <button class="nav-btn dropdown-toggle" aria-label="Usuario" id="usuarioDropdownBtn">
-            <i class="fas fa-user"></i> Usuario
-        </button>
-        <div class="dropdown-menu" id="usuarioDropdown">
-            <a href="<?= BASE_URL ?>/config_user"><i class="fas fa-sign-out-alt"></i>Configuración de Usuario</a>
-            <a href="<?= BASE_URL ?>/logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-        </div>
+    <div class="position-relative">
+      <button id="btn-notificaciones" class="btn btn-sm btn-outline-secondary position-relative">
+        <i class="fas fa-bell"></i>
+        <?php if ($total > 0): ?>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?= $total ?></span>
+        <?php endif; ?>
+      </button>
+
+      <div id="barra-notificaciones" class="p-3 shadow d-none">
+        <ul class="list-unstyled mb-2">
+          <?php if ($total > 0): ?>
+            <?php foreach ($datos as $tipo => $grupo): ?>
+              <?php foreach ($grupo['datos'] as $noti): ?>
+                <li class="mb-3 small">
+                  <strong><?= ucfirst($tipo) ?>:</strong><br>
+                  <a href="<?= BASE_URL ?>/noti?id_doc=<?= urlencode($noti['id_doc']) ?>&tabla=<?= urlencode($grupo['tabla']) ?>&id_name=<?= urlencode($grupo['id_name']) ?>" class="text-decoration-none text-dark">
+                    <?= htmlspecialchars($noti['descripcion']) ?><br>
+                    <?= htmlspecialchars($noti['estado'] ?? 'Sin mensaje') ?>
+                    <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></div>
+                  </a>
+                </li>
+              <?php endforeach; ?>
+            <?php endforeach; ?>
+            <li><a href="<?= BASE_URL ?>/marcar_vistas" class="text-primary small">Marcar todas como vistas</a></li>
+          <?php else: ?>
+            <li class="text-muted small">No hay notificaciones nuevas.</li>
+          <?php endif; ?>
+        </ul>
+      </div>
     </div>
-    
-    </nav>
-    
-    <main>
-        <section class="main-content">
-            <div class="card desc-section">
-                <h1>Descripción del Programa</h1>
-                <p>
-                    Este sistema permite gestionar solicitudes de ayuda de manera eficiente, proporcionando herramientas para la administración de usuarios, generación de reportes y estadísticas. Además, facilita la visualización de solicitudes pendientes y su estado, permitiendo a los administradores priorizar y atender las solicitudes de manera oportuna.<br><br>
-                    Con una interfaz intuitiva, los usuarios pueden navegar fácilmente por las diferentes secciones del sistema, como la gestión de usuarios, la configuración de perfiles y la consulta de datos relevantes para la toma de decisiones estratégicas.
-                </p>
+  </div>
+</header>
+
+
+  <!-- Contenedor horizontal: nav + main -->
+<div class="d-flex" style="height: calc(100vh - 72px);">
+
+    <!-- Sidebar -->
+<nav class="border-end p-3" style="width: 240px;">
+  <div class="accordion-menu d-flex flex-column gap-3">
+
+    <!-- Solicitudes -->
+    <div class="accordion-item">
+      <button class="accordion-toggle">
+        <i class="fas fa-folder-open me-2"></i> Solicitudes
+      </button>
+      <div class="accordion-content">
+        <a class="dropdown-item" href="<?= BASE_URL ?>/solicitudes_list">
+          <i class="fas fa-folder-open me-2"></i> Solicitudes de Ayuda
+        </a>
+        <?php if ($_SESSION['id_rol'] == 4 || $_SESSION['id_rol'] == 1) { ?>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/solicitudes_desarrollo">
+            <i class="fas fa-folder-open me-2"></i> Desarrollo Social
+          </a>
+        <?php } ?>
+        <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4 || $_SESSION['id_rol'] == 3) { ?>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/despacho_list">
+            <i class="fas fa-folder-open me-2"></i> Despacho
+          </a>
+        <?php } ?>
+      </div>
+    </div>
+
+    <!-- Menú administrativo -->
+    <?php if ($_SESSION['id_rol'] == 4) { ?>
+      <div class="accordion-item">
+        <button class="accordion-toggle">
+          <i class="fas fa-bars me-2"></i> Menú
+        </button>
+        <div class="accordion-content">
+          <a class="dropdown-item" href="<?= BASE_URL ?>/beneficiarios_lista">
+            <i class="fas fa-users me-2"></i> Beneficiarios
+          </a>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/registro">
+            <i class="fas fa-user-plus me-2"></i> Registrar Usuario
+          </a>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/reportes_acciones">
+            <i class="fas fa-file-alt me-2"></i> Reportes de Acciones
+          </a>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/reportes">
+            <i class="fas fa-chart-bar me-2"></i> Reportes
+          </a>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/limites">
+            <i class="fas fa-user-shield me-2"></i> Límite por rol
+          </a>
+        </div>
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="accordion-item">
+        <button class="accordion-toggle">
+          <i class="fas fa-chart-bar me-2"></i> Estadísticas
+        </button>
+        <div class="accordion-content">
+          <a class="dropdown-item" href="<?= BASE_URL ?>/estadisticas">
+            <i class="fas fa-chart-bar me-2"></i> Generales
+          </a>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/estadisticas_solicitudes_desarrollo">
+            <i class="fas fa-chart-bar me-2"></i> Desarrollo
+          </a>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/estadisticas_solicitudes_despacho">
+            <i class="fas fa-chart-bar me-2"></i> Despacho
+          </a>
+        </div>
+      </div>
+    <?php } ?>
+
+    <!-- Usuario -->
+    <div class="accordion-item mt-auto">
+      <button class="accordion-toggle">
+        <i class="fas fa-user me-2"></i> Usuario
+      </button>
+      <div class="accordion-content">
+        <a class="dropdown-item" href="<?= BASE_URL ?>/config_user">
+          <i class="fas fa-cog me-2"></i> Configuración
+        </a>
+        <a class="dropdown-item" href="<?= BASE_URL ?>/logout">
+          <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+        </a>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+    <main class="main-bg">
+      <div class="container py-5">
+        <?php if(!isset($_SESSION['bienvenida'])){ ?>
+          <div class="card bg-white bg-opacity-75 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title text-dark">Bienvenido <?=($nombre ?? '...')?>!</h5>
+              <p class="card-text text-dark">Tú última entrada fue el <?=($dia_ordenado ?? '...' )?>.</p>
             </div>
-            <div class="card img-section">
-                <img src="<?= BASE_URL ?>/assets/iss.avif" alt="Ilustración sistema">
-            </div>
-        </section>
-        <section class="novedades">
-            <h2>¿Qué hay de nuevo?</h2>
-            <ul>
-                <li>Se agregó la funcionalidad para marcar solicitudes como vistas.</li>
-                <li>Mejoras en la generación de reportes y estadísticas.</li>
-                <li>Optimización de la interfaz para dispositivos móviles.</li>
-            </ul>
-        </section>
+          </div>
+        <?php $_SESSION['bienvenida'] = 1; } ?>
+        <br>
+        <div class="card bg-white bg-opacity-75 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title text-dark">No hay novedades.</h5>
+            <p class="card-text text-dark">Fecha: <?= date('d-m-Y')?>.</p>
+          </div>
+        </div>
+      </div>
     </main>
+
+
+<!-- Chat flotante -->
+<div id="ia-container">
+<div id="chat-toggle" class="position-fixed bottom-0 end-0 m-4 z-3">
+  <button class="btn btn-peach shadow" onclick="toggleChat()">
+    <i class="fa fa-comments me-1"></i> Habla con la IA
+  </button>
+</div>
+
+<div id="chat-box" class="chat-box d-none position-fixed bottom-0 end-0 m-4 shadow rounded-3 overflow-hidden" style="width: 320px; height: 420px; background-color: white; border-left: 4px solid #f5a97f;">
+  <!-- Encabezado -->
+  <div class="bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center">
+    <span class="fw-semibold">Chat con IA</span>
+    <button class="btn btn-sm btn-light" onclick="toggleChat()"><i class="fa fa-times"></i></button>
+  </div>
+
+  <!-- Mensajes -->
+  <div id="chat-messages" class="flex-grow-1 px-3 py-2 overflow-auto" style="height: 280px; background-color: #f8f9fa;">
+    <!-- Mensajes se insertarán aquí -->
+  </div>
+
+  <!-- Input -->
+  <form class="border-top px-3 py-2 bg-white" onsubmit="enviarMensaje(event)" autocomplete="off">
+    <div class="input-group">
+      <input type="text" id="chat-input" class="form-control" placeholder="Envía un mensaje para comenzar..." required>
+      <button class="btn btn-dark" type="submit"><i class="fa fa-paper-plane"></i></button>
+    </div>
+  </form>
+</div>
+</div>
+
+
 </body>
+<script src="<?= BASE_URL ?>/public/js/prueba_conexion.js"></script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
+    const BASE_URL = "<?php echo BASE_URL; ?>";
 </script>
+<script src="<?=BASE_URL?>/public/js/chat.js"></script>
+<script src="<?=BASE_URL?>/public/js/chat_grafico.js"></script>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php
 $mensaje = $msj ?? ($_GET['msj'] ?? null);
@@ -162,6 +234,5 @@ if ($mensaje):
     </script>
 <?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
-<script src="<?= BASE_URL ?>/public/js/dropdown.js"></script>
-<script src="<?= BASE_URL ?>/public/js/notificacionAdministrador.js"></script>
+<script src="<?= BASE_URL ?>/public/js/desplegables.js"></script>
 </html>

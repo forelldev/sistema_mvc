@@ -468,6 +468,43 @@ class UserModel {
     }
 }
 
+    public static function ultima_entrada($ci) {
+    try {
+        $db = DB::conectar(); // Asegúrate de tener tu clase de conexión
+        $sql = "SELECT fecha_salida 
+                FROM reportes_entradas 
+                WHERE ci = :ci AND fecha_salida IS NOT NULL 
+                ORDER BY fecha_salida DESC 
+                LIMIT 1";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':ci', $ci, PDO::PARAM_STR);
+        $stmt->execute();
+
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultado) {
+            return ['exito' => true, 'datos' => $resultado['fecha_salida']];
+        } else {
+            return ['exito' => false, 'datos' => null];
+        }
+    } catch (PDOException $e) {
+        return ['exito' => false, 'error' => $e->getMessage()];
+    }
+}
+
+    public static function solicitante($ci){
+        $conexion = DB::conectar();
+        $consulta = "SELECT nombre,apellido FROM usuarios_info WHERE ci = :ci";
+        $stmt = $conexion->prepare($consulta);
+        $stmt->bindParam(':ci', $ci);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            return false;
+        }
+    }
+
 
 
 

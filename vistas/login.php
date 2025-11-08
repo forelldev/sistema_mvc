@@ -4,32 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio Sesión</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/style.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/login.css?v=<?= time(); ?>">
 </head>
-<body class="login-body">
-    <section class="login-container">
-        <img src="assets/body.png" alt="Logo">
-        <h1>Bienvenido</h1>
-    <form action="<?= BASE_PATH ?>/login" method="POST">
-            <div class="input-group">
-            <i class="fa fa-id-card"></i>
-            <input type="text" name="ci" required placeholder="CI" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
+<body class="login-body d-flex align-items-center justify-content-center min-vh-100">
+  <div class="card login-card shadow-lg">
+    <div class="text-center mb-3">
+      <img src="<?= BASE_URL ?>/img/logo.png" alt="Logo" class="img-fluid mb-2" style="max-height: 90px;">
+      <h5 class="fw-semibold">Bienvenido</h5>
+    </div>
+
+    <form action="<?=BASE_URL?>/login" method="POST" autocomplete="off">
+      <div class="mb-3">
+        <label for="ci" class="form-label text-gray-dark">Cédula</label>
         <div class="input-group">
-            <i class="fa fa-lock"></i>
-            <input type="password" name="clave" id="password" required placeholder="Contraseña">
-            <button class="password-toggle" id="toggle-password" type="button" onclick="togglePasswordVisibility()">
-                <i class="fa fa-eye"></i>
-            </button>
+          <span class="input-group-text bg-light text-secondary"><i class="fa fa-id-card"></i></span>
+          <input type="text" name="ci" id="ci" class="form-control" required placeholder="Ingresa tu CI" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
-        <button type="submit" class="login-btn">Iniciar Sesión</button>
+      </div>
+
+      <div class="mb-3">
+        <label for="clave" class="form-label text-gray-dark">Contraseña</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light text-secondary"><i class="fa fa-lock"></i></span>
+          <input type="password" name="clave" id="clave" class="form-control" required placeholder="Ingresa tu contraseña">
+          <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
+            <i class="fa fa-eye" id="eye-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-dark text-white fw-bold">Iniciar Sesión</button>
+      </div>
+
+      <div class="text-center">
+        <a href="recuperacion_clave" class="text-decoration-underline small text-blue-dark">¿Olvidaste tu contraseña?</a>
+      </div>
     </form>
-    <a href="recuperacion_clave">Recuperación de Cuenta</a>
-    </section>
+  </div>
 </body>
-<!-- Copiar y pegar para los mensajes de error, se puede cambiar el "error" por "info" -->
 
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
@@ -45,4 +60,25 @@ if ($mensaje):
 <?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/contra.js"></script>
+<style>
+
+  .responsive-card {
+    max-width: 360px;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-card {
+      margin-top: -80px;
+      max-width: 420px;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .responsive-card {
+      margin-top: -100px;
+      max-width: 480px;
+    }
+  }
+  
+</style>
 </html>
