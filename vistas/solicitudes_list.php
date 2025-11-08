@@ -39,7 +39,7 @@
 
       <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
         <a href="<?= BASE_URL ?>/inhabilitados_lista" class="btn btn-sm btn-secondary">
-          <i class="fa fa-eye-slash"></i> Ver Inhabilitadas
+          <i class="fa fa-eye-slash"></i> Ver Solicitudes Inválidas
         </a>
       <?php endif; ?>
 
@@ -47,7 +47,7 @@
       <?php
         $volver_url = isset($_GET['direccion']) ? BASE_URL . '/reportes_acciones' : BASE_URL . '/main';
       ?>
-      <a href="<?= $volver_url ?>" class="btn btn-sm btn-outline-dark text-white">
+      <a href="<?= $volver_url ?>" class="btn btn-sm btn-outline-secondary text-white">
         <i class="fa fa-arrow-left"></i> Volver atrás
       </a>
 
@@ -216,13 +216,13 @@
               <p><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></p>
               <p><strong>Documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></p>
               <p><strong>Cédula:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></p>
-              <p><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></p>
+              <p><strong>Beneficiario:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></p>
               <p><strong>Promotor:</strong> <?= htmlspecialchars($fila['promotor'] ?? '') ?></p>
               <p><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></p>
             </div>
 
             <div class="card-footer d-flex flex-wrap gap-2">
-              <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci'] ?>" class="btn btn-sm btn-outline-primary">Ver Información</a>
+              <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci'] ?>" class="btn btn-sm btn-outline-primary">Ver Información del Beneficiario</a>
 
               <?php if (
                 ($_SESSION['id_rol'] == 1 && $estado === 'En espera del documento físico para ser procesado 0/3') ||
@@ -232,7 +232,7 @@
               <?php endif; ?>
 
               <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                <a href="<?= BASE_URL . '/inhabilitar?id_doc=' . $fila['id_doc'] ?>" class="btn btn-sm btn-outline-danger">Inhabilitar</a>
+                <a href="<?= BASE_URL . '/inhabilitar?id_doc=' . $fila['id_doc'] ?>" class="btn btn-sm btn-outline-danger">Invalidar Solicitud</a>
               <?php endif; ?>
 
               <a href="<?= BASE_URL . '/procesar?id_doc=' . $fila['id_doc'] . '&estado=' . $estado ?>" class="btn btn-sm btn-outline-success">

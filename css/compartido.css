@@ -1,0 +1,48 @@
+/* FELICIDADES */
+body.solicitud-body {
+  background-color: #343a40; /* gris oscuro */
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  background-color: #6c757d; /* gris medio */
+  border-bottom: 1px solid #495057;
+}
+
+.titulo-header {
+  font-weight: bold;
+}
+
+.bg-light-blue {
+  background-color: #e9f3ff;
+}
+
+.btn-black-borde {
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #ced4da;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-black-borde:hover {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #ced4da;
+}
+
+.btn-blue {
+  background-color: #3b4cca;
+  color: #ffffff;
+  border: 1px solid #3b4cca;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-blue:hover {
+  background-color: #ffffff;
+  color: #3b4cca;
+  border-color: #3b4cca;
+}
+
+
+/* BENEFICARIO_LIST */

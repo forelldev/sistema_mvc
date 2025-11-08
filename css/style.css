@@ -410,4 +410,18 @@ nav.border-end {
   border-right: none !important;
 }
 
+.btn-black-borde {
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #ced4da; /* gris claro */
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-black-borde:hover {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #ced4da;
+}
+
+
 /* SOLICITUDES_GENERALES */

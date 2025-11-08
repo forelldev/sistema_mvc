@@ -176,10 +176,15 @@
 
                 <div class="col-md-6">
                 <label for="estruc_base" class="form-label">Estructura Base</label>
-                <input type="text" id="estruc_base" name="estruc_base"
-                    class="form-control form-control-sm bg-dark text-white"
-                    value="<?= $datos_beneficiario['comunidad']['estruc_base'] ?? '' ?>" required>
-                </div>
+                <select class="form-select form-select-sm bg-dark text-white" id="estruc_base" name="estruc_base" required>
+                    <option value="">Seleccione</option>
+                    <option value="Jefe de Comunidad" <?= ($datos_beneficiario['comunidad']['estruc_base'] ?? '') == 'Jefe de Comunidad' ? 'selected' : '' ?>>Jefe de Comunidad</option>
+                    <option value="Jefe de UBCH" <?= ($datos_beneficiario['comunidad']['estruc_base'] ?? '') == 'Jefe de UBCH' ? 'selected' : '' ?>>Jefe de UBCH</option>
+                    <option value="Jefe de Calle" <?= ($datos_beneficiario['comunidad']['estruc_base'] ?? '') == 'Jefe de Calle' ? 'selected' : '' ?>>Jefe de Calle</option>
+                    <option value="Ninguno" <?= ($datos_beneficiario['comunidad']['estruc_base'] ?? '') == 'Ninguno' ? 'selected' : '' ?>>Ninguno</option>
+                </select>
+
+
             </div>
             </section>
             <!-- Sección: Datos Físicos Ambientales -->
@@ -362,10 +367,9 @@
       </select>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-6 campo-formulario">
       <label for="tipo_ayuda" class="form-label">Tipo de Ayuda</label>
-      <select name="tipo_ayuda" id="tipo_ayuda"
-        class="form-select form-select-sm bg-dark text-white" required>
+      <select name="tipo_ayuda" id="tipo_ayuda" class="form-select form-select-sm bg-dark text-white" required>>
         <option value="">Seleccione</option>
         <option value="Silla de Ruedas" <?= ($_POST['tipo_ayuda'] ?? '') == 'Silla de Ruedas' ? 'selected' : '' ?>>Silla de Ruedas</option>
         <option value="Silla de Ruedas(Niño)" <?= ($_POST['tipo_ayuda'] ?? '') == 'Silla de Ruedas(Niño)' ? 'selected' : '' ?>>Silla de Ruedas (Niño)</option>

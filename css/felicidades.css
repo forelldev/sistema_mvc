@@ -1,0 +1,30 @@
+body.solicitud-body {
+  background-color: #343a40; /* gris oscuro */
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.header {
+  background-color: #6c757d; /* gris medio */
+  border-bottom: 1px solid #495057;
+}
+
+.titulo-header {
+  font-weight: bold;
+}
+
+.nav-btn {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+}
+
+.form-user {
+  background-color: #6c757d; /* gris medio */
+  border-radius: 0.5rem;
+}
+
+.fa-check-circle {
+  font-size: 2rem;
+  margin-right: 0.5rem;
+  color: #3b4cca; /* azul institucional */
+}

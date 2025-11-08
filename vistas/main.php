@@ -28,17 +28,17 @@ foreach ($datos as $grupo) {
 
   <div class="d-flex align-items-center gap-3">
     <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) { ?>
-      <a href="<?= BASE_URL ?>/nueva_solicitud" class="btn btn-sm btn-outline-primary">
+      <a href="<?= BASE_URL ?>/nueva_solicitud" class="btn btn-sm btn-black-borde">
         <i class="fas fa-plus"></i> Nueva Solicitud
       </a>
     <?php } elseif ($_SESSION['id_rol'] == 2) { ?>
-      <a href="<?= BASE_URL ?>/despacho_busqueda" class="btn btn-sm btn-outline-primary">
+      <a href="<?= BASE_URL ?>/despacho_busqueda" class="btn btn-sm btn-outline-secondary btn-custom">
         <i class="fas fa-plus"></i> Nueva Solicitud
       </a>
     <?php } ?>
 
     <div class="position-relative">
-      <button id="btn-notificaciones" class="btn btn-sm btn-outline-secondary position-relative">
+      <button id="btn-notificaciones" class="btn btn-sm btn-black-borde">
         <i class="fas fa-bell"></i>
         <?php if ($total > 0): ?>
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?= $total ?></span>
