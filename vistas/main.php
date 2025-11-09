@@ -176,7 +176,8 @@ foreach ($datos as $grupo) {
         <br>
         <div class="card bg-white bg-opacity-75 shadow-sm">
           <div class="card-body">
-            <h5 class="card-title text-dark">No hay novedades.</h5>
+            <h5 class="card-title text-dark">Alcaldía del Municipio Peña.</h5>
+            <?php  date_default_timezone_set('America/Caracas'); ?>
             <p class="card-text text-dark">Fecha: <?= date('d-m-Y')?>.</p>
           </div>
         </div>

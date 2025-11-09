@@ -390,6 +390,75 @@ class SolicitudControl {
         }
     }
 
+    public static function notificaciones_urgentes() {
+        $caso = $_GET['caso'] ?? 'invalido';
+
+        switch ($caso) {
+            case 'generales':
+                $datos = Solicitud::notificacion_urgencia();
+                break;
+            case 'desarrollo':
+                $datos = Desarrollo::notificacion_urgencia();
+                break;
+            case 'despacho':
+                $datos = Despacho::notificacion_urgencia();
+                break;
+            default:
+                $datos = ['exito' => false, 'error' => 'Caso inválido'];
+                break;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($datos);
+    }
+
+    public static function ver_solicitud_accion(){
+        if(isset($_GET['direccion']) && isset($_GET['id'])){
+            $direccion = $_GET['direccion'];
+            $id = $_GET['id'];
+            switch ($direccion) {
+            case 'solicitud':
+                $res = Solicitud::solicitud_urgencia($id);
+                $rename = true;
+                if($res['exito']){
+                    $datos = $res['datos'];
+                }
+                else{
+                    $msj = 'No se encontraron datos: '.$res['error'];
+                }
+                require_once 'vistas/solicitud_urgencia.php';
+                break;
+            case 'desarrollo':
+                $res = Desarrollo::notificacion_urgencia($id);
+                if($res['exito']){
+                    $datos = $res['datos'];
+                }
+                else{
+                    $msj = 'No se encontraron datos: '.$res['error'];
+                }
+                require_once 'vistas/solicitud_desarrollo_urgencia.php';
+                break;
+            case 'despacho':
+                $res = Despacho::notificacion_urgencia($id);
+                if($res['exito']){
+                    $datos = $res['datos'];
+                }
+                else{
+                    $msj = 'No se encontraron datos: '.$res['error'];
+                }
+                require_once 'vistas/solicitud_despacho_urgencia.php';
+                break;
+            default:
+                $msj = 'Dirección inválida';
+                header("Location: ".BASE_URL."/main?msj=Dirección inválida!");
+                break;
+        }
+        }
+        else{
+            $msj = 'No se recibieron parámetros (GET)';
+        }
+    }
+
     
 }
 

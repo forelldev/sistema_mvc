@@ -1,0 +1,118 @@
+/* Fondo general */
+body.solicitud-body {
+  background-color: #1f1f1f;
+  color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Encabezado principal */
+header.header,
+header.bg-dark {
+  background-color: #2c2f33;
+  color: #ffffff;
+  border-bottom: 1px solid #444;
+}
+
+header .btn-outline-light {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+header .btn-outline-light:hover {
+  background-color: #ffffff;
+  color: #2c2f33;
+}
+
+/* Tarjetas */
+.card {
+  background-color: #2c2f33;
+  color: #f8f9fa;
+  border: none;
+  border-radius: 8px;
+}
+
+.card-header {
+  background-color: #2c2f33;
+  border-bottom: 1px solid #444;
+  color: #f8f9fa;
+}
+
+.card-body {
+  background-color: #2c2f33;
+  color: #f8f9fa;
+}
+
+.card-footer {
+  background-color: #2c2f33;
+  border-top: 1px solid #444;
+  color: #f8f9fa;
+}
+
+/* Estado visual */
+.text-warning { color: #ffc107 !important; }
+.text-primary { color: #0d6efd !important; }
+.text-info    { color: #0dcaf0 !important; }
+.text-secondary { color: #adb5bd !important; }
+.text-success { color: #198754 !important; }
+.text-danger  { color: #dc3545 !important; }
+.text-muted   { color: #ced4da !important; }
+
+/* Botones */
+/* Unifica todos los botones en el panel y tarjetas */
+.btn,
+.btn-outline-dark,
+.btn-outline-primary,
+.btn-outline-danger,
+.btn-success {
+  background-color: #3b4cca !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 500;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover uniforme */
+.btn:hover,
+.btn-outline-dark:hover,
+.btn-outline-primary:hover,
+.btn-outline-danger:hover,
+.btn-success:hover {
+  background-color: #0050d0 !important;
+  color: #ffffff !important;
+}
+
+
+/* Responsive ajustes */
+@media (max-width: 768px) {
+  .card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-footer a {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.solicitudes-lista .card-footer .btn {
+  color: #ffffff;
+  background-color: #3b4cca;
+  border: none;
+  font-weight: 500;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.solicitudes-lista .card-footer .btn:hover {
+  background-color: #0050d0;
+  color: #ffffff;
+}
+
+.badge{
+  font-weight: 600;
+  font-size: 14px;
+}

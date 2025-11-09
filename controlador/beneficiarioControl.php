@@ -1,5 +1,7 @@
 <?php 
 require_once 'modelo/beneficiarioModelo.php';
+require_once 'modelo/solicitudModelo.php';
+
 Class BeneficiarioControl {
     public static function mostrar() {
     if (isset($_GET['ci']) && !empty($_GET['ci'])) {
@@ -26,6 +28,12 @@ Class BeneficiarioControl {
     }
 
     public static function registro_beneficiario(){
+         $data = [
+            'data_exists' => false,
+            'datos_beneficiario' => null,
+            'tiposJS' => '',
+            'nombresJS' => ''
+        ];
         require_once 'vistas/beneficiario_registro.php';
     }
 
@@ -121,6 +129,33 @@ Class BeneficiarioControl {
             $msj = 'Error al recibir "CI"';
         }
         require_once 'vistas/beneficiario_solicitudes_despacho.php';
+    }
+
+    private static function obtenerDatosBeneficiario($ci) {
+        $data = [
+            'data_exists' => false,
+            'datos_beneficiario' => null,
+            'tiposJS' => '',
+            'nombresJS' => ''
+        ];
+
+        $resultado = Solicitud::buscarCi($ci);
+        if ($resultado['exito']) {
+            $data['data_exists'] = true;
+            $data['datos_beneficiario'] = $resultado['mostrar'];
+
+            $tipos = [];
+            $nombres = [];
+            foreach ($data['datos_beneficiario']['patologia'] as $fila) {
+                $tipos[] = htmlspecialchars($fila['tip_patologia']);
+                $nombres[] = htmlspecialchars($fila['nom_patologia']);
+            }
+
+            $data['tiposJS'] = implode('|', $tipos);
+            $data['nombresJS'] = implode('|', $nombres);
+        }
+
+        return $data;
     }
 
 }

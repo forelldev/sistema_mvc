@@ -52,53 +52,21 @@
       </a>
 
       <!-- Notificaciones urgentes -->
-      <?php
-        $notificaciones = Solicitud::notificacion_urgencia();
-        $notificacion = $notificaciones['exito'] ? $notificaciones['datos'] : [];
-        $notificacionAgrupada = [];
-        foreach ($notificacion as $item) {
-          $tipo = 'General';
-          $notificacionAgrupada[$tipo][] = $item;
-        }
-        $total = 0;
-        foreach ($notificacionAgrupada as $grupo) {
-          if (isset($grupo['mensaje'])) continue;
-          $total += count($grupo);
-        }
-      ?>
       <div class="position-relative">
         <button id="btn-notificaciones" class="btn btn-sm btn-danger position-relative">
           <i class="fas fa-bell"></i> Urgentes
-          <?php if ($total > 0): ?>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
-              <?= $total ?>
-            </span>
-          <?php endif; ?>
+          <span id="badge-noti" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark d-none"></span>
         </button>
 
         <!-- Panel de notificaciones -->
         <div id="barra-notificaciones" class="position-absolute bg-white shadow-sm border rounded p-3 mt-2 d-none"
-             style="right: 0; top: 100%; max-width: 320px; max-height: 300px; overflow-y: auto; z-index: 1050;">
-          <ul class="list-unstyled mb-0">
-            <?php if ($total > 0): ?>
-              <?php foreach ($notificacionAgrupada as $tipo => $notificaciones): ?>
-                <?php foreach ($notificaciones as $noti): ?>
-                  <li class="mb-3 small">
-                    <strong class="text-danger"><?= ucfirst($tipo) ?>:</strong><br>
-                    <a href="<?= BASE_URL ?>/solicitud_urgencia?id_doc=<?= $noti['id_doc'] ?>"
-                       class="text-decoration-none text-dark">
-                      <?= htmlspecialchars($noti['descripcion'] ?? 'Sin mensaje') ?><br>
-                      <span class="text-muted"><?= htmlspecialchars($noti['estado'] ?? 'Sin estado') ?></span>
-                      <div class="text-muted small"><?= date('d/m/Y H:i', strtotime($noti['fecha'])) ?></div>
-                    </a>
-                  </li>
-                <?php endforeach; ?>
-              <?php endforeach; ?>
-            <?php else: ?>
-              <li class="text-muted small">No hay notificaciones disponibles.</li>
-            <?php endif; ?>
+            style="right: 0; top: 100%; max-width: 320px; max-height: 300px; overflow-y: auto; z-index: 1050;">
+          <ul id="lista-notificaciones" class="list-unstyled mb-0">
+            <li class="text-muted small">Cargando notificaciones...</li>
           </ul>
         </div>
+      </div>
+
       </div>
     </div>
   </div>
@@ -265,16 +233,28 @@
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php
 $mensaje = $_GET['msj'] ?? $msj ?? null;
-if ($mensaje):
+$msj_correo = $msj_correo ?? null;
+
+if ($mensaje || $msj_correo):
 ?>
 <script>
+    <?php if ($mensaje): ?>
     mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 6000);
+    <?php endif; ?>
+
+    <?php if ($msj_correo): ?>
+    setTimeout(function() {
+        mostrarMensaje("<?= htmlspecialchars($msj_correo) ?>", "warning", 6000);
+    }, <?= $mensaje ? 6000 : 0 ?>);
+    <?php endif; ?>
 </script>
 <?php endif; ?>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
+    const BASE_URL = "<?php echo BASE_URL ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
+<script src="<?= BASE_URL ?>/public/js/notificacion_urgente.js"></script>
 <script src="<?= BASE_URL ?>/public/js/desplegables.js"></script>
 </html>

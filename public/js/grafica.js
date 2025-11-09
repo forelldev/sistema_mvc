@@ -1,5 +1,7 @@
+
 document.addEventListener('DOMContentLoaded', function () {
   const ctx = document.getElementById('graficaSolicitudes').getContext('2d');
+
   const grafica = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -14,22 +16,69 @@ document.addEventListener('DOMContentLoaded', function () {
         label: 'Cantidad de Solicitudes',
         data: window.solicitudesData,
         backgroundColor: [
-          '#3b4cca', // En espera (igual al contador)
-          '#ffd600', // Proceso (igual al contador)
-          '#ffd600', // Proceso (igual al contador)
-          '#ffd600', // Proceso (igual al contador)
-          '#4caf50'  // Finalizadas (igual al contador)
-        ]
+          '#f2ef26ff', // En espera
+          '#3ab7faff', // Proceso
+          '#3ab7faff',
+          '#3ab7faff',
+          '#4caf50'    // Finalizadas
+        ],
+        borderRadius: 6,
+        barPercentage: 0.6,
+        categoryPercentage: 0.7
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 20,
+          bottom: 10,
+          left: 15,
+          right: 15
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#ffffff',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#333333',
+          titleColor: '#ffffff',
+          bodyColor: '#eeeeee',
+          borderColor: '#555555',
+          borderWidth: 1
+        }
+      },
       scales: {
+        x: {
+          ticks: {
+            color: '#ffffff',
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            color: '#444444'
+          }
+        },
         y: {
           beginAtZero: true,
           ticks: {
-            stepSize: 1
+            color: '#ffffff',
+            stepSize: 1,
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            color: '#444444'
           }
         }
       }

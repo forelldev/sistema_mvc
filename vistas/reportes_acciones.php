@@ -4,116 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes de acciones</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/font/css/all.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/reportes.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/reportes.css?v=<?= time(); ?>">
 </head>
 <body class="solicitud-body">
-    <header class="header">
-    <div class="titulo-header">Registro de acciones</div>
-    <div class="header-right">
-      <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
+  <header class="bg-dark text-white py-3 px-4 border-bottom border-secondary">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h1 class="h6 mb-0">Registro de acciones</h1>
+      <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light btn-sm">
+        <i class="fa fa-arrow-left me-1"></i> Volver atrás
+      </a>
     </div>
   </header>
-  <main class="auditoria-main">
-        <div class="auditoria-header">
-        <h1><i class="fa fa-clipboard-list"></i> Auditoría de Actividades</h1>
-        <p>Consulta las acciones realizadas por los usuarios y administradores del sistema.</p>
+
+  <main class="container py-4">
+    <section class="mb-4">
+      <h2 class="h5 text-white"><i class="fa fa-clipboard-list me-2"></i>Auditoría de Actividades</h2>
+      <p class="text-secondary">Consulta las acciones realizadas por los usuarios y administradores del sistema.</p>
+    </section>
+
+    <form action="filtro_acciones" method="POST" class="row g-3 align-items-end mb-4">
+      <div class="col-md-4">
+        <label for="filtro-rol" class="form-label text-white">Oficina</label>
+        <select id="filtro-rol" name="oficina" class="form-select bg-dark text-white border-secondary" required>
+          <option value="">Seleccione</option>
+          <option value="todas" <?= ($oficina ?? '') === 'todas' ? 'selected' : '' ?>>Todas las oficinas</option>
+          <option value="General" <?= ($oficina ?? '') === 'General' ? 'selected' : '' ?>>Generales</option>
+          <option value="Desarrollo Social" <?= ($oficina ?? '') === 'Desarrollo Social' ? 'selected' : '' ?>>Desarrollo Social</option>
+          <option value="Despacho" <?= ($oficina ?? '') === 'Despacho' ? 'selected' : '' ?>>Despacho</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label for="filtro-fecha" class="form-label text-white">Fecha</label>
+        <input type="date" id="filtro-fecha" name="fecha" class="form-control bg-dark text-white border-secondary" required value="<?= isset($fecha) ? $fecha : '' ?>">
+      </div>
+
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fa fa-search me-1"></i> Filtrar
+        </button>
+      </div>
+    </form>
+
+    <div class="mb-3">
+      <button class="btn btn-success" id="btnPDF" onclick="generarPDF()">
+        <i class="fa fa-file-pdf me-1"></i> Exportar PDF
+      </button>
     </div>
 
-    <div class="auditoria-filtros-bar">
-        <form action="filtro_acciones" method="POST">
-        <!-- <input type="text" id="filtro-nombre" class="auditoria-filtro" placeholder="Buscar por nombre..." required> POR AHORA INNECESARIO IGUAL QUE EN REPORTES-->
-            <select id="filtro-rol" class="auditoria-filtro" name="oficina" required>
-                <option value="">Seleccione</option>
-                <option value="todas" <?= ($oficina ?? '') === 'todas' ? 'selected' : '' ?>>Todas las oficinas</option>
-                <option value="Desarrollo Social" <?= ($oficina ?? '') === 'Desarrollo Social' ? 'selected' : '' ?>>Desarrollo Social</option>
-                <option value="Despacho" <?= ($oficina ?? '') === 'Despacho' ? 'selected' : '' ?>>Despacho</option>
-            </select>
-
-            <input type="date" id="filtro-fecha" class="auditoria-filtro" required name="fecha" value="<?php echo isset($fecha) ? $fecha : ''; ?>">
-        <button type="submit" class="filtrar-btn"><i class="fa fa-search"></i> Filtrar</button>
-        </form>
-    </div>
-    <button class="filtrar-btn" id="btnPDF" onclick="generarPDF()"><i class="fa fa-file-excel" ></i> Exportar PDF</button>
-  <section class="auditoria-tabla-card">
-    <div class="tabla-responsive">
-    <table class="table table-bordered table-hover align-middle text-center"  id="exportarPDF">
-        <thead class="table-primary">
-            <tr>
-                <th>Número</th>
-                <th>CI</th>
-                <th>Nombre</th>
-                <th>Fecha de la acción</th>
-                <th>Hora de la acción</th>
-                <th>Acción</th>
-                <th>Número de documento</th>
-            </tr>
+    <div class="table-responsive mb-4">
+      <table class="table table-dark table-bordered table-hover align-middle text-center" id="exportarPDF">
+        <thead class="bg-primary text-white">
+          <tr>
+            <th>Número</th>
+            <th>CI</th>
+            <th>Nombre</th>
+            <th>Fecha de la acción</th>
+            <th>Hora de la acción</th>
+            <th class="text-start">Acción</th>
+            <th>N° Documento</th>
+            <th>Enlace</th>
+          </tr>
         </thead>
         <tbody>
           <?php if (!empty($datos)): ?>
-                <?php foreach ($datos as $fila): ?>
-                        <?php
-                            $id = htmlspecialchars($fila['id']);
-                            $ci = htmlspecialchars($fila['ci']);
-                            $nombre = htmlspecialchars($fila['nombre']);
-                            $fecha = date('d-m-Y', strtotime($fila['fecha']));
-                            $hora = date('g:i A', strtotime($fila['fecha']));
-                            $accion = htmlspecialchars($fila['accion']);
-                            $id_manual = htmlspecialchars($fila['id_manual']);
-                            $origen = $fila['origen'] ?? 'solicitud';
+            <?php foreach ($datos as $fila): ?>
+              <?php
+                $id = htmlspecialchars($fila['id']);
+                $ci = htmlspecialchars($fila['ci']);
+                $nombre = htmlspecialchars($fila['nombre']);
+                $fecha = date('d-m-Y', strtotime($fila['fecha']));
+                $hora = date('g:i A', strtotime($fila['fecha']));
+                $accion = htmlspecialchars($fila['accion']);
+                $id_manual = htmlspecialchars($fila['id_manual']);
+                $origen = $fila['origen'] ?? 'solicitud';
 
-                            $direccion = match ($origen) {
-                                'despacho' => 'despacho',
-                                'desarrollo' => 'desarrollo',
-                                default => 'solicitud'
-                            };
+                $direccion = match ($origen) {
+                  'despacho' => 'despacho',
+                  'desarrollo' => 'desarrollo',
+                  default => 'solicitud'
+                };
 
-                            $queryParams = http_build_query([
-                                'filtro_busqueda' => $id_manual,
-                                'direccion' => $direccion
-                            ]);
+                $idReferencia = match ($origen) {
+                  'despacho' => $fila['id_despacho'] ?? null,
+                  'desarrollo' => $fila['id_des'] ?? null,
+                  default => $fila['id_doc'] ?? null
+                };
 
-                            $url = BASE_URL . "/filtrar_busqueda?" . $queryParams;
-                        ?>
-                        <tr>
-                            <td class="col-id"><?= $id ?></td>
-                            <td class="col-ci"><?= $ci ?></td>
-                            <td class="col-nombre"><?= $nombre ?></td>
-                            <td class="auditoria-fecha"><?= $fecha ?></td>
-                            <td class="auditoria-fecha"><?= $hora ?></td>
-                            <td class="text-start"><?= $accion ?></td>
-                            <td><?= $id_manual ?></td>
-                            <td><a href="<?= htmlspecialchars($url) ?>">Ver Solicitud</a></td>
-                        </tr>
-                    <?php endforeach; ?>
+                $queryParams = http_build_query([
+                  'id' => $idReferencia,
+                  'direccion' => $direccion
+                ]);
 
-            <?php else: ?>
-                <tr>
-                <td colspan="7">No hay información disponible.</td>
+                $url = BASE_URL . "/ver_solicitud_accion?" . $queryParams
+              ?>
+              <tr>
+                <td><?= $id ?></td>
+                <td><?= $ci ?></td>
+                <td><?= $nombre ?></td>
+                <td><?= $fecha ?></td>
+                <td><?= $hora ?></td>
+                <td class="text-start"><?= $accion ?></td>
+                <td><?= $id_manual ?></td>
+                <td>
+                  <a href="<?= htmlspecialchars($url) ?>" class="btn btn-outline-info btn-sm">
+                    <i class="fa fa-eye me-1"></i> Ver Solicitud
+                  </a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="8" class="text-center text-white">No hay información disponible.</td>
             </tr>
-        <?php endif; ?>
+          <?php endif; ?>
         </tbody>
-    </table>
+      </table>
     </div>
-    <div class="paginacion">
+
+    <nav class="d-flex justify-content-center">
+      <ul class="pagination pagination-dark">
         <?php if ($paginaActual > 1): ?>
-            <a href="?pagina=<?= $paginaActual - 1 ?>" class="paginacion-btn">&laquo;</a>
+          <li class="page-item">
+            <a class="page-link bg-dark text-white border-secondary" href="?pagina=<?= $paginaActual - 1 ?>">&laquo;</a>
+          </li>
         <?php endif; ?>
 
         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
-            <a href="?pagina=<?= $i ?>" class="paginacion-btn <?= $i == $paginaActual ? 'active' : '' ?>"><?= $i ?></a>
+          <li class="page-item <?= $i == $paginaActual ? 'active' : '' ?>">
+            <a class="page-link <?= $i == $paginaActual ? 'bg-primary border-primary text-white' : 'bg-dark text-white border-secondary' ?>" href="?pagina=<?= $i ?>"><?= $i ?></a>
+          </li>
         <?php endfor; ?>
 
         <?php if ($paginaActual < $totalPaginas): ?>
-            <a href="?pagina=<?= $paginaActual + 1 ?>" class="paginacion-btn">&raquo;</a>
+          <li class="page-item">
+            <a class="page-link bg-dark text-white border-secondary" href="?pagina=<?= $paginaActual + 1 ?>">&raquo;</a>
+          </li>
         <?php endif; ?>
-    </div>
-</section>
-</main>
+      </ul>
+    </nav>
+  </main>
 </body>
+
+
 <script src="<?= BASE_URL ?>/libs/jspdf.umd.min.js"></script>
 <script src="<?= BASE_URL ?>/libs/jspdf.plugin.autotable.min.js"></script>
 <script src="<?= BASE_URL ?>/public/js/exportarPDF.js"></script>

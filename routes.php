@@ -97,5 +97,7 @@ Router::post('/avanzada_codigo','LoginControl@avanzada_codigo');
 Router::post('/verificar_avanzada','LoginControl@verificar_avanzada');
 Router::post('/api_chat','LoginControl@api_chat');
 Router::get('/api_chat','LoginControl@api_chat');
+Router::get('/ajax_urgencia','SolicitudControl@notificaciones_urgentes');
+Router::get('/ver_solicitud_accion','SolicitudControl@ver_solicitud_accion');
 
 ?>

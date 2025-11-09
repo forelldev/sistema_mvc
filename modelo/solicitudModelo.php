@@ -602,7 +602,7 @@ private static function insertarSolicitante($db, $id, $data) {
     public static function notificacion_urgencia() {
             $conexion = DB::conectar();
             $rol = $_SESSION['id_rol'];
-
+            $msj = null;
             try {
                 $estadoFiltro = '';
                 switch ($rol) {
@@ -674,19 +674,24 @@ private static function insertarSolicitante($db, $id, $data) {
                                 ");
                                 $stmtUpdate->execute(['id_doc' => $fila['id_doc']]);
                             }
+                            else{
+                                $msj = "Está fallando la conexión para enviar un correo de recordatorio de urgencia de la persona ".$nombre. " de cédula ".$ci."!";
+                            }
                         }
                     }
                 }
 
                 return [
                     'exito' => true,
-                    'datos' => $resultados
+                    'datos' => $resultados,
+                    'msj_correo' => $msj
                 ];
             } catch (Exception $e) {
                 error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
                 return [
                     'exito' => false,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'msj_correo' => $msj
                 ];
             }
         }
@@ -925,6 +930,7 @@ private static function insertarSolicitante($db, $id, $data) {
             ];
         }
     }
+
 }
 
 

@@ -133,3 +133,11 @@ select.form-select.is-valid {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
+
+.form-control:focus,
+.form-select:focus {
+  background-color: #2b2b2b; /* mismo fondo que en reposo */
+  color: #ffffff;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}

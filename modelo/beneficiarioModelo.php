@@ -117,7 +117,7 @@ class BeneficiarioModelo{
                 if ($existe > 0) {
                     return [
                         'exito' => false,
-                        'error' => 'Ya existe una constancia con ese ID.'
+                        'error' => 'Ya existe un usuario con esa CI.'
                     ];
                 }
                 $stmt = $conexion->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
@@ -268,7 +268,7 @@ public static function mostrar_solicitudes($ci){
                 sa.id_doc AS id,
                 sa.id_manual,
                 sa.ci,
-                CONCAT(sa.estado, '. Solicitud General') AS estado,
+                sa.estado AS estado,
                 sa.estado AS estado_base,
                 sa.invalido,
                 COALESCE(saf.fecha, NOW()) AS fecha,
@@ -316,7 +316,7 @@ public static function mostrar_solicitudes($ci){
                 d.id_despacho AS id,
                 d.id_manual,
                 d.ci,
-                CONCAT(d.estado, '. Despacho') AS estado,
+                d.estado AS estado,
                 d.estado AS estado_base,
                 d.invalido,
                 COALESCE(df.fecha, NOW()) AS fecha,
@@ -365,7 +365,7 @@ public static function mostrar_solicitudes_desarrollo($ci){
                 sd.id_des AS id,
                 sd.id_manual,
                 sd.ci,
-                CONCAT(sd.estado, '. Solicitud Desarrollo') AS estado,
+                sd.estado Solicitud Desarrollo AS estado,
                 sd.estado AS estado_base,
                 sd.invalido,
                 COALESCE(sdf.fecha, NOW()) AS fecha,

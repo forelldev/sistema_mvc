@@ -34,81 +34,78 @@ class reportesModelo{
         }
     }
 
-    public static function mostrarReportesAcciones($pagina = 1, $porPagina = 10) {
-        try {
-            $conexion = DB::conectar();
-            $offset = ($pagina - 1) * $porPagina;
+   public static function mostrarReportesAcciones($pagina = 1, $porPagina = 10) {
+    try {
+        $conexion = DB::conectar();
+        $offset = ($pagina - 1) * $porPagina;
 
-            // Total de registros
-            $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
-            $totalRegistros = $totalConsulta->fetchColumn();
+        // Total real de registros (sin filtrar)
+        $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
+        $totalRegistros = $totalConsulta->fetchColumn();
 
-            // Registros paginados
-            $consulta = "
-                SELECT ra.*, ui.nombre
-                FROM reportes_acciones ra
-                INNER JOIN usuarios_info ui ON ra.ci = ui.ci
-                ORDER BY ra.fecha DESC
-                LIMIT :limite OFFSET :offset
-            ";
-            $stmt = $conexion->prepare($consulta);
-            $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Registros paginados
+        $consulta = "
+            SELECT ra.*, ui.nombre
+            FROM reportes_acciones ra
+            INNER JOIN usuarios_info ui ON ra.ci = ui.ci
+            ORDER BY ra.fecha DESC
+            LIMIT :limite OFFSET :offset
+        ";
+        $stmt = $conexion->prepare($consulta);
+        $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $datosFiltrados = [];
+        $datosFiltrados = [];
 
-            foreach ($datos as $fila) {
-                $id_doc = $fila['id_doc'];
-                $accion = strtolower($fila['accion']);
+        foreach ($datos as $fila) {
+            $id_doc = $fila['id_doc'];
+            $accion = strtolower($fila['accion']);
 
-                // Extraer tipo entre paréntesis
-                preg_match('/\((.*?)\)/', $accion, $match);
-                $tipo = strtolower(trim($match[1] ?? 'general'));
+            preg_match('/\((.*?)\)/', $accion, $match);
+            $tipo = strtolower(trim($match[1] ?? 'general'));
 
-                switch ($tipo) {
-                    case 'despacho':
-                        $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
-                        $fila['origen'] = 'despacho';
-                        break;
-                    case 'desarrollo':
-                        $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
-                        $fila['origen'] = 'desarrollo';
-                        break;
-                    default:
-                        $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
-                        $fila['origen'] = 'general';
-                        break;
-                }
-
-                $stmtManual = $conexion->prepare($query);
-                $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
-                $stmtManual->execute();
-                $id_manual = $stmtManual->fetchColumn();
-
-                if ($id_manual) {
-                    $fila['id_manual'] = $id_manual;
-                    $datosFiltrados[] = $fila;
-                } else {
-                    // Eliminar el reporte si no se encontró id_manual
-                    $stmtDelete = $conexion->prepare("DELETE FROM reportes_acciones WHERE id = :id");
-                    $stmtDelete->bindValue(':id', $fila['id'], PDO::PARAM_INT);
-                    $stmtDelete->execute();
-                }
+            switch ($tipo) {
+                case 'despacho':
+                    $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
+                    $fila['origen'] = 'despacho';
+                    break;
+                case 'desarrollo':
+                    $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
+                    $fila['origen'] = 'desarrollo';
+                    break;
+                default:
+                    $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
+                    $fila['origen'] = 'general';
+                    break;
             }
 
-            return [
-                'exito' => true,
-                'datos' => $datosFiltrados,
-                'total' => count($datosFiltrados),
-                'pagina' => $pagina,
-                'porPagina' => $porPagina
-            ];
-        } catch (PDOException $e) {
-            return ['exito' => false, 'mensaje' => $e->getMessage()];
+            $stmtManual = $conexion->prepare($query);
+            $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
+            $stmtManual->execute();
+            $id_manual = $stmtManual->fetchColumn();
+
+            if ($id_manual) {
+                $fila['id_manual'] = $id_manual;
+                $datosFiltrados[] = $fila;
+            } else {
+                // No elimines el registro aquí, solo ignóralo
+                continue;
+            }
         }
+
+        return [
+            'exito' => true,
+            'datos' => $datosFiltrados,
+            'total' => $totalRegistros, // ← usar total real para paginación
+            'pagina' => $pagina,
+            'porPagina' => $porPagina
+        ];
+    } catch (PDOException $e) {
+        return ['exito' => false, 'mensaje' => $e->getMessage()];
     }
+}
 
 
 
@@ -286,21 +283,28 @@ class reportesModelo{
         }
 
 
-  public static function filtro_acciones($fecha, $oficina, $pagina = 1, $porPagina = 10) {
+ public static function filtro_acciones($fecha, $oficina, $pagina = 1, $porPagina = 10) {
     $conexion = DB::conectar();
     $fecha_inicio = $fecha . ' 00:00:00';
     $fecha_fin = $fecha . ' 23:59:59';
     $offset = ($pagina - 1) * $porPagina;
 
-    // Condición de oficina sobre ra.accion
+    // Tipos de origen y sus tablas
+    $tipos = [
+        'General' => ['tipo' => 'general', 'tabla' => 'solicitud_ayuda', 'campo' => 'id_doc'],
+        'Desarrollo Social' => ['tipo' => 'desarrollo', 'tabla' => 'solicitud_desarrollo', 'campo' => 'id_des'],
+        'Despacho' => ['tipo' => 'despacho', 'tabla' => 'despacho', 'campo' => 'id_despacho']
+    ];
+
+    // Condición SQL según oficina
     $condicionOficina = '';
     $parametrosOficina = [];
 
     if ($oficina === 'todas') {
-        $condicionOficina = "AND (ra.accion LIKE '%(General)%' OR ra.accion LIKE '%(Despacho)%' OR ra.accion LIKE '%(Desarrollo Social)%')";
-    } elseif (!empty($oficina)) {
+        $condicionOficina = "AND (" . implode(" OR ", array_map(fn($k) => "ra.accion LIKE '%($k)%'", array_keys($tipos))) . ")";
+    } elseif (!empty($oficina) && isset($tipos[$oficina])) {
         $condicionOficina = "AND ra.accion LIKE :oficina";
-        $parametrosOficina[':oficina'] = "%(" . trim($oficina) . ")%";
+        $parametrosOficina[':oficina'] = "%(" . $oficina . ")%";
     }
 
     try {
@@ -344,6 +348,36 @@ class reportesModelo{
         $stmt->execute();
         $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Enriquecer cada fila con id_manual y origen
+        foreach ($resultados as &$fila) {
+            $fila['id_manual'] = 'N/A';
+            $fila['origen'] = 'general';
+
+            foreach ($tipos as $clave => $info) {
+                if (str_contains($fila['accion'], "($clave)")) {
+                    $fila['origen'] = $info['tipo'];
+
+                    // Acceder dinámicamente al campo correcto
+                    $campoID = $info['campo'];
+                    $id = $fila[$campoID] ?? null;
+
+                    if ($id) {
+                        $query = "SELECT id_manual FROM {$info['tabla']} WHERE {$info['campo']} = :id";
+                        $stmtManual = $conexion->prepare($query);
+                        $stmtManual->bindParam(':id', $id);
+                        $stmtManual->execute();
+                        $idManual = $stmtManual->fetchColumn();
+                        if ($idManual) {
+                            $fila['id_manual'] = $idManual;
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+        }
+
         return [
             'exito' => true,
             'datos' => $resultados,
@@ -359,6 +393,7 @@ class reportesModelo{
         ];
     }
 }
+
 
 
 

@@ -9,15 +9,15 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/formularios.css?v=<?= time(); ?>">
 </head>
 <body class="bg-dark text-white">
+<main class="container py-4">
   <!-- Encabezado -->
-  <header class="bg-secondary border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+  <header class="d-flex justify-content-between align-items-center mb-4">
     <h5 class="mb-0 fw-semibold">Formulario de solicitud de ayuda</h5>
     <a href="<?= BASE_URL ?>/solicitudes_list?msj=Has cancelado la creación de solicitud!" class="btn btn-sm btn-outline-light">
       <i class="fa fa-arrow-left me-1"></i> Volver
     </a>
   </header>
-    <main>
-        <form action="<?=BASE_URL?>/enviarFormulario" method="POST" class="formulario-ayuda" autocomplete="off">
+        <form action="<?=BASE_URL?>/enviarFormulario" method="POST" class="border rounded p-4 bg-secondary bg-opacity-10" autocomplete="off">
             <h2 class="text-center"><i class="fa fa-hands-helping"></i> Solicitud de Ayuda</h2>
             <!-- Sección: Datos Personales -->
             <section class="mb-4">
