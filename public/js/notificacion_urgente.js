@@ -51,6 +51,11 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             lista.appendChild(li);
           });
+          if (data.msj_correo) {
+                setTimeout(() => {
+                  mostrarMensaje(data.msj_correo, "warning", 6000);
+                }, 500);
+              }
         } else {
           badge.classList.add('d-none');
           lista.innerHTML = '<li class="text-muted small">No hay notificaciones disponibles.</li>';

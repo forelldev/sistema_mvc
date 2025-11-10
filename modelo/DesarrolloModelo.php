@@ -778,6 +778,7 @@ private static function insertarSolicitante($db, $id, $data) {
     public static function notificacion_urgencia() {
             $conexion = DB::conectar();
             // $rol = $_SESSION['id_rol']; esta linea era para separar por roles, pero como esta función solo es de rol 1 y accesible solo para rol 1 y 4(que es el usuario master)
+            $msj = null;
             try {
                     $stmt = $conexion->prepare("
                         SELECT 
@@ -828,12 +829,17 @@ private static function insertarSolicitante($db, $id, $data) {
                                 ");
                                 $stmtUpdate->execute(['id_des' => $fila['id_des']]);
                             }
+                            else{
+                                $msj = "Está fallando la conexión para enviar un correo de recordatorio de urgencia de la persona ".$nombre. " de cédula ".$ci."!";
+                            }
+
                         }
                     }
                 }
                 return [
                     'exito' => true,
-                    'datos' => $resultados
+                    'datos' => $resultados,
+                    'msj_correo' => $msj
                 ];
             } catch (Exception $e) {
                 error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());

@@ -6,6 +6,7 @@
     <title>Configuración de usuario</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    
 
 </head>
 <body class="bg-dark text-white">

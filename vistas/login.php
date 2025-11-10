@@ -10,25 +10,40 @@
 </head>
 <body class="login-body d-flex align-items-center justify-content-center min-vh-100">
   <div class="card login-card shadow-lg">
-    <div class="text-center mb-3">
+    <div class="text-center mb-4">
       <img src="<?= BASE_URL ?>/img/logo.png" alt="Logo" class="img-fluid mb-2" style="max-height: 90px;">
       <h5 class="fw-semibold">Bienvenido</h5>
     </div>
 
-    <form action="<?=BASE_URL?>/login" method="POST" autocomplete="off">
+    <form action="<?= BASE_URL ?>/login" method="POST" autocomplete="off">
       <div class="mb-3">
-        <label for="ci" class="form-label text-gray-dark">Cédula</label>
+        <label for="ci" class="form-label">Cédula</label>
         <div class="input-group">
-          <span class="input-group-text bg-light text-secondary"><i class="fa fa-id-card"></i></span>
-          <input type="text" name="ci" id="ci" class="form-control" required placeholder="Ingresa tu CI" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <span class="input-group-text"><i class="fa fa-id-card"></i></span>
+          <input
+            type="text"
+            name="ci"
+            id="ci"
+            class="form-control"
+            required
+            placeholder="Ingresa tu CI"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+          >
         </div>
       </div>
 
       <div class="mb-3">
-        <label for="clave" class="form-label text-gray-dark">Contraseña</label>
+        <label for="clave" class="form-label">Contraseña</label>
         <div class="input-group">
-          <span class="input-group-text bg-light text-secondary"><i class="fa fa-lock"></i></span>
-          <input type="password" name="clave" id="clave" class="form-control" required placeholder="Ingresa tu contraseña">
+          <span class="input-group-text"><i class="fa fa-lock"></i></span>
+          <input
+            type="password"
+            name="clave"
+            id="clave"
+            class="form-control"
+            required
+            placeholder="Ingresa tu contraseña"
+          >
           <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
             <i class="fa fa-eye" id="eye-icon"></i>
           </button>
@@ -36,7 +51,7 @@
       </div>
 
       <div class="d-grid mb-3">
-        <button type="submit" class="btn btn-dark text-white fw-bold">Iniciar Sesión</button>
+        <button type="submit" class="btn btn-dark fw-bold">Iniciar Sesión</button>
       </div>
 
       <div class="text-center">
@@ -45,6 +60,7 @@
     </form>
   </div>
 </body>
+
 
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";

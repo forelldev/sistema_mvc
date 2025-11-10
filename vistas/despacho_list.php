@@ -206,12 +206,22 @@ $acciones = [
 </body>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php
-$mensaje = $msj ?? ($_GET['msj'] ?? null);
-if ($mensaje):
+$mensaje = $_GET['msj'] ?? $msj ?? null;
+$msj_correo = $msj_correo ?? null;
+
+if ($mensaje || $msj_correo):
 ?>
-    <script>
-        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
-    </script>
+<script>
+    <?php if ($mensaje): ?>
+    mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 6000);
+    <?php endif; ?>
+
+    <?php if ($msj_correo): ?>
+    setTimeout(function() {
+        mostrarMensaje("<?= htmlspecialchars($msj_correo) ?>", "warning", 6000);
+    }, <?= $mensaje ? 6000 : 0 ?>);
+    <?php endif; ?>
+</script>
 <?php endif; ?>
 
 <script>
