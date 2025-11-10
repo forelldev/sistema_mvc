@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?= time(); ?>">
 </head>
-<body >
+<body>
    <!-- HEADER -->
  <header class="border-bottom shadow-sm px-4 py-3">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
@@ -32,13 +32,13 @@
 
       <!-- Acciones por rol -->
       <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-        <a href="<?= BASE_URL ?>/busqueda" class="btn btn-sm btn-primary">
+        <a href="<?= BASE_URL ?>/busqueda" class="btn btn-filtro btn-sm">
           <i class="fa fa-plus"></i> Crear Solicitud
         </a>
       <?php endif; ?>
 
       <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-        <a href="<?= BASE_URL ?>/inhabilitados_lista" class="btn btn-sm btn-secondary">
+        <a href="<?= BASE_URL ?>/inhabilitados_lista" class="btn btn-filtro btn-sm">
           <i class="fa fa-eye-slash"></i> Ver Solicitudes Inválidas
         </a>
       <?php endif; ?>
@@ -47,7 +47,7 @@
       <?php
         $volver_url = isset($_GET['direccion']) ? BASE_URL . '/reportes_acciones' : BASE_URL . '/main';
       ?>
-      <a href="<?= $volver_url ?>" class="btn btn-sm btn-outline-secondary text-white">
+      <a href="<?= $volver_url ?>" class="btn btn-filtro btn-sm">
         <i class="fa fa-arrow-left"></i> Volver atrás
       </a>
 
@@ -171,8 +171,8 @@
             default => 'bg-secondary'
           };
         ?>
-        <div class="col-12 col-md-6 col-xl-4">
-          <div class="card h-100 shadow-sm">
+        <div class="d-flex justify-content-center mb-4">
+          <div class="card w-100" style="max-width: 720px;">
             <div class="card-header d-flex justify-content-between align-items-center">
               <span class="badge <?= $clase_estado ?>"><?= $estado ?></span>
               <small class="fecha-solicitud"><strong>Fecha:</strong> <?= date('d-m-Y', strtotime($fila['fecha'])) ?></small>
@@ -217,7 +217,7 @@
             <span class="badge bg-secondary">Sin información</span>
           </div>
           <div class="card-body">
-            <p class="text-muted">No hay información disponible.</p>
+            <p class="text-white">No hay información disponible.</p>
           </div>
         </div>
       </div>
@@ -242,6 +242,7 @@ $mensaje = $_GET['msj'] ?? $msj ?? null;
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
     const BASE_URL = "<?php echo BASE_URL ?>";
+    const caso = 'generales';
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>

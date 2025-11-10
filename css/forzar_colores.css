@@ -1,0 +1,27 @@
+.badge.bg-warning {
+  color: #212529 !important; /* texto oscuro sobre fondo amarillo */
+}
+
+.badge.bg-info {
+  color: #212529 !important; /* texto oscuro sobre fondo celeste */
+}
+
+.badge.bg-primary {
+  color: #ffffff !important; /* texto blanco sobre azul */
+}
+
+.badge.bg-success {
+  color: #ffffff !important; /* texto blanco sobre verde */
+}
+
+.badge.bg-danger {
+  color: #ffffff !important; /* texto blanco sobre rojo */
+}
+
+.badge.bg-secondary {
+  color: #ffffff !important; /* texto blanco sobre gris oscuro */
+}
+
+.badge.bg-dark {
+  color: #ffffff !important; /* texto blanco sobre fondo oscuro */
+}

@@ -600,101 +600,100 @@ private static function insertarSolicitante($db, $id, $data) {
     //NOTIFICACIONES DE LOS MEDICAMENTOS Y LABORATORIO Y ENVIAR CORREO:
 
     public static function notificacion_urgencia() {
-            $conexion = DB::conectar();
-            $rol = $_SESSION['id_rol'];
-            $msj = null;
-            try {
-                $estadoFiltro = '';
-                switch ($rol) {
-                    case 1:
-                        $estadoFiltro = "sa.estado IN (
-                            'En espera del documento físico para ser procesado 0/3',
-                            'En Proceso 1/3'
-                        )";
-                        break;
-                    case 2:
-                        $estadoFiltro = "sa.estado = 'En Proceso 2/3'";
-                        break;
-                    case 3:
-                        $estadoFiltro = "sa.estado = 'En Proceso 3/3'";
-                        break;
-                    case 4:
-                    default:
-                        $estadoFiltro = "sa.estado != 'Solicitud Finalizada (Ayuda Entregada)'";
-                        break;
-                }
+    $conexion = DB::conectar();
+    $rol = $_SESSION['id_rol'];
+    $msj = null;
 
-                $stmt = $conexion->prepare("
-                    SELECT 
-                        sa.*, 
-                        saf.*,
-                        sac.correo_enviado,
-                        sd.*,
-                        sc.categoria
-                    FROM solicitud_ayuda sa
-                    LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
-                    LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
-                    LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
-                    LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
-                    WHERE sc.categoria IN ('Medicamentos', 'Laboratorio')
-                    AND $estadoFiltro
-                    AND sa.invalido = 0
-                    AND saf.fecha_renovacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
-                    ORDER BY
-                        CASE sc.categoria
-                        WHEN 'Medicamentos' THEN 0
-                        WHEN 'Laboratorio' THEN 1
-                            ELSE 2
-                            END,
-                            saf.fecha ASC
-                ");
-                $stmt->execute();
-                $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $estadoFiltro = '';
+        switch ($rol) {
+            case 1:
+                $estadoFiltro = "sa.estado IN (
+                    'En espera del documento físico para ser procesado 0/3',
+                    'En Proceso 1/3'
+                )";
+                break;
+            case 2:
+                $estadoFiltro = "sa.estado = 'En Proceso 2/3'";
+                break;
+            case 3:
+                $estadoFiltro = "sa.estado = 'En Proceso 3/3'";
+                break;
+            case 4:
+            default:
+                $estadoFiltro = "sa.estado != 'Solicitud Finalizada (Ayuda Entregada)'";
+                break;
+        }
 
-                foreach ($resultados as $fila) {
-                    if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
-                        $ci = $fila['ci'];
-                        $stmtSolicitante = $conexion->prepare("
-                            SELECT nombre, correo FROM solicitantes WHERE ci = :ci
+        $stmt = $conexion->prepare("
+            SELECT 
+                sa.*, 
+                saf.*,
+                sac.correo_enviado,
+                sd.*,
+                sc.categoria
+            FROM solicitud_ayuda sa
+            LEFT JOIN solicitud_ayuda_fecha saf ON sa.id_doc = saf.id_doc
+            LEFT JOIN solicitud_ayuda_correo sac ON sa.id_doc = sac.id_doc
+            LEFT JOIN solicitud_descripcion sd ON sa.id_doc = sd.id_doc
+            LEFT JOIN solicitud_categoria sc ON sa.id_doc = sc.id_doc
+            WHERE sc.categoria IN ('Medicamentos', 'Laboratorio')
+            AND $estadoFiltro
+            AND sa.invalido = 0
+            AND saf.fecha_renovacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
+            ORDER BY
+                CASE sc.categoria
+                    WHEN 'Medicamentos' THEN 0
+                    WHEN 'Laboratorio' THEN 1
+                    ELSE 2
+                END,
+                saf.fecha ASC
+        ");
+        $stmt->execute();
+        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($resultados as $fila) {
+            if (!empty($fila['ci']) && $fila['correo_enviado'] == 0) {
+                $ci = $fila['ci'];
+                $stmtSolicitante = $conexion->prepare("SELECT nombre, correo FROM solicitantes WHERE ci = :ci");
+                $stmtSolicitante->execute(['ci' => $ci]);
+                $solicitante = $stmtSolicitante->fetch(PDO::FETCH_ASSOC);
+
+                if ($solicitante) {
+                    $correo = $solicitante['correo'];
+                    $nombre = $solicitante['nombre'];
+
+                    $enviado = Correo::correoVencido($correo, $nombre);
+
+                    if ($enviado) {
+                        $stmtUpdate = $conexion->prepare("
+                            UPDATE solicitud_ayuda_correo 
+                            SET correo_enviado = 1 
+                            WHERE id_doc = :id_doc
                         ");
-                        $stmtSolicitante->execute(['ci' => $ci]);
-                        $solicitante = $stmtSolicitante->fetch(PDO::FETCH_ASSOC);
-
-                        if ($solicitante) {
-                            $correo = $solicitante['correo'];
-                            $nombre = $solicitante['nombre'];
-
-                            $enviado = Correo::correoVencido($correo, $nombre);
-
-                            if ($enviado) {
-                                $stmtUpdate = $conexion->prepare("
-                                    UPDATE solicitud_ayuda_correo 
-                                    SET correo_enviado = 1 
-                                    WHERE id_doc = :id_doc
-                                ");
-                                $stmtUpdate->execute(['id_doc' => $fila['id_doc']]);
-                            }
-                            else{
-                                $msj = "Está fallando la conexión para enviar un correo de recordatorio de urgencia de la persona ".$nombre. " de cédula ".$ci."!";
-                            }
-                        }
+                        $stmtUpdate->execute(['id_doc' => $fila['id_doc']]);
+                    } else {
+                        $msj = "Está fallando la conexión para enviar un correo de recordatorio de urgencia de la persona $nombre de cédula $ci!";
                     }
                 }
-
-                return [
-                    'exito' => true,
-                    'datos' => $resultados,
-                    'msj_correo' => $msj
-                ];
-            } catch (Exception $e) {
-                error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
-                return [
-                    'exito' => false,
-                    'error' => $e->getMessage(),
-                    'msj_correo' => $msj
-                ];
             }
         }
+
+        return [
+            'exito' => true,
+            'datos' => $resultados,
+            'msj_correo' => $msj
+        ];
+    } catch (Exception $e) {
+        error_log("Error al filtrar solicitudes por categoría y fecha: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'error' => $e->getMessage(),
+            'msj_correo' => $msj
+        ];
+    }
+}
+
 
         public static function verificar_solicitudes($ci){
             try {

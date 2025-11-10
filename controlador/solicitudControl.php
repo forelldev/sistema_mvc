@@ -199,7 +199,7 @@ class SolicitudControl {
             $id_doc = $_POST['id_doc'];
             $razon = $_POST['razon'];
             if(Procesar::inhabilitar($id_doc,$invalido,$razon)){
-                header('Location: '.BASE_URL.'/inhabilitados_lista');
+                header('Location: '.BASE_URL.'/inhabilitados_lista?msj=Solicitud invalidada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Inhabilitó la solicitud razón: '.$razon.' (General)';
@@ -226,7 +226,7 @@ class SolicitudControl {
             $id_doc = $_GET['id_doc'];
             $razon = '';
             if(Procesar::habilitar_solicitud($id_doc,$invalido,$razon)){
-                header('Location: '.BASE_URL.'/solicitudes_list');
+                header('Location: '.BASE_URL.'/solicitudes_list?msj=Solicitud habilitada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Habilitó la solicitud (General)';
@@ -429,7 +429,7 @@ class SolicitudControl {
                 require_once 'vistas/solicitud_urgencia.php';
                 break;
             case 'desarrollo':
-                $res = Desarrollo::notificacion_urgencia($id);
+                $res = Desarrollo::mostrar_urgencia($id);
                 if($res['exito']){
                     $datos = $res['datos'];
                 }
@@ -439,7 +439,7 @@ class SolicitudControl {
                 require_once 'vistas/solicitud_desarrollo_urgencia.php';
                 break;
             case 'despacho':
-                $res = Despacho::notificacion_urgencia($id);
+                $res = Despacho::solicitud_urgencia($id);
                 if($res['exito']){
                     $datos = $res['datos'];
                 }

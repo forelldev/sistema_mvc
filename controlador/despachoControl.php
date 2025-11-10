@@ -169,7 +169,7 @@
             $razon = $_POST['razon'];
             $res = Procesar::inhabilitarDespacho($id_doc,$estado,$razon);
             if($res['exito']){
-                header('Location: '.BASE_URL.'/inhabilitados_despacho?msj=Solicitud inhabilitada con éxito');
+                header('Location: '.BASE_URL.'/inhabilitados_despacho?msj=Solicitud invalidada con éxito');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Despacho)';
@@ -201,7 +201,7 @@
             $id_doc = $_GET['id_doc'];
             $razon = '';
             if(Procesar::habilitar_solicitudDespacho($id_doc,$estado,$razon)){
-                header('Location: '.BASE_URL.'/despacho_list');
+                header('Location: '.BASE_URL.'/despacho_list?msj=Solicitud habilitada con éxito');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Habilitó la solicitud (Despacho)';

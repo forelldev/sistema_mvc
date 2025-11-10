@@ -3,36 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitudes de ayuda</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
+    <title>Crear Solicitud - Desarrollo Social</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/busqueda.css?v=<?= time(); ?>">
 </head>
-<body class="solicitud-body">
-    <header class="header">
-    <div class="titulo-header">Verificar si el beneficiario ya está registrado</div>
-    <div class="header-right">
-      <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
-      <?php
-            $url = isset($direccion) && $direccion ? '/nueva_solicitud' : '/solicitudes_desarrollo';
-        ?>
-        <a href="<?= BASE_URL . $url ?>">
-            <button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button>
-        </a>
+<body class="solicitud-body bg-dark text-white">
+  <!-- Header -->
+  <header class="bg-secondary border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 fw-semibold">Verificar si el beneficiario ya está registrado</h5>
+    <div class="d-flex gap-2">
+      <a href="<?= BASE_URL ?>/main" class="btn btn-sm btn-outline-light">
+        <i class="fa fa-home me-1"></i> Inicio
+      </a>
+      <?php $url = isset($direccion) && $direccion ? '/nueva_solicitud' : '/solicitudes_desarrollo'; ?>
+      <a href="<?= BASE_URL . $url ?>" class="btn btn-sm btn-outline-light">
+        <i class="fa fa-arrow-left me-1"></i> Volver atrás
+      </a>
     </div>
   </header>
-<main>
-        <form action="<?=BASE_URL?>/formulario_desarrollo" method="POST" class="registro-card form-user" autocomplete="off">
-            <h2><i class="fa fa-search"></i> Buscar por CI</h2>
-            <div class="campo-user">
-            <label for="ci">Cédula de Identidad</label>
-            <input type="text" name="ci" placeholder="Ingrese su CI" class="input-ci" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
-            </div>
-            <button type="submit" value="Buscar" class="boton-enviar-ayuda"><i class="fa fa-search"></i>Buscar</button>
+
+  <!-- Main -->
+  <main class="container py-5">
+    <div class="card form-card text-white shadow-sm border-0 mx-auto" style="max-width: 480px;">
+      <div class="card-body">
+        <form action="<?= BASE_URL ?>/formulario_desarrollo" method="POST" autocomplete="off">
+          <h5 class="card-title mb-3"><i class="fa fa-search me-2"></i> Buscar por Cédula</h5>
+          <p class="small text-white-50 mb-4">
+            Ingresa la cédula del beneficiario para verificar si ya está registrado en el sistema.
+          </p>
+
+          <div class="mb-3">
+            <label for="ci" class="form-label">Cédula de Identidad</label>
+            <input type="text" name="ci" id="ci"
+                   class="form-control form-control-sm bg-dark text-white border-secondary"
+                   placeholder="Ej. 12345678" required maxlength="10"
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          </div>
+
+          <div class="text-end">
+            <button type="submit" class="btn btn-sm btn-outline-light px-4">
+              <i class="fa fa-search me-1"></i> Buscar
+            </button>
+          </div>
         </form>
-</main>
+      </div>
+    </div>
+  </main>
 </body>
+
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>

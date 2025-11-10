@@ -4,59 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Solicitudes inhabilitadas</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?= time(); ?>">
 </head>
-<body class="solicitud-body">
-    <header class="header">
-        <div class="titulo-header">Solicitudes inhabilitadas</div>
-        <div class="header-right">
-            <a href="<?=BASE_URL?>/main"><button class="nav-btn"><i class="fa fa-home"></i> Inicio</button></a>
-            <a href="<?=BASE_URL?>/despacho_list"><button class="nav-btn"><i class="fa fa-eye"></i> Ver Solicitudes Habilitadas</button></a>
-        </div>
-    </header>
-    <main>
-        <section class="solicitudes-lista">
-            <?php if (!empty($datos)):  ?>
-                <?php foreach ($datos as $fila): ?>
-                    <div class="solicitud-card">
-                        <div class="solicitud-header">
-                            <span class="solicitud-estado inhabilitada">
-                                <?= htmlspecialchars($fila['estado'] ?? '') ?>
-                            </span>
-                            <div><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'])))?></div>
-                        </div>
-                        <div class="solicitud-info">
-                            <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
-                            <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual']) ?></div>
-                            <div><strong>Cédula de Identidad del Beneficiario:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
-                            <div><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
-                            <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
-                            <div><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda'] ?? '') ?></div>
-                            <div><strong>Beneficiario:</strong> <?= htmlspecialchars($fila['nombre'].' '.$fila['apellido'] ?? '') ?></div>
-                        </div>
-                        <div class="solicitud-actions">
-                            <a href="<?= BASE_URL ?>/" class="aprobar-btn">Ver Información del beneficiario</a>
-                            <a href="<?= BASE_URL.'/editarDespacho?id_doc='.$fila['id_despacho']  ?>" class="aprobar-btn">Editar</a>
-                            <a href="<?= BASE_URL.'/habilitarDespacho?id_doc='.$fila['id_despacho'] ?>" class="aprobar-btn">Habilitar</a>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="solicitud-card">
-                    <div class="solicitud-header">
-                        <span class="solicitud-estado">Sin información</span>
-                    </div>
-                    <div class="solicitud-info">
-                        No hay información disponible.
-                    </div>
+<body class="bg-dark">
+  <!-- Encabezado -->
+  <header class="py-3 px-4 d-flex justify-content-between align-items-center" style="background-color: #2c2f33;">
+    <h5 class="mb-0 text-white">Solicitudes inhabilitadas</h5>
+    <div>
+      <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light me-2">
+        <i class="fa fa-home"></i> Inicio
+      </a>
+      <a href="<?= BASE_URL ?>/despacho_list" class="btn btn-outline-light">
+        <i class="fa fa-eye"></i> Ver Solicitudes Habilitadas
+      </a>
+    </div>
+  </header>
+
+  <!-- Contenido -->
+  <main class="container my-4">
+    <section class="solicitudes-lista">
+      <?php if (!empty($datos)): ?>
+        <div class="row g-4">
+          <?php foreach ($datos as $fila): ?>
+            <div class="col-12">
+              <div class="card shadow border-0">
+                <!-- Encabezado de tarjeta -->
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                  <span class="badge bg-secondary"><?= htmlspecialchars($fila['estado'] ?? '') ?></span>
+                  <span class="fecha-solicitud"><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?></span>
                 </div>
-            <?php endif; ?>
-        </section>
-    </main>
+
+                <!-- Cuerpo de tarjeta -->
+                <div class="card-body text-white">
+                  <p><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></p>
+                  <p><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual']) ?></p>
+                  <p><strong>Cédula de Identidad del Beneficiario:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></p>
+                  <p><strong>Creador:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></p>
+                  <p><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></p>
+                  <p><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda'] ?? '') ?></p>
+                  <p><strong>Beneficiario:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? '')) ?></p>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card-footer d-flex flex-wrap gap-2 bg-dark border-top">
+                  <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci'] ?>" class="btn btn-filtro btn-sm">Ver Información del beneficiario</a>
+                  <a href="<?= BASE_URL . '/editarDespacho?id_doc=' . $fila['id_despacho'] ?>" class="btn btn-filtro btn-sm">Editar</a>
+                  <a href="<?= BASE_URL . '/habilitarDespacho?id_doc=' . $fila['id_despacho'] ?>" class="btn btn-filtro btn-sm">Habilitar</a>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php else: ?>
+        <div class="card shadow border-0">
+          <div class="card-header bg-dark text-white">
+            <span class="badge bg-secondary">Sin información</span>
+          </div>
+          <div class="card-body text-white">
+            <p>No hay información disponible.</p>
+          </div>
+        </div>
+      <?php endif; ?>
+    </section>
+  </main>
 </body>
+
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>

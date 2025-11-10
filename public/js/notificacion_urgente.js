@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const badge = document.getElementById('badge-noti');
   const btn = document.getElementById('btn-notificaciones');
 
-  const caso = 'generales'; // puedes cambiar esto dinámicamente si lo necesitas
 
   function cargarNotificaciones() {
     fetch(BASE_URL + '/ajax_urgencia?caso=' + caso)
@@ -27,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 url = BASE_URL + '/solicitud_urgencia?id_doc=' + noti.id_doc;
                 break;
               case 'desarrollo':
-                url = BASE_URL + '/mostrar_noti_urgencia?id_des=' + noti.id_desarrollo;
+                url = BASE_URL + '/mostrar_noti_urgencia?id_des=' + noti.id_des;
                 break;
               case 'despacho':
                 url = BASE_URL + '/noti_urgente_despacho?id_despacho=' + noti.id_despacho;

@@ -8,25 +8,39 @@ const renderSubcategoria = (valor) => {
   campoExamen.style.display = 'none';
 
   if (valor === 'Ecosonograma' || valor === 'Eco-Doppler') {
-    campoExamen.innerHTML = `<input type="hidden" name="examen[]" value="${valor}">`;
-    campoExamen.style.display = 'block';
-  } else if (valor === 'Exámenes de Laboratorio') {
-    const opciones = [
-      'Hematología Completa',
-      'Glicemia',
-      'Orina',
-      'Heces'
-    ];
+  campoExamen.innerHTML = `
+    <div class="mb-3">
+      <label class="form-label">Examen seleccionado:</label>
+      <div class="alert alert-info py-2 px-3 rounded-3 mb-0">
+        ${valor}
+        <input type="hidden" name="examen[]" value="${valor}">
+      </div>
+    </div>
+  `;
+  campoExamen.style.display = 'block';
+} else if (valor === 'Exámenes de Laboratorio') {
+  const opciones = ['Hematología Completa', 'Glicemia', 'Orina', 'Heces'];
 
-    let html = `<label>Seleccione uno o más exámenes:</label><br>`;
-    opciones.forEach(opcion => {
-      const checked = examenSeleccionado.includes(opcion) ? 'checked' : '';
-      html += `<label><input type="checkbox" name="examen[]" value="${opcion}" ${checked}> ${opcion}</label><br>`;
-    });
+  let html = `
+    <div class="mb-3">
+      <label class="form-label">Seleccione uno o más exámenes:</label>
+  `;
 
-    campoExamen.innerHTML = html;
-    campoExamen.style.display = 'block';
-  }
+  opciones.forEach(opcion => {
+    const checked = examenSeleccionado.includes(opcion) ? 'checked' : '';
+    html += `
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="examen[]" value="${opcion}" id="examen_${opcion}" ${checked}>
+        <label class="form-check-label" for="examen_${opcion}">${opcion}</label>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  campoExamen.innerHTML = html;
+  campoExamen.style.display = 'block';
+}
+
 };
 
 

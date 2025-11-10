@@ -286,8 +286,24 @@ private static function insertarSolicitante($db, $id, $data) {
 
     public static function notificacion_urgencia() {
         $conexion = DB::conectar();
+        $rol = $_SESSION['id_rol'];
         $msj = null;
+
         try {
+            $estadoFiltro = '';
+            switch ($rol) {
+                case 2:
+                    $estadoFiltro = "d.estado = 'En Revisión 1/2'";
+                    break;
+                case 3:
+                    $estadoFiltro = "d.estado = 'En Proceso 2/2 (Sin entregar)'";
+                    break;
+                case 4:
+                default:
+                    $estadoFiltro = "d.estado != 'Solicitud Finalizada (Ayuda Entregada)'";
+                    break;
+            }
+
             $stmt = $conexion->prepare("
                 SELECT 
                     d.*, 
@@ -305,14 +321,15 @@ private static function insertarSolicitante($db, $id, $data) {
                 LEFT JOIN despacho_categoria dc ON d.id_despacho = dc.id_despacho
                 LEFT JOIN solicitantes sol ON d.ci = sol.ci
                 WHERE d.invalido = 0
-                AND dc.tipo_ayuda IN ('Medicamentos', 'Estudios','Exámenes')
+                AND dc.tipo_ayuda IN ('Medicamentos', 'Estudios', 'Exámenes')
+                AND $estadoFiltro
                 AND df.fecha_renovacion <= DATE_SUB(NOW(), INTERVAL 5 DAY)
                 ORDER BY 
                     CASE dc.tipo_ayuda
                         WHEN 'Medicamentos' THEN 0
                         WHEN 'Estudios' THEN 1
                         WHEN 'Exámenes' THEN 2
-                        ELSE 2
+                        ELSE 3
                     END,
                     df.fecha ASC
             ");
@@ -333,10 +350,9 @@ private static function insertarSolicitante($db, $id, $data) {
                             WHERE id_despacho = :id_despacho
                         ");
                         $stmtUpdate->execute(['id_despacho' => $fila['id_despacho']]);
+                    } else {
+                        $msj = "Está fallando la conexión para enviar un correo de recordatorio de urgencia de la persona $nombre de cédula ".$fila['ci']."!";
                     }
-                    else{
-                            $msj = "Está fallando la conexión para enviar un correo de recordatorio de urgencia de la persona ".$nombre. " de cédula ".$fila['ci']."!";
-                            }
                 }
             }
 
@@ -349,10 +365,12 @@ private static function insertarSolicitante($db, $id, $data) {
             error_log("Error al filtrar despachos por categoría y fecha: " . $e->getMessage());
             return [
                 'exito' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'msj_correo' => $msj
             ];
         }
     }
+
 
     public static function solicitud_urgencia($id_despacho) {
         try {

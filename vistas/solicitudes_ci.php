@@ -93,13 +93,20 @@
     </div>
   </main>
 </body>
-</body>
+
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
-    <?php if (isset($msj)): ?> mostrarMensaje("<?= htmlspecialchars($msj) ?>", "info", 6500);
-    <?php endif; ?>
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

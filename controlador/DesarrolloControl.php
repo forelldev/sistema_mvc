@@ -164,7 +164,7 @@ class DesarrolloControl {
             $id_des = $_POST['id_des'];
             $razon = $_POST['razon'];
             if(Procesar::inhabilitarDesarrollo($id_des,$invalido,$razon)){
-                header('Location: '.BASE_URL.'/desarrollo_invalidos');
+                header('Location: '.BASE_URL.'/desarrollo_invalidos?msj=Solicitud invalidada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Desarrollo)';
@@ -189,7 +189,7 @@ class DesarrolloControl {
         if(isset($_GET['id_des'])){
             $id_des = $_GET['id_des'];
             if(Procesar::habilitar_desarrollo($id_des)){
-                header('Location: '.BASE_URL.'/solicitudes_desarrollo');
+                header('Location: '.BASE_URL.'/solicitudes_desarrollo?msj=Solicitud habilitada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $accion = 'Habilitó la solicitud. (Desarrollo)';
