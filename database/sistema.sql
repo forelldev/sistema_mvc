@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-11-2025 a las 23:45:46
+-- Tiempo de generación: 11-11-2025 a las 16:08:05
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -227,7 +227,8 @@ INSERT INTO `despacho` (`id_despacho`, `id_manual`, `ci`, `estado`, `invalido`) 
 (41, 121222, 34444, 'Solicitud Finalizada (Ayuda Entregada)', 0),
 (42, 2131234, 232310, 'Solicitud Finalizada (Ayuda Entregada)', 0),
 (43, 2324, 122, 'Solicitud Finalizada (Ayuda Entregada)', 0),
-(44, 222333, 122, 'Solicitud Finalizada (Ayuda Entregada)', 0);
+(44, 222333, 122, 'Solicitud Finalizada (Ayuda Entregada)', 0),
+(45, 2147483647, 3215, 'En Revisión 1/2', 0);
 
 -- --------------------------------------------------------
 
@@ -259,7 +260,8 @@ INSERT INTO `despacho_categoria` (`id`, `id_despacho`, `categoria`, `tipo_ayuda`
 (31, 41, 'Materiales de Construcción', 'Bloques'),
 (32, 42, 'Ayuda Económica', 'Económica'),
 (33, 43, 'Salud', 'Operaciones'),
-(34, 44, 'Salud', 'Medicamentos');
+(34, 44, 'Salud', 'Medicamentos'),
+(35, 45, 'Materiales de Construcción', 'Sacos de cemento');
 
 -- --------------------------------------------------------
 
@@ -278,8 +280,8 @@ CREATE TABLE `despacho_correo` (
 --
 
 INSERT INTO `despacho_correo` (`id`, `id_despacho`, `correo_enviado`) VALUES
-(11, 29, 0),
-(12, 30, 0),
+(11, 29, 1),
+(12, 30, 1),
 (13, 31, 0),
 (14, 32, 0),
 (15, 33, 0),
@@ -290,7 +292,8 @@ INSERT INTO `despacho_correo` (`id`, `id_despacho`, `correo_enviado`) VALUES
 (23, 41, 0),
 (24, 42, 0),
 (25, 43, 0),
-(26, 44, 0);
+(26, 44, 1),
+(27, 45, 0);
 
 -- --------------------------------------------------------
 
@@ -324,7 +327,8 @@ INSERT INTO `despacho_fecha` (`id`, `id_despacho`, `fecha`, `fecha_modificacion`
 (38, 41, '2025-11-02 21:56:29', '2025-11-03 16:14:29', '2025-11-02 21:56:29', 1),
 (39, 42, '2025-11-03 15:59:42', '2025-11-03 16:00:15', '2025-11-03 15:59:42', 1),
 (40, 43, '2025-11-03 16:08:49', '2025-11-03 16:14:02', '2025-11-03 16:08:49', 1),
-(41, 44, '2025-11-03 16:12:47', '2025-11-03 16:13:46', '2025-11-03 16:12:47', 1);
+(41, 44, '2025-11-03 16:12:47', '2025-11-03 16:13:46', '2025-11-03 16:12:47', 1),
+(42, 45, '2025-11-10 12:07:14', '2025-11-10 12:07:14', '2025-11-10 12:07:14', 0);
 
 -- --------------------------------------------------------
 
@@ -356,7 +360,8 @@ INSERT INTO `despacho_info` (`id`, `id_despacho`, `descripcion`, `creador`) VALU
 (40, 41, 'ahora quiero blokes', 'pepe gonzalez'),
 (41, 42, 'casita', 'pepe gonzalez'),
 (42, 43, 'del corazon', 'pepe gonzalez'),
-(43, 44, 'quiero', 'pepe gonzalez');
+(43, 44, 'quiero', 'pepe gonzalez'),
+(44, 45, 'qweqweqwe', 'Admin Supremo');
 
 -- --------------------------------------------------------
 
@@ -503,7 +508,57 @@ INSERT INTO `reportes_acciones` (`id`, `id_doc`, `fecha`, `accion`, `ci`) VALUES
 (328, 31, '2025-11-03 16:15:07', 'Confirmó que se entregó la ayuda. (Despacho)', 321),
 (329, 44, '2025-11-03 16:17:03', 'Hizo click sobre la notificación, marcó visto (Despacho)', 123),
 (330, 43, '2025-11-03 16:17:07', 'Hizo click sobre la notificación, marcó visto (Despacho)', 123),
-(331, 41, '2025-11-03 16:17:09', 'Hizo click sobre la notificación, marcó visto (Despacho)', 123);
+(331, 41, '2025-11-03 16:17:09', 'Hizo click sobre la notificación, marcó visto (Despacho)', 123),
+(332, 31, '2025-11-07 14:59:10', 'Reinició el proceso de la solicitud. (General)', 3434),
+(333, 31, '2025-11-07 14:59:23', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(334, 31, '2025-11-07 14:59:27', 'Envió la solicitud a despacho. (General)', 3434),
+(335, 31, '2025-11-07 14:59:29', 'Envió la solicitud a administración. (General)', 3434),
+(336, 31, '2025-11-07 14:59:32', 'Confirmó que se entregó la ayuda. (General)', 3434),
+(337, 31, '2025-11-07 16:02:38', 'Reinició el proceso de la solicitud. (General)', 3434),
+(338, 31, '2025-11-07 16:02:40', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(339, 31, '2025-11-07 16:02:41', 'Envió la solicitud a despacho. (General)', 3434),
+(340, 31, '2025-11-07 16:02:43', 'Envió la solicitud a administración. (General)', 3434),
+(341, 31, '2025-11-07 16:02:45', 'Confirmó que se entregó la ayuda. (General)', 3434),
+(342, 34, '2025-11-07 16:03:15', 'Reinició el proceso de la solicitud. (General)', 3434),
+(343, 35, '2025-11-07 16:04:34', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(344, 35, '2025-11-07 16:04:37', 'Envió la solicitud a despacho. (General)', 3434),
+(345, 35, '2025-11-07 16:04:39', 'Envió la solicitud a administración. (General)', 3434),
+(346, 35, '2025-11-07 16:04:41', 'Confirmó que se entregó la ayuda. (General)', 3434),
+(347, 35, '2025-11-07 16:04:43', 'Reinició el proceso de la solicitud. (General)', 3434),
+(348, 32, '2025-11-07 16:25:07', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(349, 32, '2025-11-07 16:25:18', 'Envió la solicitud a despacho. (General)', 3434),
+(350, 32, '2025-11-07 16:25:34', 'Envió la solicitud a administración. (General)', 3434),
+(351, 37, '2025-11-08 10:46:01', 'Creó una nueva solicitud de ayuda (General).', 3434),
+(352, 31, '2025-11-08 20:44:47', 'Reinició el proceso de la solicitud. (General)', 3434),
+(353, 37, '2025-11-09 10:57:00', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(354, 37, '2025-11-09 10:57:02', 'Envió la solicitud a despacho. (General)', 3434),
+(355, 37, '2025-11-09 10:57:04', 'Envió la solicitud a administración. (General)', 3434),
+(356, 37, '2025-11-09 10:57:07', 'Confirmó que se entregó la ayuda. (General)', 3434),
+(357, 37, '2025-11-09 10:57:09', 'Reinició el proceso de la solicitud. (General)', 3434),
+(358, 36, '2025-11-09 14:54:50', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(359, 37, '2025-11-10 09:00:02', 'Inhabilitó la solicitud razón: porq si (General)', 3434),
+(360, 37, '2025-11-10 09:01:24', 'Habilitó la solicitud (General)', 3434),
+(361, 37, '2025-11-10 09:02:09', 'Inhabilitó la solicitud razón: soic (General)', 3434),
+(362, 37, '2025-11-10 09:02:33', 'Habilitó la solicitud (General)', 3434),
+(363, 36, '2025-11-10 09:02:38', 'Inhabilitó la solicitud razón: se (General)', 3434),
+(364, 36, '2025-11-10 09:02:45', 'Habilitó la solicitud (General)', 3434),
+(365, 36, '2025-11-10 09:03:24', 'Inhabilitó la solicitud razón: e (General)', 3434),
+(366, 36, '2025-11-10 09:03:25', 'Habilitó la solicitud (General)', 3434),
+(367, 31, '2025-11-10 09:03:50', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(368, 33, '2025-11-10 09:52:18', 'Aprobó la solicitud para su procedimiento. (Desarrollo)', 3434),
+(369, 33, '2025-11-10 09:52:21', 'Envió la solicitud a Administración. (Desarrollo)', 3434),
+(370, 33, '2025-11-10 09:52:22', 'Confirmó que se entregó la ayuda. (Desarrollo)', 3434),
+(371, 33, '2025-11-10 09:52:24', 'Reinició la solicitud. (Desarrollo)', 3434),
+(372, 34, '2025-11-10 10:38:22', 'Registró solicitud (Desarrollo)', 3434),
+(373, 28, '2025-11-10 10:50:34', 'Aprobó la solicitud para su procedimiento. (Desarrollo)', 3434),
+(374, 30, '2025-11-10 11:09:25', 'Inhabilitó la solicitud razón: pqsi (Desarrollo)', 3434),
+(375, 30, '2025-11-10 11:09:29', 'Habilitó la solicitud. (Desarrollo)', 3434),
+(376, 45, '2025-11-10 12:07:14', 'Registró solicitud. (Despacho)', 3434),
+(377, 45, '2025-11-10 12:57:09', 'Inhabilitó la solicitud razón: porq si (Despacho)', 3434),
+(378, 45, '2025-11-10 12:57:16', 'Habilitó la solicitud (Despacho)', 3434),
+(379, 37, '2025-11-11 09:57:47', 'Recibió documento físico, y aprobó para su procedimiento. (General)', 3434),
+(380, 38, '2025-11-11 10:29:21', 'Creó una nueva solicitud de ayuda (General).', 3434),
+(381, 39, '2025-11-11 10:30:14', 'Creó una nueva solicitud de ayuda (General).', 3434);
 
 -- --------------------------------------------------------
 
@@ -699,7 +754,45 @@ INSERT INTO `reportes_entradas` (`id`, `ci`, `fecha_entrada`, `fecha_salida`) VA
 (174, 3434, '2025-11-03 16:25:09', '2025-11-04 08:52:24'),
 (175, 3434, '2025-11-04 08:52:27', '2025-11-04 16:53:13'),
 (176, 3434, '2025-11-04 16:53:15', '2025-11-04 17:07:40'),
-(177, 3434, '2025-11-04 17:07:46', '2025-11-04 17:12:24');
+(177, 3434, '2025-11-04 17:07:46', '2025-11-04 17:12:24'),
+(178, 3434, '2025-11-04 20:24:43', '2025-11-04 20:40:00'),
+(179, 3434, '2025-11-04 20:40:03', '2025-11-04 21:22:04'),
+(180, 3434, '2025-11-04 21:22:24', '2025-11-04 21:22:51'),
+(181, 123, '2025-11-04 21:22:53', '2025-11-04 21:23:01'),
+(182, 123, '2025-11-04 21:23:18', '2025-11-04 21:23:37'),
+(183, 3434, '2025-11-05 09:30:29', '2025-11-05 09:30:34'),
+(184, 3434, '2025-11-05 09:30:36', '2025-11-05 09:49:40'),
+(185, 123, '2025-11-05 09:49:43', '2025-11-05 09:50:10'),
+(186, 3434, '2025-11-05 09:50:12', '2025-11-05 12:05:54'),
+(187, 123, '2025-11-06 14:55:01', '2025-11-06 15:31:32'),
+(188, 3434, '2025-11-06 15:31:41', '2025-11-06 15:31:51'),
+(189, 3434, '2025-11-06 15:31:55', '2025-11-06 15:41:13'),
+(190, 3434, '2025-11-06 15:41:29', '2025-11-06 15:54:55'),
+(191, 3434, '2025-11-06 15:54:58', '2025-11-06 16:24:22'),
+(192, 3434, '2025-11-06 16:28:41', '2025-11-06 21:40:24'),
+(193, 3434, '2025-11-06 21:40:26', '2025-11-07 09:09:59'),
+(194, 3434, '2025-11-07 09:10:02', '2025-11-07 10:58:37'),
+(195, 123, '2025-11-07 09:34:23', '2025-11-07 10:58:27'),
+(196, 3434, '2025-11-07 10:58:52', '2025-11-07 12:45:32'),
+(197, 3434, '2025-11-07 12:45:37', '2025-11-07 16:21:27'),
+(198, 3434, '2025-11-07 16:21:32', '2025-11-07 21:32:47'),
+(199, 3434, '2025-11-07 21:32:53', '2025-11-07 21:32:58'),
+(200, 3434, '2025-11-07 21:41:36', '2025-11-07 21:41:41'),
+(201, 3434, '2025-11-07 21:48:34', '2025-11-07 21:49:12'),
+(202, 3434, '2025-11-07 21:49:28', '2025-11-07 21:54:19'),
+(203, 3434, '2025-11-08 09:06:07', '2025-11-08 11:22:44'),
+(204, 3434, '2025-11-08 17:35:39', '2025-11-08 21:47:15'),
+(205, 3434, '2025-11-08 21:53:40', '2025-11-08 22:07:17'),
+(206, 3434, '2025-11-09 10:54:05', '2025-11-09 18:52:36'),
+(207, 3434, '2025-11-09 18:52:39', '2025-11-09 18:52:42'),
+(208, 3434, '2025-11-09 18:52:48', '2025-11-09 18:52:58'),
+(209, 3434, '2025-11-09 19:13:37', '2025-11-09 20:01:33'),
+(210, 3434, '2025-11-09 20:01:37', '2025-11-09 20:03:26'),
+(211, 3434, '2025-11-09 20:03:34', '2025-11-09 20:04:02'),
+(212, 3434, '2025-11-10 08:48:31', '2025-11-11 09:55:24'),
+(213, 3434, '2025-11-11 09:55:26', '2025-11-11 10:27:56'),
+(214, 3434, '2025-11-11 10:28:04', '2025-11-11 11:04:08'),
+(215, 3434, '2025-11-11 11:04:20', '2025-11-11 11:05:14');
 
 -- --------------------------------------------------------
 
@@ -745,18 +838,7 @@ CREATE TABLE `solicitantes` (
 INSERT INTO `solicitantes` (`id_solicitante`, `ci`, `nombre`, `apellido`, `correo`, `fecha_creacion`) VALUES
 (7, 3215, 'Yorsh', 'Gonzalez', 'forell.music@gmail.com', '2025-10-14 18:44:43'),
 (8, 30420669, 'Calucho', 'Gonzalez', 'carlossoteldo11@gmail.com', '2025-10-14 21:01:52'),
-(9, 16654, 'Elvis', 'Cocho', '', '0000-00-00 00:00:00'),
-(10, 4567, 'Tutis', 'Fruti', '', '0000-00-00 00:00:00'),
-(24, 302030, 'Asdas', 'Dasdasd', 'qweqwe@gmail.com', '2025-11-01 10:35:10'),
-(25, 3232, 'jaloner', 'jalono', 'qweqweqwe@gmail.com', '0000-00-00 00:00:00'),
-(26, 3333, 'vaneltin', 'siudadano', 'qwqeq@gmai', '0000-00-00 00:00:00'),
-(27, 33334, 'vaneltin', 'siudadano', 'qwqeq@gmai', '0000-00-00 00:00:00'),
-(28, 333, 'pedro', 'pelaez', 'qweqweqwe@gmail.com', '2025-11-02 21:38:39'),
-(29, 31628264, 'Danielys', 'Rojas', 'danielysrojas@gmail.com', '2025-11-02 21:52:05'),
-(30, 34444, 'omagad', 'omagaddd', 'weqwe@gmail', '0000-00-00 00:00:00'),
-(31, 2030230, 'Qweqwe', 'Qweqwe', '23qweq@g', '2025-11-03 15:55:10'),
-(32, 232310, 'bien', 'mal', 'qwejqwe@gmail.com', '0000-00-00 00:00:00'),
-(33, 122, 'Cartucho', 'Stiven', 'qweqwe@gmail.com', '0000-00-00 00:00:00');
+(29, 31628264, 'Danielys', 'Rojas', 'danielysrojas@gmail.com', '2025-11-02 21:52:05');
 
 -- --------------------------------------------------------
 
@@ -777,20 +859,9 @@ CREATE TABLE `solicitantes_comunidad` (
 --
 
 INSERT INTO `solicitantes_comunidad` (`id`, `id_solicitante`, `comunidad`, `direc_habita`, `estruc_base`) VALUES
-(6, 7, 'PALMICHAL', 'Carrera centro', 'Dominio'),
+(6, 7, 'PALMICHAL', 'Carrera centro', 'Jefe de Comunidad'),
 (7, 8, 'JOSE GREGORIO AMAYA', '32-15', 'Pues por ahi'),
-(8, 9, NULL, 'No sabo', NULL),
-(9, 10, NULL, 'Ni sabe el', NULL),
-(23, 24, 'LA MAPORITA', 'Qweqwe', 'Asdasd'),
-(24, 25, 'TACARIGUITA', 'erwer', NULL),
-(25, 26, 'LIMONCITO', '2323weqwqe', NULL),
-(26, 27, 'LIMONCITO', '2323weqwqe', NULL),
-(27, 28, 'ESPARRAMADERO', 'WENO Q TE PASA', NULL),
-(28, 29, 'JOSE GREGORIO AMAYA', 'Carrera 15 entre 14 y 16', 'Escuela'),
-(29, 30, 'CERRO GRANDE', 'centro', NULL),
-(30, 31, 'JOSE GREGORIO AMAYA', 'Qweqweq', 'Qweqweqwe'),
-(31, 32, 'LA VICTORIA', 'vivo en la casa', NULL),
-(32, 33, 'EL POZON', 'Urba', 'Qweqwe');
+(28, 29, 'JOSE GREGORIO AMAYA', 'Carrera 15 entre 14 y 16', 'Escuela');
 
 -- --------------------------------------------------------
 
@@ -812,15 +883,7 @@ CREATE TABLE `solicitantes_conocimiento` (
 INSERT INTO `solicitantes_conocimiento` (`id`, `id_solicitante`, `profesion`, `nivel_instruc`) VALUES
 (6, 7, 'Ingeniero', 'Primaria'),
 (7, 8, 'Ingeniero en informática', 'Universidad'),
-(21, 24, 'Qweqwe', 'Primaria'),
-(22, 26, NULL, NULL),
-(23, 27, NULL, NULL),
-(24, 28, NULL, NULL),
-(25, 29, 'Ama de casa', 'Secundaria'),
-(26, 30, NULL, NULL),
-(27, 31, 'Qweqwe', 'Primaria'),
-(28, 32, NULL, NULL),
-(29, 33, 'Qweqwe', 'Primaria');
+(25, 29, 'Ama de casa', 'Secundaria');
 
 -- --------------------------------------------------------
 
@@ -842,15 +905,7 @@ CREATE TABLE `solicitantes_extra` (
 INSERT INTO `solicitantes_extra` (`id`, `id_solicitante`, `codigo_patria`, `serial_patria`) VALUES
 (6, 7, '321423', '3213123'),
 (7, 8, '32131231', '232342235'),
-(21, 24, '2323', '123123'),
-(22, 26, NULL, NULL),
-(23, 27, NULL, NULL),
-(24, 28, NULL, NULL),
-(25, 29, '3123123213', '109238912389123'),
-(26, 30, NULL, NULL),
-(27, 31, '232323', '232323'),
-(28, 32, NULL, NULL),
-(29, 33, '2323', '123123');
+(25, 29, '3123123213', '109238912389123');
 
 -- --------------------------------------------------------
 
@@ -874,18 +929,7 @@ CREATE TABLE `solicitantes_info` (
 INSERT INTO `solicitantes_info` (`id`, `id_solicitante`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`) VALUES
 (7, 7, '2025-10-01', 'Hospital rafael rangel', 'Soltero/a', '042323'),
 (8, 8, '2003-04-11', 'San juan de los morros', 'Soltero/a', '04245587628'),
-(9, 9, NULL, NULL, NULL, '045634'),
-(10, 10, NULL, NULL, NULL, '56789'),
-(11, 24, '2025-11-10', 'Wqeqwe', 'Soltero/a', '2323123'),
-(12, 25, NULL, NULL, NULL, '4324234'),
-(13, 26, NULL, NULL, NULL, '2323'),
-(14, 27, NULL, NULL, NULL, '2323'),
-(15, 28, NULL, NULL, NULL, '23123123'),
-(16, 29, '2004-11-05', 'Aroa', 'Casado/a', '0414338556'),
-(17, 30, NULL, NULL, NULL, '232323'),
-(18, 31, '2020-06-03', 'Eqweqwe', 'Casado/a', '23231'),
-(19, 32, NULL, NULL, NULL, '23123123'),
-(20, 33, '2025-11-14', 'El corazon', 'Soltero/a', '2232323');
+(16, 29, '2004-11-05', 'Aroa', 'Casado/a', '0414338556');
 
 -- --------------------------------------------------------
 
@@ -908,15 +952,7 @@ CREATE TABLE `solicitantes_ingresos` (
 INSERT INTO `solicitantes_ingresos` (`id`, `id_solicitante`, `nivel_ingreso`, `pension`, `bono`) VALUES
 (6, 7, 30000, 'No', 'No'),
 (7, 8, 344, 'No', 'No'),
-(8, 24, 233, 'No', 'No'),
-(9, 26, NULL, NULL, NULL),
-(10, 27, NULL, NULL, NULL),
-(11, 28, NULL, NULL, NULL),
-(12, 29, 2000, 'No', 'No'),
-(13, 30, NULL, NULL, NULL),
-(14, 31, 232323, 'No', 'No'),
-(15, 32, NULL, NULL, NULL),
-(16, 33, 233, 'Si', 'No');
+(12, 29, 2000, 'No', 'No');
 
 -- --------------------------------------------------------
 
@@ -936,15 +972,13 @@ CREATE TABLE `solicitantes_patologia` (
 --
 
 INSERT INTO `solicitantes_patologia` (`id`, `id_solicitante`, `tip_patologia`, `nom_patologia`) VALUES
-(20, 24, 'Hereditarias', 'Wqeqwe'),
 (38, 29, 'Hereditarias', 'Diabetes'),
 (39, 29, 'Hereditarias', 'Diabetes'),
 (40, 29, 'Hereditarias', 'Diabetes'),
 (41, 29, 'Hereditarias', 'Diabetes'),
 (42, 29, 'Hereditarias', 'Diabetes'),
-(43, 31, 'Atención primaria', 'Qweqwe'),
-(44, 33, 'Hereditarias', 'Qwe'),
-(45, 33, 'Hereditarias', 'Qwe');
+(48, 7, 'Hereditarias', 'Sisa'),
+(49, 7, 'Congénitas', 'Visual');
 
 -- --------------------------------------------------------
 
@@ -967,15 +1001,7 @@ CREATE TABLE `solicitantes_propiedad` (
 INSERT INTO `solicitantes_propiedad` (`id`, `id_solicitante`, `propiedad`, `propiedad_est`, `observaciones_propiedad`) VALUES
 (6, 7, 'Casa', 'Propia', 'Era observacion'),
 (7, 8, 'Apartamento', 'Prestada', 'Sin observaciones'),
-(8, 24, 'Casa', 'Prestada', 'Sin observaciones'),
-(9, 26, NULL, NULL, NULL),
-(10, 27, NULL, NULL, NULL),
-(11, 28, NULL, NULL, NULL),
-(12, 29, 'Casa', 'Propia', 'No escucha'),
-(13, 30, NULL, NULL, NULL),
-(14, 31, 'Apartamento', 'Propia', 'Erqwreqwe'),
-(15, 32, NULL, NULL, NULL),
-(16, 33, 'Apartamento', 'Propia', 'Sin observaciones');
+(12, 29, 'Casa', 'Propia', 'No escucha');
 
 -- --------------------------------------------------------
 
@@ -999,15 +1025,7 @@ CREATE TABLE `solicitantes_trabajo` (
 INSERT INTO `solicitantes_trabajo` (`id`, `id_solicitante`, `trabajo`, `direccion_trabajo`, `trabaja_public`, `nombre_insti`) VALUES
 (6, 7, 'No tiene', 'No', 'No', 'No'),
 (7, 8, 'No tiene', 'No', 'No', 'No'),
-(8, 24, 'No tiene', 'No', 'No', 'No'),
-(9, 26, NULL, NULL, NULL, NULL),
-(10, 27, NULL, NULL, NULL, NULL),
-(11, 28, NULL, NULL, NULL, NULL),
-(12, 29, 'Ama de casa', 'Sabanita', 'No', 'No'),
-(13, 30, NULL, NULL, NULL, NULL),
-(14, 31, 'Qweqwe', 'Weqwe', 'No', 'No'),
-(15, 32, NULL, NULL, NULL, NULL),
-(16, 33, 'No tiene', 'No', 'No', 'No');
+(12, 29, 'Ama de casa', 'Sabanita', 'No', 'No');
 
 -- --------------------------------------------------------
 
@@ -1028,12 +1046,15 @@ CREATE TABLE `solicitud_ayuda` (
 --
 
 INSERT INTO `solicitud_ayuda` (`id_doc`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
-(31, '23323', '3215', 'Solicitud Finalizada (Ayuda Entregada)', 0),
-(32, '8899', '31628264', 'En espera del documento físico para ser procesado 0/3', 0),
+(31, '23323', '3215', 'En Proceso 1/3', 0),
+(32, '8899', '31628264', 'En Proceso 3/3 (Sin entregar)', 0),
 (33, '88992', '3215', 'En espera del documento físico para ser procesado 0/3', 1),
-(34, '12123232545', '2030230', 'Solicitud Finalizada (Ayuda Entregada)', 0),
+(34, '12123232545', '2030230', 'En espera del documento físico para ser procesado 0/3', 0),
 (35, '123', '3215', 'En espera del documento físico para ser procesado 0/3', 0),
-(36, '232312342', '122', 'En espera del documento físico para ser procesado 0/3', 0);
+(36, '232312342', '122', 'En Proceso 1/3', 0),
+(37, '23123', '3215', 'En Proceso 1/3', 0),
+(38, '23213', '3215', 'En espera del documento físico para ser procesado 0/3', 0),
+(39, '123123', '3215', 'En espera del documento físico para ser procesado 0/3', 0);
 
 -- --------------------------------------------------------
 
@@ -1057,7 +1078,10 @@ INSERT INTO `solicitud_ayuda_correo` (`id`, `id_doc`, `correo_enviado`) VALUES
 (47, 33, 0),
 (48, 34, 0),
 (49, 35, 0),
-(50, 36, 0);
+(50, 36, 0),
+(51, 37, 0),
+(52, 38, 0),
+(53, 39, 0);
 
 -- --------------------------------------------------------
 
@@ -1079,12 +1103,15 @@ CREATE TABLE `solicitud_ayuda_fecha` (
 --
 
 INSERT INTO `solicitud_ayuda_fecha` (`id`, `id_doc`, `fecha`, `fecha_modificacion`, `fecha_renovacion`, `visto`) VALUES
-(41, 31, '2025-11-02 14:49:10', '2025-11-02 14:50:58', '2025-11-02 14:49:10', 1),
-(42, 32, '2025-11-02 21:52:05', '2025-11-03 08:55:40', '2025-11-02 21:52:05', 1),
+(41, 31, '2025-11-02 14:49:10', '2025-11-10 09:03:47', '2025-11-10 09:03:47', 0),
+(42, 32, '2025-11-02 21:52:05', '2025-11-07 16:25:34', '2025-11-02 21:52:05', 0),
 (43, 33, '2025-11-03 10:29:17', '2025-11-03 10:50:08', '2025-11-03 10:29:17', 1),
-(44, 34, '2025-11-03 15:55:10', '2025-11-03 15:56:01', '2025-11-03 15:55:10', 1),
-(45, 35, '2025-11-03 16:07:16', '2025-11-03 16:07:16', '2025-11-03 16:07:16', 1),
-(46, 36, '2025-11-03 16:11:14', '2025-11-03 16:11:14', '2025-11-03 16:11:14', 1);
+(44, 34, '2025-11-03 15:55:10', '2025-11-07 16:03:15', '2025-11-03 15:55:10', 0),
+(45, 35, '2025-11-03 16:07:16', '2025-11-07 16:04:43', '2025-11-03 16:07:16', 0),
+(46, 36, '2025-11-03 16:11:14', '2025-11-09 14:54:45', '2025-11-09 14:54:45', 0),
+(47, 37, '2025-11-08 10:46:01', '2025-11-11 09:57:47', '2025-11-08 10:46:01', 0),
+(48, 38, '2025-11-11 10:29:21', '2025-11-11 10:29:21', '2025-11-11 10:29:21', 0),
+(49, 39, '2025-11-11 10:30:14', '2025-11-11 10:30:14', '2025-11-11 10:30:14', 0);
 
 -- --------------------------------------------------------
 
@@ -1128,7 +1155,10 @@ INSERT INTO `solicitud_categoria` (`id`, `id_doc`, `tipo_ayuda`, `categoria`) VA
 (47, 33, 'Colchón Anti-escaras', 'Ayudas Técnicas'),
 (48, 34, 'Muletas', 'Ayudas Técnicas'),
 (49, 35, 'Muletas (Niño)', 'Ayudas Técnicas'),
-(50, 36, 'Medicamentos', 'Medicamentos');
+(50, 36, 'Medicamentos', 'Medicamentos'),
+(51, 37, 'Medicamentos', 'Medicamentos'),
+(52, 38, 'Medicamentos', 'Medicamentos'),
+(53, 39, 'Enseres', 'Enseres');
 
 -- --------------------------------------------------------
 
@@ -1149,12 +1179,13 @@ CREATE TABLE `solicitud_desarrollo` (
 --
 
 INSERT INTO `solicitud_desarrollo` (`id_des`, `id_manual`, `ci`, `estado`, `invalido`) VALUES
-(28, '123123', 3215, 'En espera del documento físico para ser procesado 0/2', 0),
+(28, '123123', 3215, 'En Proceso 1/2', 0),
 (29, '221212', 3215, 'En Proceso 1/2', 0),
 (30, '212123123123123', 333, 'En espera del documento físico para ser procesado 0/2', 0),
 (31, '232323', 3215, 'En espera del documento físico para ser procesado 0/2', 0),
 (32, '23211111', 3215, 'En espera del documento físico para ser procesado 0/2', 0),
-(33, '33232', 3215, 'En espera del documento físico para ser procesado 0/2', 0);
+(33, '33232', 3215, 'En Proceso 1/2', 0),
+(34, '213123', 3215, 'En espera del documento físico para ser procesado 0/2', 0);
 
 -- --------------------------------------------------------
 
@@ -1174,11 +1205,12 @@ CREATE TABLE `solicitud_desarrollo_correo` (
 
 INSERT INTO `solicitud_desarrollo_correo` (`id`, `id_des`, `correo_enviado`) VALUES
 (19, 28, 0),
-(20, 29, 0),
-(21, 30, 0),
-(22, 31, 0),
-(23, 32, 0),
-(24, 33, 0);
+(20, 29, 1),
+(21, 30, 1),
+(22, 31, 1),
+(23, 32, 1),
+(24, 33, 0),
+(25, 34, 0);
 
 -- --------------------------------------------------------
 
@@ -1200,12 +1232,13 @@ CREATE TABLE `solicitud_desarrollo_fecha` (
 --
 
 INSERT INTO `solicitud_desarrollo_fecha` (`id`, `id_des`, `fecha`, `fecha_modificacion`, `fecha_renovacion`, `visto`) VALUES
-(25, 28, '2025-11-02 15:26:06', '2025-11-02 15:26:06', '2025-11-02 15:26:06', 1),
+(25, 28, '2025-11-02 15:26:06', '2025-11-10 10:50:30', '2025-11-10 10:50:30', 0),
 (26, 29, '2025-11-02 15:29:29', '2025-11-02 15:31:40', '2025-11-02 15:29:29', 1),
 (27, 30, '2025-11-02 21:38:39', '2025-11-02 21:38:39', '2025-11-02 21:38:39', 1),
 (28, 31, '2025-11-03 10:53:50', '2025-11-03 10:53:50', '2025-11-03 10:53:50', 1),
 (29, 32, '2025-11-03 10:54:28', '2025-11-03 10:54:28', '2025-11-03 10:54:28', 1),
-(30, 33, '2025-11-03 10:54:49', '2025-11-03 11:35:15', '2025-11-03 10:54:49', 1);
+(30, 33, '2025-11-03 10:54:49', '2025-11-10 09:52:24', '2025-11-10 09:52:15', 0),
+(31, 34, '2025-11-10 10:38:22', '2025-11-10 10:38:22', '2025-11-10 10:38:22', 0);
 
 -- --------------------------------------------------------
 
@@ -1230,7 +1263,8 @@ INSERT INTO `solicitud_desarrollo_info` (`id`, `id_des`, `descripcion`, `creador
 (29, 30, 'sdifjsdifjisdf', 'Admin Supremo'),
 (30, 31, 'qweqwe', 'Admin Supremo'),
 (31, 32, 'weqwe', 'Admin Supremo'),
-(32, 33, '1qwe', 'Admin Supremo');
+(32, 33, '1qwe', 'Admin Supremo'),
+(33, 34, 'quiero una', 'Admin Supremo');
 
 -- --------------------------------------------------------
 
@@ -1297,7 +1331,8 @@ INSERT INTO `solicitud_desarrollo_tipo` (`id`, `id_des`, `categoria`) VALUES
 (29, 30, 'Laboratorio'),
 (30, 31, 'Laboratorio'),
 (31, 32, 'Laboratorio'),
-(32, 33, 'Laboratorio');
+(32, 33, 'Laboratorio'),
+(33, 34, 'Medicamentos');
 
 -- --------------------------------------------------------
 
@@ -1323,7 +1358,10 @@ INSERT INTO `solicitud_descripcion` (`id`, `id_doc`, `descripcion`, `promotor`, 
 (46, 33, 'Sisaaa', 'Admin Supremo', 'Sin observaciones'),
 (47, 34, 'Qweqweqwe', 'promotor socio', 'Sin observaciones'),
 (48, 35, 'Qweqwe', 'promotor socio', 'Sin observaciones'),
-(49, 36, 'Qweq', 'promotor socio', 'Sin observaciones');
+(49, 36, 'Qweq', 'promotor socio', 'Sin observaciones'),
+(50, 37, 'Owqjeoqwe', 'Admin Supremo', 'Qwew'),
+(51, 38, 'Qquiero pokkemon', 'Admin Supremo', 'Quiero una losartan rapido'),
+(52, 39, 'Qweqwe', 'Admin Supremo', 'Se resetea');
 
 -- --------------------------------------------------------
 
@@ -1346,7 +1384,7 @@ INSERT INTO `usuarios` (`ci`, `clave`, `id_rol`, `sesion`) VALUES
 (34, '$2y$10$B3B3.eLTtqT.iJcPnh/m4.uSJ7M7j3tKvcLZii.D3B9BI5lgp2CwW', 1, 'False'),
 (123, '$2y$10$EUbg2UC5PG3DD2IUBrCf7OrQE.8AYST9kKAPP5MqmTU.9feSrr6Cm', 2, 'False'),
 (321, '$2y$10$b7GW4RMYoXkT7w35iXmYWuL3faGW5px.ZEi7bk4sMZZPzEwQcnjKK', 3, 'False'),
-(3434, '$2y$10$mVxyGhvwSwGiVzy.MqGC2OT/VIdKw3QxLXlwp7bepBOJat44o142m', 4, 'False');
+(3434, '$2y$10$cs3vtI7dxlKrrx4/IWSX7exhlR0Qd2Nl06ZIb8CP8e9QUGMpRbGf2', 4, 'False');
 
 -- --------------------------------------------------------
 
@@ -1653,49 +1691,49 @@ ALTER TABLE `constancias`
 -- AUTO_INCREMENT de la tabla `despacho`
 --
 ALTER TABLE `despacho`
-  MODIFY `id_despacho` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id_despacho` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_categoria`
 --
 ALTER TABLE `despacho_categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_correo`
 --
 ALTER TABLE `despacho_correo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_fecha`
 --
 ALTER TABLE `despacho_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_info`
 --
 ALTER TABLE `despacho_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT de la tabla `despacho_invalido`
 --
 ALTER TABLE `despacho_invalido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_acciones`
 --
 ALTER TABLE `reportes_acciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=332;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=382;
 
 --
 -- AUTO_INCREMENT de la tabla `reportes_entradas`
 --
 ALTER TABLE `reportes_entradas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=216;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1743,7 +1781,7 @@ ALTER TABLE `solicitantes_ingresos`
 -- AUTO_INCREMENT de la tabla `solicitantes_patologia`
 --
 ALTER TABLE `solicitantes_patologia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitantes_propiedad`
@@ -1761,61 +1799,61 @@ ALTER TABLE `solicitantes_trabajo`
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda`
 --
 ALTER TABLE `solicitud_ayuda`
-  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id_doc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_correo`
 --
 ALTER TABLE `solicitud_ayuda_correo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_fecha`
 --
 ALTER TABLE `solicitud_ayuda_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_ayuda_invalido`
 --
 ALTER TABLE `solicitud_ayuda_invalido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_categoria`
 --
 ALTER TABLE `solicitud_categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo`
 --
 ALTER TABLE `solicitud_desarrollo`
-  MODIFY `id_des` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_des` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_correo`
 --
 ALTER TABLE `solicitud_desarrollo_correo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_fecha`
 --
 ALTER TABLE `solicitud_desarrollo_fecha`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_info`
 --
 ALTER TABLE `solicitud_desarrollo_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_invalido`
 --
 ALTER TABLE `solicitud_desarrollo_invalido`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_laboratorio`
@@ -1827,13 +1865,13 @@ ALTER TABLE `solicitud_desarrollo_laboratorio`
 -- AUTO_INCREMENT de la tabla `solicitud_desarrollo_tipo`
 --
 ALTER TABLE `solicitud_desarrollo_tipo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `solicitud_descripcion`
 --
 ALTER TABLE `solicitud_descripcion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios_info`
@@ -1845,7 +1883,7 @@ ALTER TABLE `usuarios_info`
 -- AUTO_INCREMENT de la tabla `usuarios_recuperacion`
 --
 ALTER TABLE `usuarios_recuperacion`
-  MODIFY `id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Restricciones para tablas volcadas
