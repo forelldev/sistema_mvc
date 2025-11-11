@@ -430,6 +430,7 @@ class SolicitudControl {
                 break;
             case 'desarrollo':
                 $res = Desarrollo::mostrar_urgencia($id);
+                $rename = true;
                 if($res['exito']){
                     $datos = $res['datos'];
                 }
@@ -440,6 +441,7 @@ class SolicitudControl {
                 break;
             case 'despacho':
                 $res = Despacho::solicitud_urgencia($id);
+                $rename = true;
                 if($res['exito']){
                     $datos = $res['datos'];
                 }
@@ -456,6 +458,7 @@ class SolicitudControl {
         }
         else{
             $msj = 'No se recibieron parámetros (GET)';
+            header("Location: ".BASE_URL."/main?msj=$msj");
         }
     }
 

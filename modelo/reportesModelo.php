@@ -35,77 +35,83 @@ class reportesModelo{
     }
 
    public static function mostrarReportesAcciones($pagina = 1, $porPagina = 10) {
-    try {
-        $conexion = DB::conectar();
-        $offset = ($pagina - 1) * $porPagina;
+        try {
+            $conexion = DB::conectar();
+            $offset = ($pagina - 1) * $porPagina;
 
-        // Total real de registros (sin filtrar)
-        $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
-        $totalRegistros = $totalConsulta->fetchColumn();
+            // Total real de registros (sin filtrar)
+            $totalConsulta = $conexion->query("SELECT COUNT(*) FROM reportes_acciones");
+            $totalRegistros = $totalConsulta->fetchColumn();
 
-        // Registros paginados
-        $consulta = "
-            SELECT ra.*, ui.nombre
-            FROM reportes_acciones ra
-            INNER JOIN usuarios_info ui ON ra.ci = ui.ci
-            ORDER BY ra.fecha DESC
-            LIMIT :limite OFFSET :offset
-        ";
-        $stmt = $conexion->prepare($consulta);
-        $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Registros paginados
+            $consulta = "
+                SELECT ra.*, ui.nombre
+                FROM reportes_acciones ra
+                INNER JOIN usuarios_info ui ON ra.ci = ui.ci
+                ORDER BY ra.fecha DESC
+                LIMIT :limite OFFSET :offset
+            ";
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $datosFiltrados = [];
+            $datosFiltrados = [];
 
-        foreach ($datos as $fila) {
-            $id_doc = $fila['id_doc'];
-            $accion = strtolower($fila['accion']);
+            foreach ($datos as $fila) {
+                $id_doc = $fila['id_doc'];
+                $accion = strtolower($fila['accion']);
 
-            preg_match('/\((.*?)\)/', $accion, $match);
-            $tipo = strtolower(trim($match[1] ?? 'general'));
+                preg_match('/\((.*?)\)/', $accion, $match);
+                $tipo = strtolower(trim($match[1] ?? 'general'));
 
-            switch ($tipo) {
-                case 'despacho':
-                    $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
-                    $fila['origen'] = 'despacho';
-                    break;
-                case 'desarrollo':
-                    $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
-                    $fila['origen'] = 'desarrollo';
-                    break;
-                default:
-                    $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
-                    $fila['origen'] = 'general';
-                    break;
+                switch ($tipo) {
+                    case 'despacho':
+                        $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
+                        $fila['origen'] = 'despacho';
+                        $fila['id_despacho'] = $id_doc; // ✅ agregar esto
+                        break;
+                    case 'desarrollo':
+                        $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
+                        $fila['origen'] = 'desarrollo';
+                        $fila['id_des'] = $id_doc; // ✅ agregar esto
+                        break;
+                    default:
+                        $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
+                        $fila['origen'] = 'general';
+                        $fila['id_doc'] = $id_doc; // ✅ asegurar que esté presente
+                        break;
+                }
+
+
+            
+
+                $stmtManual = $conexion->prepare($query);
+                $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
+                $stmtManual->execute();
+                $id_manual = $stmtManual->fetchColumn();
+
+                if ($id_manual) {
+                    $fila['id_manual'] = $id_manual;
+                    $datosFiltrados[] = $fila;
+                } else {
+                    // No elimines el registro aquí, solo ignóralo
+                    continue;
+                }
             }
 
-            $stmtManual = $conexion->prepare($query);
-            $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
-            $stmtManual->execute();
-            $id_manual = $stmtManual->fetchColumn();
-
-            if ($id_manual) {
-                $fila['id_manual'] = $id_manual;
-                $datosFiltrados[] = $fila;
-            } else {
-                // No elimines el registro aquí, solo ignóralo
-                continue;
-            }
+            return [
+                'exito' => true,
+                'datos' => $datosFiltrados,
+                'total' => $totalRegistros, // ← usar total real para paginación
+                'pagina' => $pagina,
+                'porPagina' => $porPagina
+            ];
+        } catch (PDOException $e) {
+            return ['exito' => false, 'mensaje' => $e->getMessage()];
         }
-
-        return [
-            'exito' => true,
-            'datos' => $datosFiltrados,
-            'total' => $totalRegistros, // ← usar total real para paginación
-            'pagina' => $pagina,
-            'porPagina' => $porPagina
-        ];
-    } catch (PDOException $e) {
-        return ['exito' => false, 'mensaje' => $e->getMessage()];
     }
-}
 
 
 

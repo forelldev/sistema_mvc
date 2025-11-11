@@ -12,14 +12,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($rename) ? 'Ver Solicitud en Acción' : 'Solicitud General Urgente' ?></title>
+    <title><?= isset($rename) ? 'Ver Solicitud' : 'Solicitud General Urgente' ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?= time(); ?>">
 </head>
 <body class="solicitud-body">
   <header class="py-3 px-4 d-flex justify-content-between align-items-center">
-    <h5 class="mb-0"><?= isset($rename) ? 'Solicitud en Acción' : 'Solicitud Urgente' ?></h5>
+    <h5 class="mb-0"><?= isset($rename) ? 'Solicitud' : 'Solicitud Urgente' ?></h5>
     <a href="<?= BASE_URL ?>/solicitudes_list" class="btn btn-filtro btn-sm">
       <i class="fa fa-arrow-left"></i> Volver atrás
     </a>

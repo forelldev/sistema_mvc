@@ -10,7 +10,7 @@ $acciones = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitud Despacho</title>
+    <title><?= isset($rename) ? 'Ver Solicitud - Despacho' : 'Solicitud Urgente - Despacho' ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/solicitud.css?v=<?= time(); ?>">
@@ -19,7 +19,7 @@ $acciones = [
 <body class="solicitud-body">
   <!-- Header -->
   <header class="py-3 px-4 d-flex justify-content-between align-items-center bg-secondary">
-    <h5 class="mb-0">Solicitud Urgente (Despacho)</h5>
+    <h5 class="mb-0"><?= isset($rename) ? 'Solicitud - Despacho' : 'Solicitud Urgente - Despacho' ?></h5>
     <a href="<?= BASE_URL ?>/despacho_list" class="btn btn-filtro btn-sm">
       <i class="fa fa-arrow-left"></i> Volver atrás
     </a>

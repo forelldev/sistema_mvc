@@ -3,65 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadísticas de solicitudes</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/style.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/estadisticas.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
+    <title>Estadísticas de solicitudes - Desarrollo Social</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
 </head>
-<body class="solicitud-body">
-    <header class="header">
-        <div class="titulo-header">Estadísticas de solicitudes de Desarrollo Social</div>
-        <div class="header-right">
-            <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
-        </div>
-    </header>
-    <main class="container my-5">
-  <div class="card shadow-sm rounded-4">
-    <div class="card-body">
-      <h2 class="mb-4"><i class="fa fa-chart-bar me-2"></i>Resumen de solicitudes generales</h2>
+<body class="bg-dark text-white">
+  <header class="bg-dark text-white py-3 px-4 border-bottom border-secondary">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h1 class="h6 mb-0">Estadísticas de solicitudes - Desarrollo Social</h1>
+      <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light btn-sm">
+        <i class="fa fa-arrow-left me-1"></i> Volver atrás
+      </a>
+    </div>
+  </header>
 
-      <div class="row g-3">
-        <div class="col-md-6 col-lg-4">
-          <div class="border rounded p-3 bg-light">
-            <h5 class="mb-2 text-warning"><i class="fa fa-clock me-2"></i>En Revisión</h5>
-            <p class="fs-5 fw-semibold"><?= $datos['En espera del documento físico para ser procesado 0/2'] ?></p>
+  <main class="container py-4">
+    <div class="card bg-secondary bg-opacity-10 border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="text-white mb-4"><i class="fa fa-chart-bar me-2"></i> Resumen de solicitudes generales</h5>
+
+        <div class="row g-4">
+          <!-- En Revisión -->
+          <div class="col-md-6 col-lg-4">
+            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
+              <h6 class="mb-2 text-warning"><i class="fa fa-clock me-2"></i> En Revisión</h6>
+              <p class="fs-5 fw-semibold"><?= $datos['En espera del documento físico para ser procesado 0/2'] ?></p>
+            </div>
+          </div>
+
+          <!-- En Proceso 1/2 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
+              <h6 class="mb-2 text-info"><i class="fa fa-spinner me-2"></i> En Proceso 1/2</h6>
+              <p class="fs-5 fw-semibold"><?= $datos['En Proceso 1/2'] ?></p>
+            </div>
+          </div>
+
+          <!-- En Proceso 2/2 -->
+          <div class="col-md-6 col-lg-4">
+            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
+              <h6 class="mb-2 text-info"><i class="fa fa-spinner me-2"></i> En Proceso 2/2 (Sin Entregar)</h6>
+              <p class="fs-5 fw-semibold"><?= $datos['En Proceso 2/2 (Sin entregar)'] ?></p>
+            </div>
+          </div>
+
+          <!-- Finalizadas -->
+          <div class="col-md-6 col-lg-4">
+            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
+              <h6 class="mb-2 text-success"><i class="fa fa-check-circle me-2"></i> Solicitudes finalizadas</h6>
+              <p class="fs-5 fw-semibold"><?= $datos['Solicitud Finalizada (Ayuda Entregada)'] ?></p>
+            </div>
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-4">
-          <div class="border rounded p-3 bg-light">
-            <h5 class="mb-2 text-info"><i class="fa fa-spinner me-2"></i>En Proceso 1/2</h5>
-            <p class="fs-5 fw-semibold"><?= $datos['En Proceso 1/2'] ?></p>
+        <!-- Gráfico -->
+        <div class="mt-5">
+          <div class="grafico-solicitudes-container position-relative rounded overflow-hidden border border-secondary text-white">
+            <canvas id="graficaSolicitudes" class="w-100 h-100 d-block" style="max-height: 400px;"></canvas>
           </div>
         </div>
-
-        <div class="col-md-6 col-lg-4">
-          <div class="border rounded p-3 bg-light">
-            <h5 class="mb-2 text-info"><i class="fa fa-spinner me-2"></i>En Proceso 2/2 (Sin Entregar)</h5>
-            <p class="fs-5 fw-semibold"><?= $datos['En Proceso 2/2 (Sin entregar)'] ?></p>
-          </div>
-        </div>
-
-
-        <div class="col-md-6 col-lg-4">
-          <div class="border rounded p-3 bg-light">
-            <h5 class="mb-2 text-success"><i class="fa fa-check-circle me-2"></i>Solicitudes finalizadas</h5>
-            <p class="fs-5 fw-semibold"><?= $datos['Solicitud Finalizada (Ayuda Entregada)'] ?></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-5">
-        <canvas id="graficaSolicitudes" class="w-100" style="max-height: 400px;"></canvas>
       </div>
     </div>
-  </div>
-</main>
-
+  </main>
 </body>
+
 <script src="<?= BASE_URL ?>/libs/Chart.min.js"></script>
 <script>
   window.solicitudesData = [
