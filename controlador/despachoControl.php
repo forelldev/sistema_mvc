@@ -119,10 +119,10 @@
             $estado_switch = $_GET['estado'];
             switch($estado_switch){
                 case 'En Revisión 1/2':
-                    $estado_new = 'En Proceso 2/2 (Sin entregar)';
+                    $estado_new = 'Aprobado 2/2';
                     $accion = 'Envió la solicitud a Administración. (Despacho)';
                     break;
-                case 'En Proceso 2/2 (Sin entregar)':
+                case 'Aprobado 2/2':
                     $estado_new = 'Solicitud Finalizada (Ayuda Entregada)';
                     $accion = 'Confirmó que se entregó la ayuda. (Despacho)';
                     break;

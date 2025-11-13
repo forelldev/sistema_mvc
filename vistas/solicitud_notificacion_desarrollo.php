@@ -3,76 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitud Desarrollo Social (Interna)</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>../font/css/all.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/solicitud.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>../css/registro.css?v=<?php echo time(); ?>">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <title>Solicitud - Desarrollo Social</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/urgencia.css?v=<?= time(); ?>">
 </head>
 <body class="solicitud-body">
-    <header class="header">
-        <div class="titulo-header">Solicitud Notificada</div>
-        <div class="header-right">
-            <a href="<?= BASE_URL ?>/main"><button class="nav-btn"><i class="fa fa-arrow-left"></i> Volver atrás</button></a>
-        </div>
-    </header>
-    <h1 class="mensaje"><?= isset($msj) ? htmlspecialchars($msj) : '' ?></h1>
-     <main class="solicitudes-main">
-<section class="solicitudes-lista">
-    <?php if (!empty($datos)): ?>
-            <?php foreach ($datos as $fila): ?>
-                <div class="solicitud-card">
-                    <div class="solicitud-header">
-                        <span class="solicitud-estado
-                            <?php
-                                $estado = htmlspecialchars($fila['estado'] ?? '');
-                                if ($estado == 'En espera del documento físico para ser procesado 0/2') echo 'pendiente';
-                                else if ($estado == 'En Proceso 1/2') echo 'activo1';
-                                else if ($estado == 'En Proceso 2/2 (Sin entregar)') echo 'activo2';
-                                else if ($estado == 'Solicitud Finalizada (Ayuda Entregada)') echo 'activo3';
-                                else if ($estado == 'Documento inválido') echo 'finalizada';
-                            ?>">
-                            <?= $estado ?>
-                        </span>
-                        <div><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?></div>
-                    </div>
-                    <div class="solicitud-info">
-                        <div><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></div>
-                        <div><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></div>
-                        <div><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></div>
-                        <div><strong>Promotor:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></div>
-                        <div><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></div>
-                        <div><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? ''))?></div>
-                    </div>
-                    <div class="solicitud-actions">
-                        <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="aprobar-btn">Ver Información del beneficiario</a>
-                        <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-                        <a href="<?= BASE_URL.'/editarDesarrollo?id_des='.$fila['id_des'] ?>" class="aprobar-btn">Editar</a>
-                        <?php endif; ?>
-                        <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                            <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_des='.$fila['id_des'] ?>" class="rechazar-btn">Inhabilitar</a>
-                        <?php endif; ?>
-                        <a href="<?= BASE_URL.'/procesarDesarrollo?id_des='.$fila['id_des'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
-                            <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
-                        </a>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            <?php else: ?>
-            <div class="solicitud-card">
-                <div class="solicitud-header">
-                    <span class="solicitud-estado">Sin información</span>
-                </div>
-                <div class="solicitud-info">
-                    No hay información disponible.
-                </div>
+  <header class="header d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-secondary" style="background-color: #2c2f33;">
+    <h5 class="titulo-header mb-0 text-white">Solicitud Notificada</h5>
+    <div class="header-right">
+      <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light btn-sm">
+        <i class="fa fa-arrow-left"></i> Volver atrás
+      </a>
+    </div>
+  </header>
+
+  <main class="solicitudes-main container py-4">
+    <section class="solicitudes-lista row g-4">
+      <?php if (!empty($datos)): ?>
+        <?php foreach ($datos as $fila): ?>
+          <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <div class="solicitud-card card bg-dark border-secondary shadow-sm">
+              <div class="solicitud-header card-header d-flex justify-content-between align-items-center bg-dark text-white">
+                <?php
+                  $estado = htmlspecialchars($fila['estado'] ?? '');
+                  $estadoClass = match ($estado) {
+                    'En espera del documento físico para ser procesado 0/2' => 'bg-warning text-dark',
+                    'En Proceso 1/2' => 'activo1 bg-info text-dark',
+                    'En Proceso 2/2 (Sin entregar)' => 'activo2 bg-primary',
+                    'Solicitud Finalizada (Ayuda Entregada)' => 'activo3 bg-success',
+                    'Documento inválido' => 'finalizada bg-danger',
+                    default => 'bg-secondary'
+                  };
+                ?>
+                <span class="solicitud-estado badge <?= $estadoClass ?>"><?= $estado ?></span>
+                <div class="fecha-solicitud text-white"><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha']))) ?></div>
+              </div>
+
+              <div class="solicitud-info card-body">
+                <p><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></p>
+                <p><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></p>
+                <p><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></p>
+                <p><strong>Promotor:</strong> <?= htmlspecialchars($fila['creador'] ?? '') ?></p>
+                <p><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></p>
+                <p><strong>Remitente:</strong> <?= htmlspecialchars(($fila['nombre'] ?? '') . ' ' . ($fila['apellido'] ?? ''))?></p>
+              </div>
+
+              <div class="solicitud-actions card-footer d-flex flex-wrap gap-2 bg-dark border-top border-secondary">
+                <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci']?>" class="btn btn-filtro btn-sm">Ver Información del beneficiario</a>
+
+                <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
+                  <a href="<?= BASE_URL.'/editarDesarrollo?id_des='.$fila['id_des'] ?>" class="btn btn-filtro btn-sm">Editar</a>
+                <?php endif; ?>
+
+                <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
+                  <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_des='.$fila['id_des'] ?>" class="btn btn-filtro btn-sm">Inhabilitar</a>
+                <?php endif; ?>
+
+                <a href="<?= BASE_URL.'/procesarDesarrollo?id_des='.$fila['id_des'].'&estado='.$fila['estado'] ?>" class="btn btn-filtro btn-sm">
+                  <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>
+                </a>
+              </div>
             </div>
-        <?php endif; ?>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="col-12 col-md-6 mx-auto">
+          <div class="solicitud-card card bg-dark border-secondary text-center p-4">
+            <div class="solicitud-header card-header bg-dark text-white">
+              <span class="solicitud-estado badge bg-secondary">Sin información</span>
+            </div>
+            <div class="solicitud-info card-body">
+              <p class="text-muted">No hay información disponible.</p>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
     </section>
+  </main>
 </body>
+
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
+<script src="<?= BASE_URL ?>/public/js/msj.js"></script>
+<?php
+$mensaje = $msj ?? ($_GET['msj'] ?? null);
+if ($mensaje):
+?>
+    <script>
+        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+    </script>
+<?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
 </html>

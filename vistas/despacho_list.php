@@ -145,7 +145,7 @@ $acciones = [
           $estado = htmlspecialchars($fila['estado'] ?? '');
           $clase_estado = match ($estado) {
             'En Revisión 1/2' => 'bg-info text-dark',
-            'En Proceso 2/2 (Sin entregar)' => 'bg-primary text-white',
+            'Aprobado 2/2' => 'bg-primary text-white',
             'Solicitud Finalizada (Ayuda Entregada)' => 'bg-success text-white',
             'Documento inválido' => 'bg-danger text-white',
             default => 'bg-secondary text-white'
@@ -224,7 +224,7 @@ if ($mensaje || $msj_correo):
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
-<script src="<?= BASE_URL ?>/public/js/desplegables.js"></script>
+<script src="<?= BASE_URL ?>/public/js/noti_urg.js"></script>
 <script src="<?= BASE_URL ?>/public/js/notificacion_urgente.js"></script>
 
 </html>

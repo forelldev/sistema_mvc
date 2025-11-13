@@ -269,52 +269,56 @@ require_once 'conexiondb.php';
         }
     }
 
-    public static function mostrar_notis_desarrollo($id_des) {
-        try {
-            $conexion = DB::conectar();
+   public static function mostrar_notis_desarrollo($id_des) {
+    try {
+        $conexion = DB::conectar();
 
-            $consulta = "
-                SELECT 
-                    sd.*, 
-                    sdi.*,
-                    sdt.*,
-                    sdl.*,
-                    sdf.*,
-                    sol.*
-                FROM solicitud_desarrollo sd
-                LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
-                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
-                LEFT JOIN solicitud_desarrollo_laboratorio sdl ON sd.id_des = sdl.id_des
-                LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
-                LEFT JOIN solicitantes sol ON sd.ci = sol.ci
-                WHERE sd.id_des = :id_des
-            ";
+        $consulta = "
+            SELECT 
+                sd.*, 
+                sdi.*, 
+                sdt.*, 
+                sdf.*, 
+                sol.*, 
+                lab.examenes
+            FROM solicitud_desarrollo sd
+            LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+            LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+            LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+            LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+            LEFT JOIN (
+                SELECT id_des, GROUP_CONCAT(examen SEPARATOR ', ') AS examenes
+                FROM solicitud_desarrollo_laboratorio
+                GROUP BY id_des
+            ) AS lab ON lab.id_des = sd.id_des
+            WHERE sd.id_des = :id_des
+        ";
 
+        $busqueda = $conexion->prepare($consulta);
+        $busqueda->bindParam(':id_des', $id_des, PDO::PARAM_STR);
+        $busqueda->execute();
+        $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC); // ← solo una fila esperada
 
-            $busqueda = $conexion->prepare($consulta);
-            $busqueda->bindParam(':id_des', $id_des, PDO::PARAM_STR);
-            $busqueda->execute();
-            $resultado = $busqueda->fetchAll(PDO::FETCH_ASSOC);
-
-            if ($resultado) {
-                return [
-                    'exito' => true,
-                    'datos' => $resultado
-                ];
-            } else {
-                return [
-                    'exito' => false,
-                    'mensaje' => 'No se encontraron datos para el ID proporcionado.'
-                ];
-            }
-        } catch (PDOException $e) {
-            error_log("Error en mostrar_notis: " . $e->getMessage());
+        if ($resultado) {
+            return [
+                'exito' => true,
+                'datos' => $resultado
+            ];
+        } else {
             return [
                 'exito' => false,
-                'mensaje' => 'Error al realizar la búsqueda.'
+                'mensaje' => 'No se encontraron datos para el ID proporcionado.'
             ];
         }
+    } catch (PDOException $e) {
+        error_log("Error en mostrar_notis: " . $e->getMessage());
+        return [
+            'exito' => false,
+            'mensaje' => 'Error al realizar la búsqueda.'
+        ];
     }
+}
+
 
       public static function mostrar_notis_despacho($id_despacho) {
         try {

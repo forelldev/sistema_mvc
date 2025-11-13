@@ -1,0 +1,50 @@
+/* 🔔 Panel de notificaciones oscuro */
+#barra-notificaciones.dropdown-menu {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  border: 1px solid #333;
+}
+
+/* 📝 Cada notificación */
+#barra-notificaciones li {
+  padding: 0.75rem;
+  border-radius: 0.4rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* 🖱️ Hover elegante */
+#barra-notificaciones li:hover {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+/* 🔗 Enlaces dentro de notificaciones */
+#barra-notificaciones a {
+  color: #e0e0e0;
+  text-decoration: none;
+}
+
+#barra-notificaciones a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* 🕒 Fecha en pequeño */
+#barra-notificaciones .text-muted {
+  color: #aaa !important;
+}
+
+#btn-notificaciones {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  border-color: #ffffff;
+  background-color: transparent;
+}
+
+#btn-notificaciones:hover {
+  background-color: #1f1f1f; /* fondo oscuro al hacer hover */
+  border-color: #999999;     /* borde más tenue */
+}
+
+#btn-notificaciones .fa-bell {
+  color: #ffffff;
+}

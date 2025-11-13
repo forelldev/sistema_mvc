@@ -43,27 +43,6 @@ class LoginControl {
         $datos = [];
         $msj = null;
         // Notificaciones generales (solicitud_ayuda)
-        $notificaciones = Notificaciones::mostrarNotificaciones($_SESSION['id_rol']);
-        if ($notificaciones['exito']) {
-            $datos = $notificaciones['datos'] ?? [];
-        }
-
-        // Notificaciones de despacho y master (solo rol 2 y 4)
-        if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 3 || $_SESSION['id_rol'] == 4) {
-            $notificaciones_despacho = Notificaciones::mostrar_notificaciones_despacho();
-            if ($notificaciones_despacho['exito']) {
-                $datos['despacho'] = $notificaciones_despacho['datos']['despacho'];
-            }
-        }
-
-        // Notificaciones de desarrollo y master (solo rol 1 y 4)
-        if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4) {
-            $notificaciones_desarrollo = Notificaciones::mostrar_notificaciones_desarrollo();
-            if ($notificaciones_desarrollo['exito']) {
-                $datos['desarrollo'] = $notificaciones_desarrollo['datos']['desarrollo'];
-            }
-        }
-
         $res = UserModel::ultima_entrada($_SESSION['ci']);
         if($res['exito']){
             $dia = $res['datos'];
@@ -73,14 +52,42 @@ class LoginControl {
                 $nombre = $datos['nombre']. ' '.$datos['apellido'];
             }
         }
-
-        // if(!$notificaciones['exito'] && !$notificaciones_despacho['exito'] && !$notificaciones_desarrollo['exito']){
-        //     $msj = 'No se encontraron notificaciones';
-        // }
-        // Pasar los datos a la vista
         require_once 'vistas/main.php';
     }
 
+    public function obtenerNotificacionesAjax() {
+            if (!isset($_SESSION['ci'])) {
+            echo json_encode(['exito' => false, 'mensaje' => 'No autenticado']);
+            return;
+            }
+
+            $datos = [];
+            $rol = $_SESSION['id_rol'] ?? null;
+
+            // Notificaciones generales
+            $notificaciones = Notificaciones::mostrarNotificaciones($rol);
+            if ($notificaciones['exito']) {
+            $datos = $notificaciones['datos'];
+            }
+
+            // Despacho (rol 2, 3, 4)
+            if (in_array($rol, [2, 3, 4])) {
+            $despacho = Notificaciones::mostrar_notificaciones_despacho($rol);
+            if ($despacho['exito']) {
+                $datos['despacho'] = $despacho['datos']['despacho'];
+            }
+            }
+
+            // Desarrollo (rol 1, 4)
+            if (in_array($rol, [4])) {
+            $desarrollo = Notificaciones::mostrar_notificaciones_desarrollo();
+            if ($desarrollo['exito']) {
+                $datos['desarrollo'] = $desarrollo['datos']['desarrollo'];
+            }
+            }
+
+            echo json_encode(['exito' => true, 'datos' => $datos]);
+        }
 
     public function logout() {
         if (isset($_SESSION['ci'])) {
@@ -192,7 +199,7 @@ public function validarSesionAjax() {
             $id_doc = $_GET['id_doc'];
             $id_name = $_GET['id_name'] ?? null;
             $tabla = $_GET['tabla'] ?? null;
-            $rol = $_SESSION['id_rol'] ?? null;
+            $rol = isset($_SESSION['id_rol']) ? (int)$_SESSION['id_rol'] : null;
 
             // Función auxiliar para validar acceso por rol y estado
             function tieneAcceso($estado, $rol) {
@@ -201,11 +208,12 @@ public function validarSesionAjax() {
                     'En Proceso 1/3' => [1, 4],
                     'En Proceso 2/3' => [2, 4],
                     'En Proceso 3/3 (Sin entregar)' => [3, 4],
-                    'Solicitud Finalizada (Ayuda Entregada)' => [1, 2, 4],
                     'En espera del documento físico para ser procesado 0/2' => [1, 4],
                     'En Proceso 1/2' => [1, 4],
                     'En Proceso 2/2 (Sin entregar)' => [1, 3, 4],
-                    'En Revisión 1/2' => [2, 4]
+                    'Solicitud Finalizada (Ayuda Entregada)' => [4],
+                    'En Revisión 1/2' => [2, 4],
+                    'Aprobado 2/2' => [3,4]
                 ];
                 return isset($mapa[$estado]) && in_array($rol, $mapa[$estado]);
             }
@@ -250,7 +258,7 @@ public function validarSesionAjax() {
                         foreach ($datos as $fila) {
                             $estado = $fila['estado'] ?? '';
                             if (!tieneAcceso($estado, $rol)) {
-                                header('Location: ' . BASE_URL . '/main');
+                                header('Location: ' . BASE_URL . '/main?msj=La solicitud ya ha sido procesada');
                                 exit;
                             }
                             if (isset($fila['visto']) && $fila['visto'] == 0) {

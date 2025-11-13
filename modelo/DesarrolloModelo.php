@@ -891,73 +891,78 @@ private static function insertarSolicitante($db, $id, $data) {
                 ];
             }
         }
-
-      public static function buscar_filtro($filtro) {
-    if (empty($filtro) || !is_string($filtro)) {
-        return [
-            'exito' => false,
-            'error' => 'El término de búsqueda está vacío o no es válido.'
-        ];
-    }
-
-    try {
-        $conexion = DB::conectar();
-
-        $consulta = "
-            SELECT 
-                sd.*, 
-                sdf.*, 
-                sdc.correo_enviado, 
-                sdt.*, 
-                sdi.*, 
-                sol.nombre AS remitente_nombre,
-                sol.apellido AS remitente_apellido,
-                GROUP_CONCAT(sl.examen SEPARATOR ', ') AS examenes
-            FROM solicitud_desarrollo sd
-            LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
-            LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
-            LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
-            LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
-            LEFT JOIN solicitantes sol ON sd.ci = sol.ci
-            LEFT JOIN solicitud_desarrollo_laboratorio sl ON sd.id_des = sl.id_des
-            WHERE 
-                sd.ci LIKE :filtro OR
-                sd.id_manual LIKE :filtro OR
-                sd.estado LIKE :filtro OR
-                sdt.categoria LIKE :filtro OR
-                sdi.descripcion LIKE :filtro OR
-                sdi.creador LIKE :filtro OR
-                CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
-                CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
-                sol.nombre LIKE :filtro OR
-                sol.apellido LIKE :filtro
-            GROUP BY sd.id_des
-        ";
-
-        $stmt = $conexion->prepare($consulta);
-        $busqueda = '%' . $filtro . '%';
-        $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
-        $stmt->execute();
-        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if (!$datos || count($datos) === 0) {
+    public static function buscar_filtro($filtro) {
+        if (empty($filtro) || !is_string($filtro)) {
             return [
                 'exito' => false,
-                'error' => 'No se encontraron coincidencias con el filtro proporcionado.'
+                'error' => 'El término de búsqueda está vacío o no es válido.'
             ];
         }
 
-        return [
-            'exito' => true,
-            'datos' => $datos
-        ];
-    } catch (PDOException $e) {
-        return [
-            'exito' => false,
-            'error' => 'Error en la base de datos: ' . $e->getMessage()
-        ];
+        try {
+            $conexion = DB::conectar();
+
+            $consulta = "
+                SELECT 
+                    sd.*, 
+                    sdf.*, 
+                    sdc.correo_enviado, 
+                    sdt.*, 
+                    sdi.*, 
+                    sol.nombre AS remitente_nombre,
+                    sol.apellido AS remitente_apellido,
+                    lab.examenes
+                FROM solicitud_desarrollo sd
+                LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
+                LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
+                LEFT JOIN solicitud_desarrollo_tipo sdt ON sd.id_des = sdt.id_des
+                LEFT JOIN solicitud_desarrollo_info sdi ON sd.id_des = sdi.id_des
+                LEFT JOIN solicitantes sol ON sd.ci = sol.ci
+                LEFT JOIN (
+                    SELECT id_des, GROUP_CONCAT(examen SEPARATOR ', ') AS examenes
+                    FROM solicitud_desarrollo_laboratorio
+                    GROUP BY id_des
+                ) AS lab ON lab.id_des = sd.id_des
+                WHERE 
+                    sd.ci LIKE :filtro OR
+                    sd.id_manual LIKE :filtro OR
+                    sd.estado LIKE :filtro OR
+                    sdt.categoria LIKE :filtro OR
+                    lab.examenes LIKE :filtro OR
+                    sdi.descripcion LIKE :filtro OR
+                    sdi.creador LIKE :filtro OR
+                    CONCAT(sol.nombre, ' ', sol.apellido) LIKE :filtro OR
+                    CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
+                    sol.nombre LIKE :filtro OR
+                    sol.apellido LIKE :filtro
+                GROUP BY sd.id_des DESC
+            ";
+
+            $stmt = $conexion->prepare($consulta);
+            $busqueda = '%' . $filtro . '%';
+            $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
+            $stmt->execute();
+            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (!$datos || count($datos) === 0) {
+                return [
+                    'exito' => false,
+                    'error' => 'No se encontraron coincidencias con el filtro proporcionado.'
+                ];
+            }
+
+            return [
+                'exito' => true,
+                'datos' => $datos
+            ];
+        } catch (PDOException $e) {
+            return [
+                'exito' => false,
+                'error' => 'Error en la base de datos: ' . $e->getMessage()
+            ];
+        }
     }
-}
+
 
 
 }

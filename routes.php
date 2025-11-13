@@ -99,5 +99,5 @@ Router::post('/api_chat','LoginControl@api_chat');
 Router::get('/api_chat','LoginControl@api_chat');
 Router::get('/ajax_urgencia','SolicitudControl@notificaciones_urgentes');
 Router::get('/ver_solicitud_accion','SolicitudControl@ver_solicitud_accion');
-
+Router::get('/obtenerNotificacionesAjax','LoginControl@obtenerNotificacionesAjax');
 ?>
