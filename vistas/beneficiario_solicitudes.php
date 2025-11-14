@@ -8,7 +8,8 @@ $acciones = [
     'En Revisión 1/2' => 'Enviar a Administración',
     'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
     'En espera del documento físico para ser procesado 0/2' => 'Aprobar para su procedimiento',
-    'En Proceso 1/2' => 'Aprobar Ayuda'
+    'En Proceso 1/2' => 'Aprobar Ayuda',
+    'Aprobado 2/2' => 'Finalizar Solicitud (Se entregó la ayuda)'
 ];
 
 function procesarSolicitud($fila, $acciones) {
@@ -25,6 +26,7 @@ function procesarSolicitud($fila, $acciones) {
     'En Revisión 1/2' => 'bg-info text-dark',
     'En Proceso 2/3' => 'bg-primary text-white',
     'En Proceso 2/2 (Sin entregar)' => 'bg-primary text-white',
+    'Aprobado 2/2' => 'bg-primary text-white',
     'En Proceso 3/3 (Sin entregar)' => 'bg-primary text-white',
     'Solicitud Finalizada (Ayuda Entregada)' => 'bg-success text-white',
     'Documento inválido' => 'bg-danger text-white'
@@ -58,13 +60,17 @@ function procesarSolicitud($fila, $acciones) {
       </h1>
       <div class="d-flex flex-wrap gap-2">
         <a href="<?= BASE_URL ?>/beneficiario_desarrollo?ci=<?= $ci ?? $datos[0]['ci'] ?? null ?>" class="btn btn-volver btn-sm">
-          <i class="fa fa-screwdriver-wrench"></i> Solicitudes de desarrollo
+          <i class="fa fa-screwdriver-wrench"></i> Ver solicitudes de Desarrollo Social
         </a>
         <a href="<?= BASE_URL ?>/beneficiario_despacho?ci=<?= $ci ?? $datos[0]['ci'] ?? null ?>" class="btn btn-volver btn-sm">
-          <i class="fa fa-truck-fast"></i> Solicitudes de despacho
+          <i class="fa fa-truck-fast"></i> Ver solicitudes de Despacho 
         </a>
         <a href="<?= BASE_URL ?>/main" class="btn btn-volver btn-sm">
-          <i class="fa fa-arrow-left"></i> Volver atrás
+          <i class="fa fa-home"></i> Inicio
+        </a>
+
+        <a href="<?= BASE_URL ?>/beneficiarios_lista" class="btn btn-volver btn-sm">
+          <i class="fa fa-users"></i> Ver lista de beneficiarios
         </a>
       </div>
     </div>
@@ -99,9 +105,6 @@ function procesarSolicitud($fila, $acciones) {
               </div>
 
               <div class="card-footer d-flex flex-wrap gap-2">
-                <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= urlencode($fila['ci']) ?>" class="btn btn-solicitud btn-sm">
-                  Ver Información del beneficiario
-                </a>
                 <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
                   <a href="<?= BASE_URL.'/editar?id_doc='.urlencode($info['id']) ?>" class="btn btn-solicitud btn-sm">Editar</a>
                 <?php endif; ?>

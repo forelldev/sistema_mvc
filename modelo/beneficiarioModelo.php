@@ -365,7 +365,7 @@ public static function mostrar_solicitudes_desarrollo($ci){
                 sd.id_des AS id,
                 sd.id_manual,
                 sd.ci,
-                sd.estado Solicitud Desarrollo AS estado,
+                sd.estado AS estado,
                 sd.estado AS estado_base,
                 sd.invalido,
                 COALESCE(sdf.fecha, NOW()) AS fecha,
@@ -400,7 +400,7 @@ public static function mostrar_solicitudes_desarrollo($ci){
         error_log("❌ Error en mostrar solicitudes de desarrollo: " . $e->getMessage());
         return [
             'exito' => false,
-            'error' => 'Ocurrió un error al consultar las solicitudes de desarrollo'
+            'error' => $e->getMessage()
         ];
     }
 }

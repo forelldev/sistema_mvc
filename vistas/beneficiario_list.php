@@ -15,12 +15,11 @@
       <a href="<?= BASE_URL ?>/registro_beneficiario" class="btn sol-btn-principal">
         <i class="fa fa-plus me-1"></i> Registrar Beneficiario
       </a>
-      <a href="<?= BASE_URL ?>/main" class="btn sol-btn-nav">
-        <i class="fa fa-arrow-left me-1"></i> Volver atrás
+      <a href="<?= BASE_URL ?>/main" class="btn btn-volver btn-sm btn-outline-light">
+        <i class="fa fa-home"></i> Inicio
       </a>
     </div>
   </header>
-
   <section class="benef-filtros py-5">
   <div class="container">
     <h2 class="mb-2 text-white">🔍 Búsqueda Rápida</h2>

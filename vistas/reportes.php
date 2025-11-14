@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <h1 class="h6 mb-0">Reportes</h1>
       <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light btn-sm">
-        <i class="fa fa-arrow-left me-1"></i> Volver atrás
+        <i class="fa fa-home"></i> Inicio
       </a>
     </div>
   </header>
