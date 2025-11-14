@@ -61,7 +61,7 @@
                         <a href="<?= BASE_URL.'/editar?id_doc='.$fila['id_doc'] ?>" class="aprobar-btn">Editar</a>
                         <?php endif; ?>
                         <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                            <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Inhabilitar</a>
+                            <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="rechazar-btn">Invalidar Solicitud</a>
                         <?php endif; ?>
                         <a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="aprobar-btn">
                             <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>

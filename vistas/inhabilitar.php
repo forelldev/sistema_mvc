@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inhabilitar</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/edicion.css?v=<?= time(); ?>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invalidar Solicitud</title>
+  <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
+  <link rel="stylesheet" href="<?= BASE_URL ?>/css/edicion.css?v=<?= time(); ?>">
 </head>
+
 <body class="solicitud-body">
   <header class="bg-dark text-white py-3 px-4 d-flex justify-content-between align-items-center">
     <h1 class="h5 mb-0">Invalidar solicitud</h1>
@@ -23,14 +25,14 @@
 
   <main class="container py-4">
     <form action="inhabilitar_solicitud" method="POST" class="bg-panel-dark text-white p-4 rounded shadow" autocomplete="off">
-      <h2 class="h6 mb-4"><i class="fa fa-ban"></i> Invalidar solicitud</h2>
+      <h2 class="h6 mb-4"><i class="fa fa-ban"></i> Invalidar Solicitud</h2>
 
       <input type="hidden" name="id_doc" value="<?= $id_doc ?? 'No hay ID' ?>">
 
       <div class="mb-3">
         <label for="razon" class="form-label">Razón por la cual será invalidada esta solicitud</label>
         <input type="text" name="razon" id="razon" class="form-control"
-               placeholder="Razón por la cual será invalidada esta solicitud" required>
+          placeholder="Razón por la cual será invalidada esta solicitud" required>
       </div>
 
       <button type="submit" class="btn btn-primary">
@@ -40,17 +42,18 @@
   </main>
 </body>
 <script>
-    const BASE_PATH = "<?php echo BASE_PATH; ?>";
+  const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php
 $mensaje = $msj ?? ($_GET['msj'] ?? null);
 if ($mensaje):
 ?>
-    <script>
-        mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
-    </script>
+  <script>
+    mostrarMensaje("<?= htmlspecialchars($mensaje) ?>", "info", 3000);
+  </script>
 <?php endif; ?>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
+
 </html>

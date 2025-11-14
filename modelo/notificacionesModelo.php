@@ -21,7 +21,7 @@ require_once 'conexiondb.php';
                         'En espera del documento físico para ser procesado 0/3',
                         'En Proceso 1/3',
                         'En Proceso 2/3',
-                        'En Proceso 3/3',
+                        'En Proceso 3/3 (Sin entregar)',
                         'Solicitud Finalizada (Ayuda Entregada)'
                     ];
                     break;
@@ -111,7 +111,7 @@ require_once 'conexiondb.php';
 
                 // Filtro adicional según el rol
                 if ($rol == 3) {
-                    $consultaDespacho .= " AND d.estado = 'En Proceso 2/2 (Sin entregar)'";
+                    $consultaDespacho .= " AND d.estado = 'Aprobado 2/2'";
                 }
 
                  if ($rol == 2) {
@@ -413,7 +413,7 @@ require_once 'conexiondb.php';
             $consulta2 = "UPDATE despacho_fecha df
                         JOIN despacho d ON d.id_despacho = df.id_despacho
                         SET df.visto = 1
-                        WHERE df.visto = 0 AND d.estado = 'En Proceso 2/2 (Sin entregar)'";
+                        WHERE df.visto = 0 AND d.estado = 'Aprobado 2/2'";
         } elseif ($rol == 4) {
             $consulta2 = "UPDATE despacho_fecha SET visto = 1 WHERE visto = 0";
         }

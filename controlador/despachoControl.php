@@ -164,10 +164,9 @@
 
     public static function inhabilitar_solicitud(){
         if(isset($_POST['id_despacho'])){
-            $estado = 'Inhabilitado';
             $id_doc = $_POST['id_despacho'];
             $razon = $_POST['razon'];
-            $res = Procesar::inhabilitarDespacho($id_doc,$estado,$razon);
+            $res = Procesar::inhabilitarDespacho($id_doc,$razon);
             if($res['exito']){
                 header('Location: '.BASE_URL.'/inhabilitados_despacho?msj=Solicitud invalidada con éxito');
                 date_default_timezone_set('America/Caracas');
@@ -197,10 +196,8 @@
 
     public static function habilitar(){
         if(isset($_GET['id_doc'])){
-            $estado = 'En Revisión 1/2';
             $id_doc = $_GET['id_doc'];
-            $razon = '';
-            if(Procesar::habilitar_solicitudDespacho($id_doc,$estado,$razon)){
+            if(Procesar::habilitar_solicitudDespacho($id_doc)){
                 header('Location: '.BASE_URL.'/despacho_list?msj=Solicitud habilitada con éxito');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');

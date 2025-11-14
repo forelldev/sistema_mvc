@@ -67,7 +67,7 @@
                   <?php endif; ?>
 
                   <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                    <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="btn btn-filtro btn-sm">Inhabilitar</a>
+                    <a href="<?= BASE_URL.'/inhabilitar?id_doc='.$fila['id_doc'] ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
                   <?php endif; ?>
 
                   <a href="<?= BASE_URL.'/procesar?id_doc='.$fila['id_doc'].'&estado='.$fila['estado'] ?>" class="btn btn-filtro btn-sm">

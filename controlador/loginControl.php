@@ -306,7 +306,7 @@ public function validarSesionAjax() {
 
                     $acciones = [
                         'En Revisión 1/2' => 'Enviar a Administración',
-                        'En Proceso 2/2 (Sin entregar)' => 'Finalizar Solicitud (Se entregó la ayuda)',
+                        'Aprobado 2/2' => 'Finalizar Solicitud (Se entregó la ayuda)',
                         'Solicitud Finalizada (Ayuda Entregada)' => 'Reiniciar en caso de algún error'
                     ];
                     require_once 'vistas/solicitud_notificacion_despacho.php';

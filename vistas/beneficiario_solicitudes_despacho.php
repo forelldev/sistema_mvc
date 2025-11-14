@@ -108,7 +108,7 @@ function procesarSolicitud($fila, $acciones) {
                 <?php endif; ?>
                 <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
                   <a href="<?= BASE_URL.'/inhabilitarDespacho?id_doc='.urlencode($info['id']) ?>" class="btn btn-solicitud btn-sm rechazar-btn">
-                    <i class="fa fa-ban"></i> Inhabilitar
+                    <i class="fa fa-ban"></i> Invalidar Solicitud
                   </a>
                 <?php endif; ?>
                 <a href="<?= BASE_URL.'/procesarDespacho?id_doc='.urlencode($info['id']).'&estado='.urlencode($info['estado_base']) ?>" class="btn btn-solicitud btn-sm aprobar-btn">

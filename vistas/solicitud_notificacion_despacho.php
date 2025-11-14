@@ -64,7 +64,7 @@
                 <?php endif; ?>
 
                 <?php if ($puedeInhabilitar): ?>
-                  <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.urlencode($fila['id_despacho']) ?>" class="btn btn-filtro btn-sm">Inhabilitar</a>
+                  <a href="<?= BASE_URL.'/inhabilitarDespacho?id_despacho='.urlencode($fila['id_despacho']) ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
                 <?php endif; ?>
 
                 <?php if ($puedeProcesar): ?>

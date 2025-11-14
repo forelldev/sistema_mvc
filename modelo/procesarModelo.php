@@ -556,65 +556,67 @@ public static function solicitud($id_doc, $estado) {
         };
     }
 
-   public static function inhabilitarDespacho($id_despacho, $estado, $razon) {
-    try {
-        $conexion = DB::conectar();
+   public static function inhabilitarDespacho($id_despacho, $razon) {
+        try {
+            $conexion = DB::conectar();
 
-        // Actualizar estado en despacho
-        $stmt = $conexion->prepare("UPDATE despacho SET estado = ?, invalido = 1 WHERE id_despacho = ?");
-        $stmt->execute([$estado, $id_despacho]);
+            // Marcar despacho como inválido (sin tocar estado)
+            $stmt = $conexion->prepare("UPDATE despacho SET invalido = 1 WHERE id_despacho = ?");
+            $stmt->execute([$id_despacho]);
 
-        if ($stmt->rowCount() === 0) {
-            return ['exito' => false, 'error' => 'No se pudo actualizar el despacho. El ID no existe.'];
-        }
-
-        // Verificar si ya existe una razón en despacho_invalido
-        $stmtCheck = $conexion->prepare("SELECT COUNT(*) FROM despacho_invalido WHERE id_despacho = ?");
-        $stmtCheck->execute([$id_despacho]);
-        $existe = $stmtCheck->fetchColumn();
-
-        if ($existe) {
-            $stmtUpdate = $conexion->prepare("UPDATE despacho_invalido SET razon = ? WHERE id_despacho = ?");
-            $stmtUpdate->execute([$razon, $id_despacho]);
-        } else {
-            $stmtInsert = $conexion->prepare("INSERT INTO despacho_invalido (id_despacho, razon) VALUES (?, ?)");
-            $stmtInsert->execute([$id_despacho, $razon]);
-        }
-
-        return ['exito' => true];
-    } catch (PDOException $e) {
-        error_log("Error al inhabilitar despacho: " . $e->getMessage());
-        return ['exito' => false, 'error' => $e->getMessage()];
-    }
-}
-
-
-
-    public static function habilitar_solicitudDespacho($id_despacho, $estado) {
-            try {
-                $conexion = DB::conectar();
-
-                // Actualizar estado e invalido en despacho
-                $stmt = $conexion->prepare("
-                    UPDATE despacho 
-                    SET estado = ?, invalido = 0 
-                    WHERE id_despacho = ?
-                ");
-                $stmt->execute([$estado, $id_despacho]);
-
-                // Eliminar la razón en despacho_invalido
-                $stmtDelete = $conexion->prepare("
-                    DELETE FROM despacho_invalido 
-                    WHERE id_despacho = ?
-                ");
-                $stmtDelete->execute([$id_despacho]);
-
-                return true;
-            } catch (PDOException $e) {
-                error_log("Error al habilitar despacho: " . $e->getMessage());
-                return false;
+            if ($stmt->rowCount() === 0) {
+                return ['exito' => false, 'error' => 'No se pudo actualizar el despacho. El ID no existe.'];
             }
+
+            // Verificar si ya existe una razón en despacho_invalido
+            $stmtCheck = $conexion->prepare("SELECT COUNT(*) FROM despacho_invalido WHERE id_despacho = ?");
+            $stmtCheck->execute([$id_despacho]);
+            $existe = $stmtCheck->fetchColumn();
+
+            if ($existe) {
+                $stmtUpdate = $conexion->prepare("UPDATE despacho_invalido SET razon = ? WHERE id_despacho = ?");
+                $stmtUpdate->execute([$razon, $id_despacho]);
+            } else {
+                $stmtInsert = $conexion->prepare("INSERT INTO despacho_invalido (id_despacho, razon) VALUES (?, ?)");
+                $stmtInsert->execute([$id_despacho, $razon]);
+            }
+
+            return ['exito' => true];
+        } catch (PDOException $e) {
+            error_log("Error al inhabilitar despacho: " . $e->getMessage());
+            return ['exito' => false, 'error' => $e->getMessage()];
         }
+    }
+
+
+
+
+    public static function habilitar_solicitudDespacho($id_despacho) {
+        try {
+            $conexion = DB::conectar();
+
+            // Marcar despacho como válido (sin tocar estado)
+            $stmt = $conexion->prepare("
+                UPDATE despacho 
+                SET invalido = 0 
+                WHERE id_despacho = ?
+            ");
+            $stmt->execute([$id_despacho]);
+
+            // Eliminar la razón en despacho_invalido
+            $stmtDelete = $conexion->prepare("
+                DELETE FROM despacho_invalido 
+                WHERE id_despacho = ?
+            ");
+            $stmtDelete->execute([$id_despacho]);
+
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error al habilitar despacho: " . $e->getMessage());
+            return false;
+        }
+    }
+
 
         
 

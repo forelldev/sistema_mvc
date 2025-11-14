@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderNotificaciones(datos) {
   const ul = document.createElement('ul');
   ul.className = 'list-unstyled mb-2';
-
+  const novedades = document.getElementById("novedades");
   let total = 0;
 
   for (const tipo in datos) {
@@ -41,6 +41,7 @@ function renderNotificaciones(datos) {
 
   if (total > 0) {
     const marcar = document.createElement('li');
+    novedades.style.display = 'block'
     marcar.innerHTML = `<a href="${BASE_URL}/marcar_vistas" class="text-primary small">Marcar todas como vistas</a>`;
     ul.appendChild(marcar);
   }

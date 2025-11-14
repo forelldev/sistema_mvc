@@ -73,7 +73,7 @@
                 <?php endif; ?>
 
                 <?php if ($puedeInhabilitar): ?>
-                  <a href="<?= BASE_URL.'/inhabilitar?id_doc='.urlencode($fila['id_doc']) ?>" class="btn btn-filtro btn-sm">Inhabilitar</a>
+                  <a href="<?= BASE_URL.'/inhabilitar?id_doc='.urlencode($fila['id_doc']) ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
                 <?php endif; ?>
 
                 <?php if ($puedeProcesar): ?>

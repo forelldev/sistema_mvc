@@ -57,7 +57,7 @@
                 <?php endif; ?>
 
                 <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                  <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_des='.$fila['id_des'] ?>" class="btn btn-filtro btn-sm">Inhabilitar</a>
+                  <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_des='.$fila['id_des'] ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
                 <?php endif; ?>
 
                 <a href="<?= BASE_URL.'/procesarDesarrollo?id_des='.$fila['id_des'].'&estado='.$fila['estado'] ?>" class="btn btn-filtro btn-sm">

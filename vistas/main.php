@@ -154,6 +154,13 @@
             <p class="card-text text-dark">Fecha: <?= date('d-m-Y')?>.</p>
           </div>
         </div>
+          <br>
+            <div id="novedades" class="card bg-white bg-opacity-75 shadow-sm" style="display:none;">
+              <div class="card-body">
+                <h5 class="card-title text-dark">Hay actividades nuevas!</h5>
+                <p class="card-text text-dark">Puedes verlas en notificaciones.</p>
+              </div>
+            </div>
       </div>
     </main>
 

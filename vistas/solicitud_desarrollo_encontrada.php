@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/busqueda.css?v=<?= time(); ?>">
-    <title>Se han encontrado otras solicitudes </title>
+    <title>Se han encontrado otras solicitudes - Desarrollo</title>
 </head>
 <body class="solicitud-body bg-dark text-white">
 

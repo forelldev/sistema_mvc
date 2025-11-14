@@ -25,7 +25,7 @@
   <!-- Formulario -->
   <main class="container py-4">
     <form action="inhabilitar_desarrollo" method="POST" class="bg-panel-dark text-white p-4 rounded shadow" autocomplete="off">
-      <h2 class="h6 mb-4"><i class="fa fa-ban me-2"></i> Invalidar solicitud</h2>
+      <h2 class="h6 mb-4"><i class="fa fa-ban me-2"></i> Invalidar Solicitud</h2>
 
       <input type="hidden" name="id_des" value="<?= $id_des ?? 'No hay ID' ?>">
 

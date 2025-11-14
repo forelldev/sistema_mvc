@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inhabilitar</title>
+    <title>Invalidar Solicitud - Despacho</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/css_bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/edicion.css?v=<?= time(); ?>">
@@ -25,7 +25,7 @@
   <!-- Formulario -->
   <main class="container py-4">
     <form action="inhabilitar_solicitudDespacho" method="POST" class="bg-panel-dark text-white p-4 rounded shadow" autocomplete="off">
-      <h2 class="h6 mb-4"><i class="fa fa-ban"></i> Inhabilitar solicitud</h2>
+      <h2 class="h6 mb-4"><i class="fa fa-ban"></i> Invalidar Solicitud</h2>
 
       <input type="hidden" name="id_despacho" value="<?= htmlspecialchars($id_despacho) ?>">
 
