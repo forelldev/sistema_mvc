@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.exito && data.datos) {
         renderNotificaciones(data.datos);
       } else {
-        document.getElementById('barra-notificaciones').innerHTML = '<p class="text-muted">No hay notificaciones nuevas.</p>';
+        document.getElementById('barra-notificaciones').innerHTML = '<p class="text-white">No hay notificaciones nuevas.</p>';
       }
     })
     .catch(error => {

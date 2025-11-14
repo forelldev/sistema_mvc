@@ -56,38 +56,44 @@ class LoginControl {
     }
 
     public function obtenerNotificacionesAjax() {
-            if (!isset($_SESSION['ci'])) {
+        if (!isset($_SESSION['ci'])) {
             echo json_encode(['exito' => false, 'mensaje' => 'No autenticado']);
             return;
-            }
+        }
 
-            $datos = [];
-            $rol = $_SESSION['id_rol'] ?? null;
+        $datos = [];
+        $rol = $_SESSION['id_rol'] ?? null;
 
-            // Notificaciones generales
-            $notificaciones = Notificaciones::mostrarNotificaciones($rol);
-            if ($notificaciones['exito']) {
+        // Notificaciones generales
+        $notificaciones = Notificaciones::mostrarNotificaciones($rol);
+        if ($notificaciones['exito'] && !empty($notificaciones['datos'])) {
             $datos = $notificaciones['datos'];
-            }
+        }
 
-            // Despacho (rol 2, 3, 4)
-            if (in_array($rol, [2, 3, 4])) {
+        // Despacho (rol 2, 3, 4)
+        if (in_array($rol, [2, 3, 4])) {
             $despacho = Notificaciones::mostrar_notificaciones_despacho($rol);
-            if ($despacho['exito']) {
+            if ($despacho['exito'] && !empty($despacho['datos']['despacho'])) {
                 $datos['despacho'] = $despacho['datos']['despacho'];
             }
-            }
+        }
 
-            // Desarrollo (rol 1, 4)
-            if (in_array($rol, [4])) {
+        // Desarrollo (rol 4)
+        if (in_array($rol, [4])) {
             $desarrollo = Notificaciones::mostrar_notificaciones_desarrollo();
-            if ($desarrollo['exito']) {
+            if ($desarrollo['exito'] && !empty($desarrollo['datos']['desarrollo'])) {
                 $datos['desarrollo'] = $desarrollo['datos']['desarrollo'];
             }
-            }
+        }
 
+        // Validación final: si no hay datos, devolver error
+        if (empty($datos)) {
+            echo json_encode(['exito' => false, 'mensaje' => 'No hay notificaciones disponibles']);
+        } else {
             echo json_encode(['exito' => true, 'datos' => $datos]);
         }
+    }
+
 
     public function logout() {
         if (isset($_SESSION['ci'])) {
