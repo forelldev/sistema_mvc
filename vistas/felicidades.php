@@ -31,6 +31,11 @@
     </main>
 </body>
 <script>
+    setTimeout(function() {
+        window.location.href = "<?= BASE_URL ?>/solicitudes_list";
+    }, 5000);
+</script>
+<script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>

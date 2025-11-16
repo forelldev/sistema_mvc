@@ -390,6 +390,10 @@ public static function solicitud($id_doc, $estado) {
             'id_doc', 'id_manual', 'descripcion', 'observaciones', 'tipo_ayuda', 'categoria'
         ];
 
+        if (empty($data['tipo_ayuda']) && !empty($data['categoria'])) {
+            $data['tipo_ayuda'] = $data['categoria'];
+        }
+
         foreach ($camposObligatorios as $campo) {
             if (!isset($data[$campo]) || $data[$campo] === '') {
                 throw new Exception("Falta el campo obligatorio: $campo");

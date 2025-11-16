@@ -13,9 +13,19 @@
   <!-- Encabezado -->
   <header class="d-flex justify-content-between align-items-center mb-4">
     <h5 class="mb-0 fw-semibold">Formulario de solicitud de ayuda</h5>
-    <a href="<?= BASE_URL ?>/solicitudes_list?msj=Has cancelado la creación de solicitud!" class="btn btn-sm btn-outline-light">
-      <i class="fa fa-arrow-left me-1"></i> Volver
+    <div class="btn-group" role="group">
+    <div class="d-flex gap-2">
+    <a href="<?= BASE_URL ?>/solicitudes_list?msj=Has cancelado la creación de solicitud!" 
+        class="btn btn-sm btn-outline-light">
+        <i class="fa fa-arrow-left me-1"></i> Ver lista de Solicitudes
     </a>
+    <a href="<?= BASE_URL ?>/busqueda?msj=Has cancelado la creación de solicitud!" 
+        class="btn btn-sm btn-outline-light">
+        <i class="fa fa-search me-1"></i> Buscar Beneficiario
+    </a>
+    </div>
+
+
   </header>
         <form action="<?=BASE_URL?>/enviarFormulario" method="POST" class="border rounded p-4 bg-secondary bg-opacity-10" autocomplete="off">
             <h2 class="text-center"><i class="fa fa-hands-helping"></i> Solicitud de Ayuda</h2>

@@ -122,7 +122,7 @@ function procesarSolicitud($fila, $acciones) {
         <div class="col-12">
           <div class="card border-0 shadow-sm bg-panel-dark text-white">
             <div class="card-body text-center">
-              <span class="text-muted">No hay información disponible.</span>
+              <span class="text-white">No hay información disponible.</span>
             </div>
           </div>
         </div>

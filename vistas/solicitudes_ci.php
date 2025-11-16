@@ -86,8 +86,8 @@
       </a>
       <form action="solicitudes_ci" method="POST" class="d-inline-block">
         <input type="hidden" name="ci" value="<?= $ci ?>">
-        <button type="submit" class="btn btn-success px-4 rounded-pill">
-          Registrar Solicitud
+        <button type="submit" class="btn btn-outline-light px-4 rounded-pill">
+          <i class="fa fa-plus me-1"></i> Registrar Solicitud
         </button>
       </form>
     </div>

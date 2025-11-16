@@ -17,18 +17,18 @@ function procesarSolicitud($fila, $acciones) {
     $accion = $acciones[$estado_base] ?? 'Acción desconocida';
 
     $clases = [
-        'En espera del documento físico para ser procesado 0/3' => 'pendiente',
-        'En Proceso 1/3' => 'activo1',
-        'En Proceso 2/3' => 'activo2',
-        'En Proceso 3/3 (Sin entregar)' => 'activo3',
-        'Solicitud Finalizada (Ayuda Entregada)' => 'finalizada',
-        'Documento inválido' => 'invalido',
-        'En Revisión 1/2' => 'activo1',
-        'En Proceso 2/2 (Sin entregar)' => 'activo2',
-        'Aprobado 2/2' => 'activo2',
-        'En espera del documento físico para ser procesado 0/2' => 'pendiente',
-        'En Proceso 1/2' => 'activo1'
-    ];
+        'En espera del documento físico para ser procesado 0/3' => 'bg-warning text-dark',
+        'En espera del documento físico para ser procesado 0/2' => 'bg-warning text-dark',
+        'En Proceso 1/3' => 'bg-info text-dark',
+        'En Proceso 1/2' => 'bg-info text-dark',
+        'En Revisión 1/2' => 'bg-info text-dark',
+        'En Proceso 2/3' => 'bg-primary text-white',
+        'En Proceso 2/2 (Sin entregar)' => 'bg-primary text-white',
+        'Aprobado 2/2' => 'bg-primary text-white',
+        'En Proceso 3/3 (Sin entregar)' => 'bg-primary text-white',
+        'Solicitud Finalizada (Ayuda Entregada)' => 'bg-success text-white',
+        'Documento inválido' => 'bg-danger text-white'
+        ];
     $estado_class = $clases[$estado_base] ?? '';
 
     // ✅ Usa el campo 'id' que viene del modelo con UNION
@@ -48,12 +48,13 @@ function procesarSolicitud($fila, $acciones) {
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/beneficiario_list.css?v=<?= time(); ?>">
 </head>
 <body class="solicitud-body">
-  <header class="header bg-dark text-white py-3 px-4">
-    <div class="titulo-header">
+  <header class="bg-dark text-white py-3 px-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+      <h1 class="h6 mb-0">
       Lista de solicitudes del beneficiario: 
       <?= htmlspecialchars(($datos[0]['nombre'] ?? '') . ' ' . ($datos[0]['apellido'] ?? '')) ?>
-    </div>
-    <div class="d-flex flex-wrap gap-2 mt-3">
+      </h1>
+    <div class="d-flex flex-wrap gap-2">
       <a href="<?= BASE_URL ?>/solicitudes_beneficiario?ci=<?= $ci ?? $datos[0]['ci'] ?? null ?>" class="btn btn-volver btn-sm">
         <i class="fa fa-list"></i> Ver Solicitudes Generales
       </a>
@@ -66,6 +67,7 @@ function procesarSolicitud($fila, $acciones) {
       <a href="<?= BASE_URL ?>/beneficiarios_lista" class="btn btn-volver btn-sm">
         <i class="fa fa-users"></i> Ver lista de beneficiarios
       </a>
+    </div>
     </div>
   </header>
 
@@ -80,13 +82,13 @@ function procesarSolicitud($fila, $acciones) {
             $mostrados[] = $info['id'];
         ?>
           <div class="col-12 col-md-6 col-xl-5">
-            <div class="card h-100 border-0 shadow-sm bg-panel-dark text-white solicitud-card">
-              <div class="card-header d-flex flex-nowrap align-items-center solicitud-header <?= $info['estado_class'] ?>">
-                <span class="flex-grow-1 solicitud-estado"><strong><?= htmlspecialchars($info['estado_completo']) ?></strong></span>
+            <div class="card h-100 border-0 shadow-sm bg-panel-dark text-white">
+              <div class="card-header d-flex flex-nowrap align-items-center <?= $info['estado_class'] ?>">
+                <span class="flex-grow-1"><strong><?= htmlspecialchars($info['estado_completo']) ?></strong></span>
                 <small class="ms-auto text-end"><strong>Fecha:</strong> <?= htmlspecialchars(date('d-m-Y', strtotime($fila['fecha'] ?? ''))) ?></small>
               </div>
 
-              <div class="card-body solicitud-info">
+              <div class="card-body">
                 <p><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion'] ?? '') ?></p>
                 <p><strong>Tipo de ayuda:</strong> <?= htmlspecialchars($fila['tipo_ayuda'] ?? '') ?></p>
                 <p><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></p>
@@ -97,19 +99,19 @@ function procesarSolicitud($fila, $acciones) {
                 <p><strong>Observaciones:</strong> <?= htmlspecialchars($fila['observaciones'] ?? '') ?></p>
               </div>
 
-              <div class="card-footer d-flex flex-wrap gap-2 solicitud-actions">
+              <div class="card-footer d-flex flex-wrap gap-2">
                 <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
-                  <a href="<?= BASE_URL.'/editarDesarrollo?id_doc='.urlencode($info['id']) ?>" class="btn btn-solicitud btn-sm aprobar-btn">
+                  <a href="<?= BASE_URL.'/editarDesarrollo?id_doc='.urlencode($info['id']) ?>" class="btn btn-solicitud btn-sm">
                     <i class="fa fa-edit"></i> Editar
                   </a>
                 <?php endif; ?>
                 <?php if ($_SESSION['id_rol'] == 2 || $_SESSION['id_rol'] == 4): ?>
-                  <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_doc='.urlencode($info['id']) ?>" class="btn btn-solicitud btn-sm rechazar-btn">
+                  <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_doc='.urlencode($info['id']) ?>" class="btn btn-solicitud btn-sm">
                     <i class="fa fa-ban"></i> Invalidar Solicitud
                   </a>
                 <?php endif; ?>
-                <a href="<?= BASE_URL.'/procesarDesarrollo?id_doc='.urlencode($info['id']).'&estado='.urlencode($info['estado_base']) ?>" class="btn btn-solicitud btn-sm aprobar-btn">
-                  <i class="fa fa-check"></i> <?= htmlspecialchars($info['accion']) ?>
+                <a href="<?= BASE_URL.'/procesarDesarrollo?id_doc='.urlencode($info['id']).'&estado='.urlencode($info['estado_base']) ?>" class="btn btn-solicitud btn-sm">
+                     <?= htmlspecialchars($info['accion']) ?>
                 </a>
               </div>
             </div>
@@ -119,7 +121,7 @@ function procesarSolicitud($fila, $acciones) {
         <div class="col-12">
           <div class="card border-0 shadow-sm bg-panel-dark text-white solicitud-card">
             <div class="card-body text-center solicitud-info">
-              <span class="text-muted">No hay información disponible.</span>
+              <span class="text-white">No hay información disponible.</span>
             </div>
           </div>
         </div>

@@ -18,17 +18,17 @@ function procesarSolicitud($fila, $acciones) {
     $accion = $acciones[$estado_base] ?? 'Acción desconocida';
 
     $clases = [
-        'En espera del documento físico para ser procesado 0/3' => 'pendiente',
-        'En Proceso 1/3' => 'activo1',
-        'En Proceso 2/3' => 'activo2',
-        'En Proceso 3/3 (Sin entregar)' => 'activo3',
-        'Solicitud Finalizada (Ayuda Entregada)' => 'finalizada',
-        'Documento inválido' => 'invalido',
-        'En Revisión 1/2' => 'activo1',
-        'En Proceso 2/2 (Sin entregar)' => 'activo2',
-        'En espera del documento físico para ser procesado 0/2' => 'pendiente',
-        'En Proceso 1/2' => 'activo1',
-        'Aprobado 2/2' => 'activo2'
+        'En espera del documento físico para ser procesado 0/3' => 'bg-warning text-dark',
+        'En espera del documento físico para ser procesado 0/2' => 'bg-warning text-dark',
+        'En Proceso 1/3' => 'bg-info text-dark',
+        'En Proceso 1/2' => 'bg-info text-dark',
+        'En Revisión 1/2' => 'bg-info text-dark',
+        'En Proceso 2/3' => 'bg-primary text-white',
+        'En Proceso 2/2 (Sin entregar)' => 'bg-primary text-white',
+        'Aprobado 2/2' => 'bg-primary text-white',
+        'En Proceso 3/3 (Sin entregar)' => 'bg-primary text-white',
+        'Solicitud Finalizada (Ayuda Entregada)' => 'bg-success text-white',
+        'Documento inválido' => 'bg-danger text-white'
     ];
     $estado_class = $clases[$estado_base] ?? '';
 
@@ -122,7 +122,7 @@ function procesarSolicitud($fila, $acciones) {
         <div class="col-12">
           <div class="card border-0 shadow-sm bg-panel-dark text-white solicitud-card">
             <div class="card-body text-center solicitud-info">
-              <span class="text-muted">No hay información disponible.</span>
+              <span class="text-white">No hay información disponible.</span>
             </div>
           </div>
         </div>

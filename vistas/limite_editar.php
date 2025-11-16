@@ -47,8 +47,8 @@
     <!-- Usuarios excedentes -->
     <?php if (!empty($excedentes)): ?>
       <div class="mb-3">
-        <h5><i class="fa fa-users"></i> Usuarios excedentes para el rol</h5>
-        <p>Debes eliminar <?= count($excedentes) ?> usuario(s) para cumplir con el nuevo límite.</p>
+        <h5><i class="fa fa-users"></i> Usuarios del rol</h5>
+        <p>Debes eliminar <?= ($total_usuarios - $datos['limite']) ?> usuario(s) para cumplir con el nuevo límite.</p>
       </div>
 
       <div class="card bg-secondary bg-opacity-10 border-0 shadow-sm">

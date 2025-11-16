@@ -49,7 +49,7 @@
 
         <input type="hidden" name="id_doc" value="<?= $datos['id_doc'] ?? '' ?>">
 
-        <div class="col-md-6">
+        <div class="col-md-6 ">
           <label for="categoria" class="form-label">Categoría:</label>
           <select class="form-select" name="categoria" id="categoria" required>
             <option value="">Seleccione</option>
@@ -59,7 +59,7 @@
           </select>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 campo-formulario">
           <label for="tipo_ayuda" class="form-label">Tipo de Ayuda:</label>
           <select class="form-select" name="tipo_ayuda" id="tipo_ayuda" required>
             <option value="">Seleccione</option>

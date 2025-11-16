@@ -68,17 +68,23 @@ class ReportesControl{
         if ($total_usuarios > $nuevo_limite) {
             // Hay excedentes, no se actualiza el límite aún
             $usuarios = reportesModelo::obtenerUsuariosPorRol($id_rol);
-            $excedentes = array_slice($usuarios['datos'], 0, $total_usuarios - $nuevo_limite);
+
+            // Mostrar todos los usuarios
+            $excedentes = $usuarios['datos']; 
+
+            // Calcular cuántos excedentes hay
+            $cantidad_excedentes = $total_usuarios - $nuevo_limite;
 
             $datos = [
                 'id_rol' => $id_rol,
                 'nombre_rol' => $nombre_rol,
                 'limite' => $nuevo_limite
             ];
-            $msj = "Hay usuarios excedentes. Elimina " . count($excedentes) . " cuenta(s) para cumplir el nuevo límite.";
+            $msj = "Hay usuarios excedentes. Elimina $cantidad_excedentes cuenta(s) para cumplir el nuevo límite.";
             require_once 'vistas/limite_editar.php';
             return;
         }
+
 
         // Si no hay excedentes, se actualiza el límite
         $actualizado = reportesModelo::actualizarLimite($id_rol, $nuevo_limite);
@@ -104,11 +110,13 @@ class ReportesControl{
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ci = $_POST['ci'];
             $resultado = reportesModelo::eliminarUsuario($ci);
-
-            if ($resultado['exito']) {
-                echo "<script>alert('Usuario eliminado correctamente'); window.history.back();</script>";
+            
+           if ($resultado['exito']) {
+                header("Location: " . BASE_URL . "/limites?msj=Usuario eliminado correctamente, puedes cambiar el límite!");
+                exit;
             } else {
-                echo "<script>alert('Error al eliminar usuario'); window.history.back();</script>";
+                header("Location: " . BASE_URL . "/limites?msj=Error al eliminar usuario");
+                exit;
             }
         }
     }

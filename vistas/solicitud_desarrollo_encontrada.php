@@ -51,7 +51,7 @@
                     <li><strong>Descripción:</strong> <?= htmlspecialchars($fila['descripcion']) ?></li>
                     <li><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></li>
                     <?php if ($fila['categoria'] === 'Laboratorio'): ?>
-                      <li><strong>🧪 Exámenes:</strong> <?= htmlspecialchars($fila['examenes']) ?></li>
+                      <li><strong>Exámenes:</strong> <?= htmlspecialchars($fila['examenes']) ?></li>
                     <?php endif; ?>
                     <li><strong>Número de documento:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></li>
                     <li><strong> CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></li>
