@@ -1,6 +1,5 @@
 let codigoEsperado = null;
 let intentosRestantes = 3;
-
 document.getElementById('form-avanzado').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -73,9 +72,11 @@ document.getElementById('form-avanzado').addEventListener('submit', async functi
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         }
-    } catch {
-        alert("No se pudo conectar con el servidor.");
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    }
+    } catch (err) {
+    console.error("Error en fetch:", err);
+    alert("No se pudo conectar con el servidor: " + err.message);
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+}
+
 });

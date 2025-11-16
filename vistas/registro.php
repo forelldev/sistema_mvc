@@ -28,6 +28,11 @@
       </div>
 
       <div class="mb-3">
+        <label for="correo" class="form-label">Correo</label>
+        <input type="text" name="correo" id="correo" class="form-control" placeholder="Correo" required>
+      </div>
+
+      <div class="mb-3">
         <label for="apellido" class="form-label">Apellido</label>
         <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Apellido" required>
       </div>

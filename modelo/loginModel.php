@@ -46,7 +46,7 @@ class UserModel {
         return ['status' => 'error', 'msj' => '¡Credenciales incorrectas!'];
     }
 
-    public static function crearCuenta($ci, $claveHash, $nombre, $apellido, $id_rol, $sesion) {
+    public static function crearCuenta($ci,$correo, $claveHash, $nombre, $apellido, $id_rol, $sesion) {
         $conexion = DB::conectar();
 
         // Verificar si el usuario ya existe
@@ -95,12 +95,13 @@ class UserModel {
             $stmtUsuarios->execute();
 
             // Insertar en tabla usuarios_info
-            $sqlInfo = "INSERT INTO usuarios_info (ci, nombre, apellido) 
-                        VALUES (:ci, :nombre, :apellido)";
+            $sqlInfo = "INSERT INTO usuarios_info (ci, nombre, apellido,correo) 
+                        VALUES (:ci, :nombre, :apellido,:correo)";
             $stmtInfo = $conexion->prepare($sqlInfo);
             $stmtInfo->bindParam(':ci', $ci);
             $stmtInfo->bindParam(':nombre', $nombre);
             $stmtInfo->bindParam(':apellido', $apellido);
+            $stmtInfo->bindParam(':correo', $correo);
             $stmtInfo->execute();
 
             // Confirmar transacción

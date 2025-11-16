@@ -57,7 +57,7 @@
             <table class="table table-dark table-bordered align-middle mb-0">
               <thead class="thead-light-gray">
                 <tr>
-                  <th>ID</th>
+                  <th>Cédula</th>
                   <th>Nombre</th>
                   <th>Acción</th>
                 </tr>

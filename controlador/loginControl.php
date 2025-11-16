@@ -146,6 +146,7 @@ public function validarSesionAjax() {
             // MÉTODOS DE REGISTRO
     public static function registro() {
         $ci = $_POST['ci'] ?? null;
+        $correo = $_POST['correo'] ?? null;
         $clave = $_POST['clave'] ?? null;
         $nombre = $_POST['nombre'] ?? null;
         $apellido = $_POST['apellido'] ?? null;
@@ -156,7 +157,7 @@ public function validarSesionAjax() {
 
         if ($ci && $clave && $nombre && $apellido && $id_rol) {
             $claveHash = password_hash($clave, PASSWORD_DEFAULT);
-            $resultado = UserModel::crearCuenta($ci, $claveHash, $nombre, $apellido, $id_rol, $sesion);
+            $resultado = UserModel::crearCuenta($ci,$correo, $claveHash, $nombre, $apellido, $id_rol, $sesion);
                 if (str_starts_with($resultado, 'error_sql:')) {
                     $msj = "❌ Error SQL: " . substr($resultado, strlen('error_sql:'));
                 }

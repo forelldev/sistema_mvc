@@ -112,7 +112,7 @@ class ReportesControl{
             $resultado = reportesModelo::eliminarUsuario($ci);
             
            if ($resultado['exito']) {
-                header("Location: " . BASE_URL . "/limites?msj=Usuario eliminado correctamente, puedes cambiar el límite!");
+                header("Location: " . BASE_URL . "/limites?msj=Usuario eliminado correctamente!");
                 exit;
             } else {
                 header("Location: " . BASE_URL . "/limites?msj=Error al eliminar usuario");

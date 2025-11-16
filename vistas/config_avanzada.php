@@ -32,7 +32,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="correo" class="form-label text-white">Correo electrónico:</label>
+        <label for="correo" class="form-label text-white">Nuevo Correo electrónico (En caso de no querer cambiarlo repetir correo)</label>
         <input type="email" name="correo" id="correo" class="form-control bg-dark text-white border-light" required value="<?= $datos['correo'] ?? '' ?>">
       </div>
 
