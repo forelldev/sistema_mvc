@@ -172,7 +172,9 @@ $acciones = [
 
               <?php if (($estado === 'En Revisión 1/2' && $_SESSION['id_rol'] == 2) || $_SESSION['id_rol'] == 4): ?>
                 <a href="<?= BASE_URL . '/editarDespacho?id_despacho=' . $fila['id_despacho'] ?>" class="btn btn-filtro btn-sm">Editar</a>
+              <?php if ($estado !== 'Solicitud Finalizada (Ayuda Entregada)'): ?>
                 <a href="<?= BASE_URL . '/inhabilitarDespacho?id_despacho=' . $fila['id_despacho'] ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
+                <?php endif; ?>
                 <a href="<?= BASE_URL . '/procesarDespacho?id_despacho=' . $fila['id_despacho'] . '&estado=' . $fila['estado'] ?>" class="btn btn-filtro btn-sm"><?= $accion ?></a>
               <?php elseif ($estado === 'En Proceso 2/2 (Sin entregar)' && $_SESSION['id_rol'] == 3): ?>
                 <a href="<?= BASE_URL . '/procesarDespacho?id_despacho=' . $fila['id_despacho'] . '&estado=' . $fila['estado'] ?>" class="btn btn-filtro btn-sm"><?= $accion ?></a>

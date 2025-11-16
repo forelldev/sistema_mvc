@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
   const ctx = document.getElementById('graficaSolicitudes').getContext('2d');
 
@@ -12,20 +11,28 @@ document.addEventListener('DOMContentLoaded', function () {
         'En proceso 3/3',
         'Solicitudes finalizadas'
       ],
-      datasets: [{
-        label: 'Cantidad de Solicitudes',
-        data: window.solicitudesData,
-        backgroundColor: [
-          '#f2ef26ff', // En espera
-          '#3ab7faff', // Proceso
-          '#3ab7faff',
-          '#3ab7faff',
-          '#4caf50'    // Finalizadas
-        ],
-        borderRadius: 6,
-        barPercentage: 0.6,
-        categoryPercentage: 0.7
-      }]
+      datasets: [
+        {
+          label: 'Válido',
+          data: window.valData, // <-- nuevo arreglo con válidos
+          backgroundColor: 'rgba(25, 135, 84, 0.7)', // verde Bootstrap
+          borderColor: 'rgba(25, 135, 84, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+          barPercentage: 0.6,
+          categoryPercentage: 0.7
+        },
+        {
+          label: 'Inválido',
+          data: window.invData, // <-- nuevo arreglo con inválidos
+          backgroundColor: 'rgba(220, 53, 69, 0.7)', // rojo Bootstrap
+          borderColor: 'rgba(220, 53, 69, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+          barPercentage: 0.6,
+          categoryPercentage: 0.7
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -53,11 +60,19 @@ document.addEventListener('DOMContentLoaded', function () {
           titleColor: '#ffffff',
           bodyColor: '#eeeeee',
           borderColor: '#555555',
-          borderWidth: 1
+          borderWidth: 1,
+          callbacks: {
+            afterBody: function (items) {
+              const i = items[0].dataIndex;
+              const total = window.valData[i] + window.invData[i];
+              return 'Total: ' + total;
+            }
+          }
         }
       },
       scales: {
         x: {
+          stacked: true,
           ticks: {
             color: '#ffffff',
             font: {
@@ -69,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         },
         y: {
+          stacked: true,
           beginAtZero: true,
           ticks: {
             color: '#ffffff',

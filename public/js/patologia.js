@@ -67,14 +67,14 @@ function generarCamposFamiliares(cantidad, precargar = false) {
         ).join('');
 
         const campoHTML = `
-            <div class="campo-formulario" style="margin-top:10px;">
-                <label for="tipoPatologia${i}">Familiar ${i + 1} - Tipo de patología:</label>
-                <select id="tipoPatologia${i}" name="tip_patologia[${i}]" required>
+            <div class="campo-formulario" class="row g-3 mt-3" >
+                <label class="form-label" for="tipoPatologia${i}">Familiar ${i + 1} - Tipo de patología:</label>
+                <select id="tipoPatologia${i}" name="tip_patologia[${i}]" class="form-select form-select-sm bg-dark text-white" required>
                     <option value="">Seleccione</option>
                     ${opciones}
                 </select>
                 <label for="nombrePatologia${i}">Nombre de la patología:</label>
-                <input type="text" id="nombrePatologia${i}" name="nom_patologia[${i}]" placeholder="Ej. Hipertensión" value="${escapeHTML(nombrePatologia)}" required>
+                <input type="text" class="form-control form-control-sm bg-dark text-white" id="nombrePatologia${i}" name="nom_patologia[${i}]" placeholder="Ej. Hipertensión" value="${escapeHTML(nombrePatologia)}" required>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', campoHTML);

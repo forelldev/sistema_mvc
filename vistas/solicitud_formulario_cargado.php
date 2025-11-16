@@ -362,8 +362,7 @@
         <option value="Medicamentos" <?= ($_POST['categoria'] ?? '') == 'Medicamentos' ? 'selected' : '' ?>>Medicamentos</option>
         <option value="Laboratorio" <?= ($_POST['categoria'] ?? '') == 'Laboratorio' ? 'selected' : '' ?>>Laboratorio</option>
         <option value="Enseres" <?= ($_POST['categoria'] ?? '') == 'Enseres' ? 'selected' : '' ?>>Enseres</option>
-        <option value="Economica" <?= ($_POST['categoria'] ?? '') == 'Economica' ? 'selected' : '' ?>>Económica</option>
-        <option value="Otros" <?= ($_POST['categoria'] ?? '') == 'Otros' ? 'selected' : '' ?>>Otros</option>
+        <option value="Económica" <?= ($_POST['categoria'] ?? '') == 'Económica' ? 'selected' : '' ?>>Económica</option>
       </select>
     </div>
 
@@ -382,7 +381,6 @@
         <option value="Muletas (Niño)" <?= ($_POST['tipo_ayuda'] ?? '') == 'Muletas (Niño)' ? 'selected' : '' ?>>Muletas (Niño)</option>
         <option value="Collarín" <?= ($_POST['tipo_ayuda'] ?? '') == 'Collarín' ? 'selected' : '' ?>>Collarín</option>
         <option value="Colchón Anti-escaras" <?= ($_POST['tipo_ayuda'] ?? '') == 'Colchón Anti-escaras' ? 'selected' : '' ?>>Colchón Anti-escaras</option>
-        <option value="Otros" <?= ($_POST['tipo_ayuda'] ?? '') == 'Otros' ? 'selected' : '' ?>>Otros</option>
       </select>
     </div>
 

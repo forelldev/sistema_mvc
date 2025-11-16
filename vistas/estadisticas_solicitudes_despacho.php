@@ -8,69 +8,110 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/fontawesome/css/all.min.css?v=<?php echo time(); ?>">
 </head>
 <body class="bg-dark text-white">
-  <header class="bg-dark text-white py-3 px-4 border-bottom border-secondary">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-      <h1 class="h6 mb-0">Estadísticas de solicitudes - Despacho</h1>
-      <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light btn-sm">
-        <i class="fa fa-arrow-left me-1"></i> Volver atrás
+  <div class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0 text-white">Estadísticas de solicitudes - Despacho</h4>
+      <a href="<?= BASE_URL ?>/main" class="btn btn-outline-light">
+        <i class="fa fa-arrow-left"></i> Volver atrás
       </a>
     </div>
-  </header>
 
-  <main class="container py-4">
+    <!-- Tarjeta de estadísticas -->
     <div class="card bg-secondary bg-opacity-10 border-0 shadow-sm">
       <div class="card-body">
         <h5 class="text-white mb-4"><i class="fa fa-chart-bar me-2"></i> Resumen de solicitudes de despacho</h5>
 
         <div class="row g-4">
-          <!-- En Revisión -->
-          <div class="col-md-6 col-lg-4">
-            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
-              <h6 class="mb-2 text-warning"><i class="fa fa-clock me-2"></i> En Revisión</h6>
-              <p class="fs-5 fw-semibold"><?= $datos['En Revisión 1/2'] ?></p>
-            </div>
+          <!-- Resumen de estados -->
+          <div class="col-md-6">
+            <ul class="list-group list-group-flush">
+
+              <!-- En Revisión -->
+              <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-clock me-2"></i> En Revisión</span>
+                <div class="d-flex gap-2">
+                  <span class="badge bg-success">Válido: <?= $datos['En Revisión 1/2']['val'] ?></span>
+                  <span class="badge bg-danger">Inválido: <?= $datos['En Revisión 1/2']['inv'] ?></span>
+                  <span class="badge bg-warning text-dark">Total: <?= $datos['En Revisión 1/2']['total'] ?></span>
+                </div>
+              </li>
+
+              <!-- En Proceso -->
+              <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-spinner me-2"></i> En Proceso</span>
+                <div class="d-flex gap-2">
+                  <span class="badge bg-success">Válido: <?= $datos['En Proceso 2/2']['val'] ?></span>
+                  <span class="badge bg-danger">Inválido: <?= $datos['En Proceso 2/2']['inv'] ?></span>
+                  <span class="badge bg-info text-dark">Total: <?= $datos['En Proceso 2/2']['total'] ?></span>
+                </div>
+              </li>
+
+              <!-- En Proceso (Sin Entregar) -->
+              <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-spinner me-2"></i> En Proceso (Sin Entregar)</span>
+                <div class="d-flex gap-2">
+                  <span class="badge bg-success">Válido: <?= $datos['En Proceso 2/2 (Sin Entregar)']['val'] ?></span>
+                  <span class="badge bg-danger">Inválido: <?= $datos['En Proceso 2/2 (Sin Entregar)']['inv'] ?></span>
+                  <span class="badge bg-info text-dark">Total: <?= $datos['En Proceso 2/2 (Sin Entregar)']['total'] ?></span>
+                </div>
+              </li>
+
+              <!-- Finalizadas -->
+              <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-check-circle me-2"></i> Solicitudes finalizadas</span>
+                <div class="d-flex gap-2">
+                  <span class="badge bg-success">Válido: <?= $datos['Solicitud Finalizada (Ayuda Entregada)']['val'] ?></span>
+                  <span class="badge bg-danger">Inválido: <?= $datos['Solicitud Finalizada (Ayuda Entregada)']['inv'] ?></span>
+                  <span class="badge bg-primary">Total: <?= $datos['Solicitud Finalizada (Ayuda Entregada)']['total'] ?></span>
+                </div>
+              </li>
+
+              <!-- Total general -->
+              <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                <span><i class="fa fa-list-check me-2"></i> Total general</span>
+                <div class="d-flex gap-2">
+                  <span class="badge bg-success">Válido: <?= $datos['TOTAL']['val'] ?></span>
+                  <span class="badge bg-danger">Inválido: <?= $datos['TOTAL']['inv'] ?></span>
+                  <span class="badge bg-primary">Total: <?= $datos['TOTAL']['total'] ?></span>
+                </div>
+              </li>
+
+            </ul>
           </div>
 
-          <!-- En Proceso -->
-          <div class="col-md-6 col-lg-4">
-            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
-              <h6 class="mb-2 text-info"><i class="fa fa-spinner me-2"></i> En proceso</h6>
-              <p class="fs-5 fw-semibold"><?= $datos['En Proceso 2/2 (Sin entregar)'] ?></p>
+          <!-- Gráfico -->
+          <div class="col-md-6">
+            <div class="grafico-solicitudes-container position-relative rounded overflow-hidden border border-secondary text-white" style="min-height: 320px;">
+              <canvas id="graficaSolicitudes" class="w-100 h-100 d-block"></canvas>
             </div>
-          </div>
-
-          <!-- Finalizadas -->
-          <div class="col-md-6 col-lg-4">
-            <div class="bg-dark text-light border border-secondary rounded p-3 h-100">
-              <h6 class="mb-2 text-success"><i class="fa fa-check-circle me-2"></i> Solicitudes finalizadas</h6>
-              <p class="fs-5 fw-semibold"><?= $datos['Solicitud Finalizada (Ayuda Entregada)'] ?></p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Gráfico -->
-        <div class="mt-5">
-          <div class="grafico-solicitudes-container position-relative rounded overflow-hidden border border-secondary text-white">
-            <canvas id="graficaSolicitudes" class="w-100 h-100 d-block" style="max-height: 400px;"></canvas>
           </div>
         </div>
       </div>
     </div>
-  </main>
-</body>
+  </div>
 
 <script src="<?= BASE_URL ?>/libs/Chart.min.js"></script>
 <script>
-  window.solicitudesData = [
-    <?= $datos['En Revisión 1/2'] ?>,
-    <?= $datos['En Proceso 2/2 (Sin entregar)'] ?>,
-    <?= $datos['Solicitud Finalizada (Ayuda Entregada)'] ?>
+  window.valData = [
+    <?= $datos['En Revisión 1/2']['val'] ?>,
+    <?= $datos['En Proceso 2/2']['val'] ?>,
+    <?= $datos['En Proceso 2/2 (Sin Entregar)']['val'] ?>,
+    <?= $datos['Solicitud Finalizada (Ayuda Entregada)']['val'] ?>
+  ];
+  window.invData = [
+    <?= $datos['En Revisión 1/2']['inv'] ?>,
+    <?= $datos['En Proceso 2/2']['inv'] ?>,
+    <?= $datos['En Proceso 2/2 (Sin Entregar)']['inv'] ?>,
+    <?= $datos['Solicitud Finalizada (Ayuda Entregada)']['inv'] ?>
   ];
 </script>
+
 <script src="<?= BASE_URL ?>/public/js/grafica_despacho.js"></script>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/sesionReload.js"></script>
 <script src="<?= BASE_URL ?>/public/js/validarSesion.js"></script>
+</body>
 </html>

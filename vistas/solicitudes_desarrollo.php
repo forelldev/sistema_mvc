@@ -176,7 +176,9 @@ $acciones = [
                 <a href="<?= BASE_URL ?>/informacion_beneficiario?ci=<?= $fila['ci'] ?>" class="btn btn-filtro btn-sm">Ver Información</a>
                 <?php if ($_SESSION['id_rol'] == 1 || $_SESSION['id_rol'] == 4): ?>
                     <a href="<?= BASE_URL.'/editarDesarrollo?id_des='.$fila['id_des'] ?>" class="btn btn-filtro btn-sm">Editar</a>
+                  <?php if ($estado !== 'Solicitud Finalizada (Ayuda Entregada)'): ?>
                     <a href="<?= BASE_URL.'/inhabilitarDesarrollo?id_des='.$fila['id_des'] ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
+                <?php endif; ?>
                 <?php endif; ?>
                 <a href="<?= BASE_URL.'/procesarDesarrollo?id_des='.$fila['id_des'].'&estado='.$fila['estado'] ?>" class="btn btn-filtro btn-sm">
                     <?= isset($acciones[$fila['estado']]) ? $acciones[$fila['estado']] : 'Acción desconocida'; ?>

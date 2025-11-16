@@ -75,7 +75,7 @@
           </table>
         <?php else: ?>
           <div class="alert alert-warning text-center" role="alert">
-            <strong>Sin información:</strong> No hay beneficiarios registrados en este momento.
+            <strong>Sin información.</strong>
           </div>
         <?php endif; ?>
       </div>
