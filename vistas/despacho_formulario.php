@@ -161,6 +161,8 @@
 
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
+    const precarga = "<?php echo '' ?>";
+    const precargaDatos = "<?php echo '' ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php
