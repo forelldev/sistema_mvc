@@ -553,7 +553,16 @@ public function validarSesionAjax() {
             }
         }
 
-
+        public static function respaldar(){
+            $res = UserModel::respaldar();
+            if($res['exito']){
+                $msj = 'Respaldo de la base de datos éxitoso!';
+            }
+            else{
+                $msj = 'Ha ocurrido un error: '.$res['error'];
+            }
+            require_once 'vistas/main.php';
+        }
         
     }
 ?>

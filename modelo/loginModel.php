@@ -507,6 +507,44 @@ class UserModel {
     }
 
 
+        public static function respaldar(){
+        try {
+            // Usamos la conexión para validar que la BD está accesible
+            $conexion = DB::conectar();
+
+            // Datos ya definidos en tu DB::conectar()
+            $host       = "localhost";
+            $usuario    = "root";
+            $contrasena = "";
+            $base_datos = "sistema";
+
+            // Carpeta donde guardar el respaldo
+            $carpeta = dirname(__DIR__) . "/database";
+            $nombre_archivo = "sistema.sql";
+            $ruta_respaldo = $carpeta . "/$nombre_archivo";
+
+            // Validar ruta de mysqldump
+            $mysqldump_path = trim(shell_exec("which mysqldump"));
+            if (!$mysqldump_path) {
+                $mysqldump_path = "C:\\xampp\\mysql\\bin\\mysqldump.exe"; // Ruta típica en Windows con XAMPP
+            }
+
+            // Comando mysqldump
+            $comando = "\"$mysqldump_path\" --user=\"$usuario\" --password=\"$contrasena\" --host=\"$host\" \"$base_datos\" > \"$ruta_respaldo\"";
+
+            // Ejecutar
+            exec($comando, $output, $resultado);
+
+            if ($resultado === 0 && file_exists($ruta_respaldo)) {
+                return ['exito' => true, 'archivo' => $nombre_archivo];
+            } else {
+                return ['exito' => false, 'error' => 'Error al crear el respaldo. Verifica ruta de mysqldump y permisos.'];
+            }
+        } catch (Exception $e) {
+            return ['exito' => false, 'error' => $e->getMessage()];
+        }
+    }
+
 
 
 

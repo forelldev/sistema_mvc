@@ -23,7 +23,7 @@
         <i class="fas fa-plus"></i> Nueva Solicitud
       </a>
     <?php } elseif ($_SESSION['id_rol'] == 2) { ?>
-      <a href="<?= BASE_URL ?>/despacho_busqueda" class="btn btn-sm btn-outline-secondary btn-custom">
+      <a href="<?= BASE_URL ?>/despacho_busqueda" class="btn btn-sm btn-black-borde">
         <i class="fas fa-plus"></i> Nueva Solicitud
       </a>
     <?php } ?>
@@ -126,6 +126,11 @@
         <a class="dropdown-item" href="<?= BASE_URL ?>/config_user">
           <i class="fas fa-cog me-2"></i> Configuración
         </a>
+        <?php if($_SESSION['id_rol'] == 4){?>
+          <a class="dropdown-item" href="<?= BASE_URL ?>/respaldar">
+              <i class="fas fa-database me-2"></i> Respaldar datos
+          </a>
+        <?php } ?>
         <a class="dropdown-item" href="<?= BASE_URL ?>/logout">
           <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
         </a>
