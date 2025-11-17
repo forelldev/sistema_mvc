@@ -2,60 +2,67 @@ document.addEventListener("DOMContentLoaded", function () {
   const categoriaSelect = document.getElementById("categoria");
   const tipoAyudaSelect = document.getElementById("tipo_ayuda");
   const tipoAyudaContainer = document.getElementById("tipoAyudaContainer");
-  const tipoAyudaPrecargado = document.getElementById("tipo_ayuda_precargado")?.value || "";
+  const campoExtra = document.getElementById("campoExtra");
 
-  const opcionesPorCategoria = {
-    "Salud": ["Medicamentos", "Ayudas Técnicas", "Operaciones", "Exámenes", "Estudios", "Consultas"],
-    "Ayuda Económica": ["Económica"],
-    "Materiales de Construcción": ["Sacos de cemento", "Bloques", "Tuberías", "Tubos", "Cables"],
-    "Varios": ["Tanques de Agua"]
-  };
 
-  const renderTipoAyuda = (categoria) => {
-    const opciones = opcionesPorCategoria[categoria] || [];
-
-    tipoAyudaSelect.innerHTML = "";
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "Seleccione";
-    tipoAyudaSelect.appendChild(defaultOption);
-
-    opciones.forEach(opcion => {
-      const optionElement = document.createElement("option");
-      optionElement.value = opcion;
-      optionElement.textContent = opcion;
-      if (opcion === tipoAyudaPrecargado) {
-        optionElement.selected = true;
-      }
-      tipoAyudaSelect.appendChild(optionElement);
-    });
-  };
-
-  categoriaSelect.addEventListener("change", function () {
+  function toggleCampos() {
     const categoria = categoriaSelect.value;
 
-    if (categoria === "") {
-      tipoAyudaContainer.style.display = "none";
-      tipoAyudaSelect.innerHTML = "";
-      return;
-    }
-
-    tipoAyudaContainer.style.display = "block";
-    renderTipoAyuda(categoria);
-  });
-
-  tipoAyudaSelect.addEventListener("change", function () {
-    if (tipoAyudaSelect.value === "Tuberías") {
-      alert("Especificar en descripción si son tuberías blancas o negras");
-    }
-  });
-
-  // ✅ Precarga al cargar el DOM
-  if (categoriaSelect.value && opcionesPorCategoria[categoriaSelect.value]) {
-    tipoAyudaContainer.style.display = "block";
-    renderTipoAyuda(categoriaSelect.value);
-  } else {
+    // Reset
     tipoAyudaContainer.style.display = "none";
-    tipoAyudaSelect.innerHTML = "";
+    tipoAyudaSelect.removeAttribute("required");
+    tipoAyudaSelect.value = "";
+    campoExtra.style.display = "none";
+    campoExtra.innerHTML = "";
+
+    if (categoria === "Ayudas Técnicas") {
+      // Mostrar select estandarizado
+      tipoAyudaContainer.style.display = "block";
+      tipoAyudaSelect.setAttribute("required", "required");
+
+      // Precargar en el select si coincide
+      if (precarga) {
+        [...tipoAyudaSelect.options].forEach(opt => {
+          if (opt.value === precarga) opt.selected = true;
+        });
+      }
+
+    } else if (categoria === "Medicamentos" || categoria === "Enseres" || categoria === "Económica") {
+      let label = "";
+      let placeholder = "";
+      let value = "";
+
+      switch (categoria) {
+        case "Medicamentos":
+          label = "Especifique el medicamento:";
+          placeholder = "Nombre del medicamento";
+          // Solo usar precarga si la categoría guardada era Medicamentos
+          value = (categoria === precargaDatos) ? precarga : "";
+          break;
+        case "Enseres":
+          label = "Especifique el enser:";
+          placeholder = "Nombre del enser";
+          value = (categoria === precargaDatos) ? precarga : "";
+          break;
+        case "Económica":
+          label = "Especifique el apoyo económico:";
+          placeholder = "Detalle del apoyo económico";
+          value = (categoria === precargaDatos) ? precarga : "";
+          break;
+      }
+
+      campoExtra.innerHTML = `
+        <label for="detalle_categoria" class="form-label">${label}</label>
+        <input type="text" id="detalle_categoria" name="tipo_ayuda"
+               class="form-control" placeholder="${placeholder}" required value="${value}">
+      `;
+      campoExtra.style.display = "block";
+    }
   }
+
+  // Ejecutar al cargar
+  toggleCampos();
+
+  // Ejecutar al cambiar
+  categoriaSelect.addEventListener("change", toggleCampos);
 });

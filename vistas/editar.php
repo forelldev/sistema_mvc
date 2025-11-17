@@ -53,7 +53,7 @@
           <label for="categoria" class="form-label">Categoría:</label>
           <select class="form-select" name="categoria" id="categoria" required>
             <option value="">Seleccione</option>
-            <?php foreach (['Ayudas Técnicas','Medicamentos','Laboratorio','Enseres','Economica','Otros'] as $cat): ?>
+            <?php foreach (['Ayudas Técnicas','Medicamentos','Laboratorio','Enseres','Económica'] as $cat): ?>
               <option value="<?= $cat ?>" <?= ($datos['categoria'] ?? '') == $cat ? 'selected' : '' ?>><?= $cat ?></option>
             <?php endforeach; ?>
           </select>
@@ -68,6 +68,8 @@
             <?php endforeach; ?>
           </select>
         </div>
+
+        <div class="col-md-6" id="campo-extra" style="display:none;"></div>
 
         <div class="col-12">
           <label for="observaciones" class="form-label">Observaciones:</label>
@@ -87,6 +89,8 @@
 </body>
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
+    const precarga = "<?php echo $datos['tipo_ayuda']; ?>";
+    const precargaDatos = "<?php echo $datos['categoria']; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php

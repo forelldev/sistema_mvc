@@ -47,28 +47,46 @@
         </div>
 
         <!-- Categoría -->
-        <div class="col-md-6">
-          <label for="categoria" class="form-label">Categoría:</label>
-          <select class="form-select" name="categoria" id="categoria" required>
-            <option value="">Seleccione</option>
+        <div class="col-md-6 mb-3">
+          <label for="categoria" class="form-label">Categoría</label>
+          <select name="categoria" id="categoria" class="form-select" required>
             <?php
-              $categoria_actual = $datos['categoria'] ?? '';
-              $categorias = ['Salud', 'Ayuda Económica', 'Materiales de Construcción', 'Varios'];
-              foreach ($categorias as $cat) {
-                $selected = ($cat === $categoria_actual) ? 'selected' : '';
-                echo "<option value=\"$cat\" $selected>$cat</option>";
-              }
+            // Precarga desde $_POST o desde $datos
+            $categoria_actual = $_POST['categoria'] ?? ($datos['categoria'] ?? null);
+            $categorias = ['Ayudas Técnicas', 'Medicamentos', 'Enseres', 'Económica'];
+            echo '<option value="">Seleccione</option>';
+            foreach ($categorias as $cat) {
+              $selected = ($cat === $categoria_actual) ? 'selected' : '';
+              echo "<option value=\"$cat\" $selected>$cat</option>";
+            }
             ?>
           </select>
         </div>
 
-        <!-- Tipo de ayuda -->
-        <div class="col-md-6" id="tipoAyudaContainer">
-          <label for="tipo_ayuda" class="form-label">Tipo de ayuda:</label>
-          <select class="form-select" name="tipo_ayuda" id="tipo_ayuda" required></select>
-          <input type="hidden" id="tipo_ayuda_precargado" value="<?= htmlspecialchars($datos['tipo_ayuda'] ?? '') ?>">
+        <!-- Ayudas Técnicas (estandarizado con select fijo) -->
+        <div class="mb-3" id="tipoAyudaContainer" style="display:none;">
+          <label for="tipo_ayuda" class="form-label">Tipo de ayuda</label>
+          <select name="tipo_ayuda" id="tipo_ayuda" class="form-select">
+            <option value="">Seleccione</option>
+            <?php
+            $tipo_ayuda_actual = $_POST['tipo_ayuda'] ?? ($datos['tipo_ayuda'] ?? '');
+            $opciones = [
+              "Silla de Ruedas", "Silla de Ruedas(Niño)", "Andadera", "Andadera (Niño)",
+              "Bastón 1 Punta", "Bastón 3 Puntas", "Bastón 4 Puntas",
+              "Muletas", "Muletas (Niño)", "Collarín", "Colchón Anti-escaras"
+            ];
+            foreach ($opciones as $op) {
+              $selected = ($op === $tipo_ayuda_actual) ? 'selected' : '';
+              echo "<option value=\"$op\" $selected>$op</option>";
+            }
+            ?>
+          </select>
         </div>
-      </div>
+
+        <!-- Contenedor dinámico para input text -->
+        <div class="mb-3" id="campoExtra" style="display:none;">
+        </div>
+
 
       <!-- Botón de envío -->
       <div class="mt-4 text-center">
@@ -82,6 +100,8 @@
 
 <script>
     const BASE_PATH = "<?php echo BASE_PATH; ?>";
+    const precarga = "<?php echo $datos['tipo_ayuda']; ?>";
+    const precargaDatos = "<?php echo $datos['categoria']; ?>";
 </script>
 <script src="<?= BASE_URL ?>/public/js/msj.js"></script>
 <?php

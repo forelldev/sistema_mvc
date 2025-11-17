@@ -51,7 +51,7 @@
               $seleccion = 'Eco-Doppler';
             } elseif (strpos($examen, 'sono') !== false || strpos($examen, 'ecosonograma') !== false) {
               $seleccion = 'Ecosonograma';
-            } else {
+            } elseif (!empty($examen)) {
               $seleccion = 'Exámenes de Laboratorio';
             }
           ?>
@@ -63,8 +63,30 @@
           </select>
         </div>
 
-        <!-- Campo dinámico -->
+        <!-- Campo dinámico de exámenes -->
         <div class="col-12" id="campo_examen" style="display: none;"></div>
+
+        <!-- Medicamentos (usa el mismo campo examen[]) -->
+        <div id="medicamentos_container" class="mb-3" style="display:none;">
+          <label for="medicamento" class="form-label">Especifique el medicamento:</label>
+          <input type="text" id="medicamento" class="form-control"
+                placeholder="Medicamento"
+                value="<?= htmlspecialchars($datos['examenes'] ?? ($_POST['examen'][0] ?? '')) ?>">
+        </div>
+
+        <!-- Render dinámico de medicamentos -->
+        <div id="campo_medicamento" class="mb-3" style="display:none;">
+          <?php if (!empty($datos['examenes'])): ?>
+            <div class="mb-3">
+              <label class="form-label">Medicamento especificado:</label>
+              <div class="alert alert-info py-2 px-3 rounded-3 mb-0">
+                <?= htmlspecialchars($datos['examenes']) ?>
+                <input type="hidden" name="examen[]" value="<?= htmlspecialchars($datos['examenes']) ?>">
+              </div>
+            </div>
+          <?php endif; ?>
+        </div>
+
 
         <!-- Número de documento -->
         <div class="col-md-6">

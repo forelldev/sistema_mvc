@@ -106,7 +106,8 @@
             <select name="categoria" id="categoria" class="form-select" required>
               <?php
               $categoria_actual = $_POST['categoria'] ?? null;
-              $categorias = ['Salud', 'Ayuda Económica', 'Materiales de Construcción', 'Varios'];
+              // Solo las categorías que realmente usas
+              $categorias = ['Ayudas Técnicas', 'Medicamentos', 'Enseres', 'Económica'];
               echo '<option value="">Seleccione</option>';
               foreach ($categorias as $cat) {
                 $selected = ($cat === $categoria_actual) ? 'selected' : '';
@@ -115,13 +116,30 @@
               ?>
             </select>
           </div>
+          </div>
         </div>
 
-        <div class="mb-3" id="tipoAyudaContainer">
-          <label for="tipo_ayuda" class="form-label">Tipo de ayuda</label>
-          <select name="tipo_ayuda" id="tipo_ayuda" class="form-select" required></select>
-          <input type="hidden" id="tipo_ayuda_precargado" value="<?= htmlspecialchars($_POST['tipo_ayuda'] ?? '') ?>">
-        </div>
+        <!-- Ayudas Técnicas (estandarizado con select fijo) -->
+          <div class="mb-3" id="tipoAyudaContainer" style="display:none;">
+            <label for="tipo_ayuda" class="form-label">Tipo de ayuda</label>
+            <select name="tipo_ayuda" id="tipo_ayuda" class="form-select">
+              <option value="">Seleccione</option>
+              <option value="Silla de Ruedas">Silla de Ruedas</option>
+              <option value="Silla de Ruedas(Niño)">Silla de Ruedas (Niño)</option>
+              <option value="Andadera">Andadera</option>
+              <option value="Andadera (Niño)">Andadera (Niño)</option>
+              <option value="Bastón 1 Punta">Bastón 1 Punta</option>
+              <option value="Bastón 3 Puntas">Bastón 3 Puntas</option>
+              <option value="Bastón 4 Puntas">Bastón 4 Puntas</option>
+              <option value="Muletas">Muletas</option>
+              <option value="Muletas (Niño)">Muletas (Niño)</option>
+              <option value="Collarín">Collarín</option>
+              <option value="Colchón Anti-escaras">Colchón Anti-escaras</option>
+            </select>
+            <input type="hidden" id="tipo_ayuda_precargado" value="<?= htmlspecialchars($_POST['tipo_ayuda'] ?? '') ?>">
+          </div>
+        <!-- Contenedor dinámico para input text -->
+        <div class="mb-3" id="campoExtra" style="display:none;"></div>
 
         <div class="mb-3">
           <label for="descripcion" class="form-label">Descripción</label>

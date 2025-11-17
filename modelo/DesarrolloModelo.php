@@ -249,14 +249,26 @@ class Desarrollo {
 
         // Insertar exámenes si aplica
         if ($data['categoria'] === 'Laboratorio' && !empty($data['examen'])) {
+            // Inserta exámenes de laboratorio
             $examenes = is_array($data['examen']) ? $data['examen'] : [$data['examen']];
             $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (:id_des, :examen)");
             foreach ($examenes as $examen) {
                 $stmt->execute([':id_des' => $id_des, ':examen' => $examen]);
             }
+
         } elseif (in_array($data['categoria'], ['Ecosonograma', 'Eco-Doppler'])) {
+            // Inserta ecosonograma o eco-doppler
             $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (:id_des, :examen)");
             $stmt->execute([':id_des' => $id_des, ':examen' => $data['categoria']]);
+
+        } elseif ($data['categoria'] === 'Medicamentos' && !empty($data['examen'])) {
+            // Inserta medicamentos (usa examen[] para capturar el nombre del medicamento)
+            $medicamentos = is_array($data['examen']) ? $data['examen'] : [$data['examen']];
+            $stmt = $db->prepare("INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (:id_des, :examen)");
+            foreach ($medicamentos as $medicamento) {
+                $medicamento = ucfirst($medicamento);
+                $stmt->execute([':id_des' => $id_des, ':examen' => $medicamento]);
+            }
         }
 
         // Insertar fechas

@@ -394,6 +394,8 @@
       </select>
     </div>
 
+    <div class="col-md-6" id="campo-extra" style="display:none;"></div>
+
     
     <div class="col-12">
       <label for="observaciones_ayuda" class="form-label">Observaciones</label>

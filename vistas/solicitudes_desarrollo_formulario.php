@@ -111,6 +111,18 @@
 
         <div id="campo_examen" class="mb-3" style="display: none;"></div>
 
+
+        <div id="medicamentos_container" class="mb-3" style="display:none;">
+          <label for="medicamento" class="form-label">Especificar el medicamento:</label>
+          <input type="text" id="medicamento" class="form-control"
+                placeholder="Medicamento"
+                value="<?= htmlspecialchars($_POST['medicamento'] ?? '') ?>">
+        </div>
+
+        <!-- Render dinámico de medicamentos -->
+        <div id="campo_medicamento" class="mb-3" style="display:none;"></div>
+
+
         <div class="mb-3">
           <label for="id_manual" class="form-label">Número de documento</label>
           <input type="text" name="id_manual" id="id_manual" class="form-control" placeholder="Ingrese el número de documento"

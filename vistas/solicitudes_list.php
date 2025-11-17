@@ -138,9 +138,7 @@
         <div class="d-flex flex-wrap gap-2 justify-content-center">
           <a href="<?= BASE_URL ?>/filtrar?filtro=recientes" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Más recientes</a>
           <a href="<?= BASE_URL ?>/filtrar?filtro=antiguos" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Más antiguos</a>
-          <a href="<?= BASE_URL ?>/filtrar?filtro=otros" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Otros</a>
           <a href="<?= BASE_URL ?>/filtrar?filtro=economica" class="btn btn-filtro btn-sm"><i class="fa fa-dollar-sign"></i> Económicas</a>
-          <a href="<?= BASE_URL ?>/filtrar?filtro=urgentes" class="btn btn-filtro btn-sm"><i class="fa fa-exclamation-circle"></i> Más urgentes</a>
           <a href="<?= BASE_URL ?>/filtrar?filtro=medicinas" class="btn btn-filtro btn-sm"><i class="fa fa-medkit"></i> Medicinas</a>
           <a href="<?= BASE_URL ?>/filtrar?filtro=ayuda_tecnica" class="btn btn-filtro btn-sm"><i class="fa fa-wheelchair"></i> Ayudas técnicas</a>
           <a href="<?= BASE_URL ?>/filtrar?filtro=laboratorio" class="btn btn-filtro btn-sm"><i class="fa fa-flask"></i> Laboratorio</a>

@@ -123,7 +123,6 @@ $acciones = [
           <div class="d-flex flex-wrap gap-2 justify-content-center">
             <a href="<?= BASE_URL ?>/filtrar_desarrollo?filtro=recientes" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Más recientes</a>
             <a href="<?= BASE_URL ?>/filtrar_desarrollo?filtro=antiguos" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Más antiguos</a>
-            <a href="<?= BASE_URL ?>/filtrar_desarrollo?filtro=urgentes" class="btn btn-filtro btn-sm"><i class="fa fa-exclamation-circle"></i> Más urgentes</a>
             <a href="<?= BASE_URL ?>/filtrar_desarrollo?filtro=medicinas" class="btn btn-filtro btn-sm"><i class="fa fa-medkit"></i> Medicinas</a>
             <a href="<?= BASE_URL ?>/filtrar_desarrollo?filtro=ayuda_tecnica" class="btn btn-filtro btn-sm"><i class="fa fa-wheelchair"></i> Ayudas técnicas</a>
             <a href="<?= BASE_URL ?>/filtrar_desarrollo?filtro=laboratorio" class="btn btn-filtro btn-sm"><i class="fa fa-flask"></i> Laboratorio</a>
@@ -166,6 +165,9 @@ $acciones = [
                 <p><strong>Categoría:</strong> <?= htmlspecialchars($fila['categoria'] ?? '') ?></p>
                 <?php if ($fila['categoria'] === 'Laboratorio'): ?>
                     <p><strong>Exámenes:</strong> <?= htmlspecialchars($fila['examenes'] ?? '') ?></p>
+                <?php endif; ?>
+                <?php if ($fila['categoria'] === 'Medicamentos'): ?>
+                    <p><strong>Medicamento:</strong> <?= htmlspecialchars($fila['examenes'] ?? '') ?></p>
                 <?php endif; ?>
                 <p><strong>ID Manual:</strong> <?= htmlspecialchars($fila['id_manual'] ?? '') ?></p>
                 <p><strong>CI:</strong> <?= htmlspecialchars($fila['ci'] ?? '') ?></p>
