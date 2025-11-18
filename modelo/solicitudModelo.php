@@ -491,7 +491,7 @@ private static function insertarSolicitante($db, $id, $data) {
 
         switch ($filtro) {
             case "economica":
-                $categorias = ["Economica"];
+                $categorias = ["Económica"];
                 break;
             case "otros":
                 $categorias = ["Otros"];
@@ -743,7 +743,7 @@ private static function insertarSolicitante($db, $id, $data) {
         public static function traer_comunidades() {
             try {
                 $conexion = DB::conectar();
-                $consulta = "SELECT comunidad FROM comunidades";
+                $consulta = "SELECT comunidad FROM comunidades ORDER BY comunidad ASC";
                 $stmt = $conexion->prepare($consulta);
                 $stmt->execute();
                 $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);

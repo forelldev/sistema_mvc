@@ -12,9 +12,9 @@
   <header class="sol-header d-flex justify-content-between align-items-center px-4 py-3">
     <div class="sol-header-title h4 m-0">Lista de beneficiarios</div>
     <div class="sol-header-actions d-flex gap-2">
-      <a href="<?= BASE_URL ?>/registro_beneficiario" class="btn sol-btn-principal">
+      <!-- <a href="/registro_beneficiario" class="btn sol-btn-principal">
         <i class="fa fa-plus me-1"></i> Registrar Beneficiario
-      </a>
+      </a> -->
       <a href="<?= BASE_URL ?>/main" class="btn btn-volver btn-sm btn-outline-light">
         <i class="fa fa-home"></i> Inicio
       </a>

@@ -553,23 +553,29 @@ private static function insertarSolicitante($db, $id, $data) {
 
         switch ($filtro) {
             case "economica":
-                $categoria = "Economica";
+                $categoria = "Económica";
                 break;
-            case "salud":
-                $categoria = "Salud";
+            case "otros":
+                $categoria = "Otros";
                 break;
-            case "materiales_construccion":
-                $categoria = "Materiales de Construcción";
+            case "medicinas":
+                $categoria = "Medicamentos";
                 break;
-            case "varios":
-                $categoria = "Varios";
+            case "laboratorio":
+                $categoria = "Laboratorio";
+                break;
+            case "ayuda_tecnica":
+                $categoria = "Ayudas Técnicas";
+                break;
+            case "enseres":
+                $categoria = "Enseres";
                 break;
             case "antiguos":
                 $order = "ASC";
                 break;
             case "recientes":
             default:
-                // No se modifica categoría ni orden (DESC por defecto)
+                // No se modifica categoría ni orden
                 break;
         }
 

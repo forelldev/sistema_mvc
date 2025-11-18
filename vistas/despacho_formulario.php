@@ -152,7 +152,7 @@
       <!-- Botón de envío -->
       <div class="text-center mt-4">
         <button type="submit" class="btn btn-outline-light px-4 rounded-pill">
-          <i class="fa fa-paper-plane me-2"></i> Enviar
+          <i class="fa fa-paper-plane me-2"></i> Registrar Solicitud
         </button>
       </div>
     </form>

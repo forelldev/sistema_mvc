@@ -220,19 +220,24 @@ class reportesModelo{
         }
 
 
-        public static function eliminarUsuario($ci) {
-            try {
-                $conexion = DB::conectar();
-                $consulta = "DELETE FROM usuarios WHERE ci = :ci";
-                $stmt = $conexion->prepare($consulta);
-                $stmt->bindParam(':ci', $ci, PDO::PARAM_INT);
-                $stmt->execute();
+       public static function eliminarUsuario($ci) {
+        try {
+            $conexion = DB::conectar();
+            $consulta = "DELETE FROM usuarios WHERE ci = :ci AND especial = 0";
+            $stmt = $conexion->prepare($consulta);
+            $stmt->bindParam(':ci', $ci, PDO::PARAM_INT); // Usa PARAM_STR si ci no es numérico
+            $stmt->execute();
 
+            if ($stmt->rowCount() > 0) {
                 return ['exito' => true];
-            } catch (PDOException $e) {
-                return ['exito' => false, 'mensaje' => $e->getMessage()];
+            } else {
+                return ['exito' => false, 'mensaje' => 'No se puede eliminar este usuario!'];
             }
+        } catch (PDOException $e) {
+            return ['exito' => false, 'mensaje' => $e->getMessage()];
         }
+    }
+
 
         public static function fecha_filtro($datos) {
             $conexion = DB::conectar();

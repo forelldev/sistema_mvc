@@ -107,7 +107,7 @@ $acciones = [
             <select name="estado" class="form-select form-select-sm bg-dark text-white" required>
               <option value="">Seleccione</option>
               <option value="En Revisión 1/2" <?= ($estado ?? '') == 'En Revisión 1/2' ? 'selected' : '' ?>>En Revisión 1/2</option>
-              <option value="En Proceso 2/2 (Sin entregar)" <?= ($estado ?? '') == 'En Proceso 2/2 (Sin entregar)' ? 'selected' : '' ?>>En Proceso 2/2 (Sin entregar)</option>
+              <option value="Aprobado 2/2" <?= ($estado ?? '') == 'Aprobado 2/2' ? 'selected' : '' ?>>Aprobado 2/2</option>
               <option value="Solicitud Finalizada (Ayuda Entregada)" <?= ($estado ?? '') == 'Solicitud Finalizada (Ayuda Entregada)' ? 'selected' : '' ?>>Solicitud Finalizada (Ayuda Entregada)</option>
             </select>
           </div>
@@ -128,10 +128,12 @@ $acciones = [
         <div class="d-flex flex-wrap gap-2 justify-content-center">
           <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=recientes" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Más recientes</a>
           <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=antiguos" class="btn btn-filtro btn-sm"><i class="fa fa-clock"></i> Más antiguos</a>
-          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=salud" class="btn btn-filtro btn-sm"><i class="fa fa-exclamation-circle"></i> Salud</a>
-          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=ayuda_economica" class="btn btn-filtro btn-sm"><i class="fa fa-medkit"></i> Ayuda Económica</a>
-          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=materiales_construccion" class="btn btn-filtro btn-sm"><i class="fa fa-flask"></i> Materiales de Construcción</a>
-          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=varios" class="btn btn-filtro btn-sm"><i class="fa fa-couch"></i> Varios</a>
+          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=economica" class="btn btn-filtro btn-sm"><i class="fa fa-dollar-sign"></i> Económicas</a>
+          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=medicinas" class="btn btn-filtro btn-sm"><i class="fa fa-medkit"></i> Medicinas</a>
+          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=ayuda_tecnica" class="btn btn-filtro btn-sm"><i class="fa fa-wheelchair"></i> Ayudas técnicas</a>
+          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=laboratorio" class="btn btn-filtro btn-sm"><i class="fa fa-flask"></i> Laboratorio</a>
+          <a href="<?= BASE_URL ?>/filtrar_despacho?filtro=enseres" class="btn btn-filtro btn-sm"><i class="fa fa-couch"></i> Enseres</a>
+        </div>
         </div>
       </div>
     </div>
@@ -176,7 +178,7 @@ $acciones = [
                 <a href="<?= BASE_URL . '/inhabilitarDespacho?id_despacho=' . $fila['id_despacho'] ?>" class="btn btn-filtro btn-sm">Invalidar Solicitud</a>
                 <?php endif; ?>
                 <a href="<?= BASE_URL . '/procesarDespacho?id_despacho=' . $fila['id_despacho'] . '&estado=' . $fila['estado'] ?>" class="btn btn-filtro btn-sm"><?= $accion ?></a>
-              <?php elseif ($estado === 'En Proceso 2/2 (Sin entregar)' && $_SESSION['id_rol'] == 3): ?>
+              <?php elseif ($estado === 'Aprobado 2/2' && $_SESSION['id_rol'] == 3): ?>
                 <a href="<?= BASE_URL . '/procesarDespacho?id_despacho=' . $fila['id_despacho'] . '&estado=' . $fila['estado'] ?>" class="btn btn-filtro btn-sm"><?= $accion ?></a>
               <?php endif; ?>
             </div>

@@ -410,7 +410,7 @@
       <!-- Botón de envío -->
       <div class="text-end mt-4">
         <button type="submit" class="btn btn-outline-light px-4">
-          <i class="fa fa-paper-plane me-2"></i> Enviar Solicitud
+          <i class="fa fa-paper-plane me-2"></i> Registrar Solicitud
         </button>
       </div>
     </form>
