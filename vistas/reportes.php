@@ -85,23 +85,43 @@
 
     <nav class="d-flex justify-content-center">
       <ul class="pagination pagination-dark">
-        <?php if ($paginaActual > 1): ?>
-          <li class="page-item">
-            <a class="page-link bg-dark text-white border-secondary" href="?pagina=<?= $paginaActual - 1 ?>">&laquo;</a>
-          </li>
-        <?php endif; ?>
+       <nav class="d-flex justify-content-center">
+  <ul class="pagination pagination-dark">
 
-        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
-          <li class="page-item <?= $i == $paginaActual ? 'active' : '' ?>">
-            <a class="page-link <?= $i == $paginaActual ? 'bg-primary border-primary text-white' : 'bg-dark text-white border-secondary' ?>" href="?pagina=<?= $i ?>"><?= $i ?></a>
-          </li>
-        <?php endfor; ?>
+    <!-- Botón anterior -->
+    <?php if ($paginaActual > 1): ?>
+      <li class="page-item">
+        <a class="page-link bg-dark text-white border-secondary"
+           href="?pagina=<?= $paginaActual - 1 ?><?= isset($rename) ? "&fecha_inicio=" . urlencode($fecha_inicio) . "&fecha_final=" . urlencode($fecha_final) : "" ?>">
+           &laquo;
+        </a>
+      </li>
+    <?php endif; ?>
 
-        <?php if ($paginaActual < $totalPaginas): ?>
-          <li class="page-item">
-            <a class="page-link bg-dark text-white border-secondary" href="?pagina=<?= $paginaActual + 1 ?>">&raquo;</a>
-          </li>
-        <?php endif; ?>
+    <!-- Números de página -->
+    <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+      <li class="page-item <?= $i == $paginaActual ? 'active' : '' ?>">
+        <a class="page-link <?= $i == $paginaActual ? 'bg-primary border-primary text-white' : 'bg-dark text-white border-secondary' ?>"
+           href="?pagina=<?= $i ?><?= isset($rename) ? "&fecha_inicio=" . urlencode($fecha_inicio) . "&fecha_final=" . urlencode($fecha_final) : "" ?>">
+           <?= $i ?>
+        </a>
+      </li>
+    <?php endfor; ?>
+
+    <!-- Botón siguiente -->
+    <?php if ($paginaActual < $totalPaginas): ?>
+      <li class="page-item">
+        <a class="page-link bg-dark text-white border-secondary"
+           href="?pagina=<?= $paginaActual + 1 ?><?= isset($rename) ? "&fecha_inicio=" . urlencode($fecha_inicio) . "&fecha_final=" . urlencode($fecha_final) : "" ?>">
+           &raquo;
+        </a>
+      </li>
+    <?php endif; ?>
+
+  </ul>
+</nav>
+
+
       </ul>
     </nav>
   </main>

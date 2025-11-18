@@ -102,4 +102,6 @@ Router::get('/ajax_urgencia','SolicitudControl@notificaciones_urgentes');
 Router::get('/ver_solicitud_accion','SolicitudControl@ver_solicitud_accion');
 Router::get('/obtenerNotificacionesAjax','LoginControl@obtenerNotificacionesAjax');
 Router::get('/respaldar','LoginControl@respaldar');
+Router::get('/filtro_acciones','ReportesControl@filtrar_acciones');
+Router::get('/fecha_reportes','ReportesControl@filtrar_fecha');
 ?>

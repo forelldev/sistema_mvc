@@ -63,6 +63,7 @@ class reportesModelo{
                 $id_doc = $fila['id_doc'];
                 $accion = strtolower($fila['accion']);
 
+                // Detectar tipo de acción
                 preg_match('/\((.*?)\)/', $accion, $match);
                 $tipo = strtolower(trim($match[1] ?? 'general'));
 
@@ -70,41 +71,37 @@ class reportesModelo{
                     case 'despacho':
                         $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
                         $fila['origen'] = 'despacho';
-                        $fila['id_despacho'] = $id_doc; // ✅ agregar esto
+                        $fila['id_despacho'] = $id_doc;
                         break;
                     case 'desarrollo':
                         $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
                         $fila['origen'] = 'desarrollo';
-                        $fila['id_des'] = $id_doc; // ✅ agregar esto
+                        $fila['id_des'] = $id_doc;
                         break;
                     default:
                         $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
                         $fila['origen'] = 'general';
-                        $fila['id_doc'] = $id_doc; // ✅ asegurar que esté presente
+                        $fila['id_doc'] = $id_doc;
                         break;
                 }
 
-
-            
-
+                // Buscar id_manual
                 $stmtManual = $conexion->prepare($query);
                 $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
                 $stmtManual->execute();
                 $id_manual = $stmtManual->fetchColumn();
 
-                if ($id_manual) {
-                    $fila['id_manual'] = $id_manual;
-                    $datosFiltrados[] = $fila;
-                } else {
-                    // No elimines el registro aquí, solo ignóralo
-                    continue;
-                }
+                // ✅ No descartar registros: asignar valor por defecto si no existe
+                $fila['id_manual'] = $id_manual ?: 'N/A';
+
+                // Agregar siempre la fila
+                $datosFiltrados[] = $fila;
             }
 
             return [
                 'exito' => true,
                 'datos' => $datosFiltrados,
-                'total' => $totalRegistros, // ← usar total real para paginación
+                'total' => $totalRegistros, // total real para paginación
                 'pagina' => $pagina,
                 'porPagina' => $porPagina
             ];
@@ -112,6 +109,7 @@ class reportesModelo{
             return ['exito' => false, 'mensaje' => $e->getMessage()];
         }
     }
+
 
 
 

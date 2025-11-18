@@ -128,7 +128,7 @@
         </a>
         <?php if($_SESSION['id_rol'] == 4){?>
           <a class="dropdown-item" href="<?= BASE_URL ?>/respaldar">
-              <i class="fas fa-database me-2"></i> Respaldar datos
+              <i class="fas fa-database me-2"></i> Respaldar Datos
           </a>
         <?php } ?>
         <a class="dropdown-item" href="<?= BASE_URL ?>/logout">

@@ -123,31 +123,54 @@ class ReportesControl{
     }
 
     public static function filtrar_fecha() {
-        if (isset($_POST['fecha_inicio']) && isset($_POST['fecha_final'])) {
-            $_POST['pagina'] = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
-            $_POST['porPagina'] = 10;
-            $resultado = reportesModelo::fecha_filtro($_POST);
-            if ($resultado['exito']) {
-                $datos = $resultado['datos'];
-                $fecha_inicio = $_POST['fecha_inicio'];
-                $fecha_final = $_POST['fecha_final'];
-                $total = $resultado['total'];
-                $porPagina = $resultado['porPagina'];
-                $paginaActual = $resultado['pagina'];
-                $totalPaginas = ceil($total / $porPagina);
-                
-            } else {
-                $msj = "Error al filtrar solicitudes por fecha: " . $resultado['error'];
-            }
-        } else {
-            $msj = "No está llegando el POST correctamente.";
-        }
-        require_once 'vistas/reportes.php';
+    // Paginación
+    $pagina   = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+    $porPagina = 10;
+
+    // Tomar fechas desde GET o POST
+    $fecha_inicio = $_GET['fecha_inicio'] ?? ($_POST['fecha_inicio'] ?? '');
+    $fecha_final  = $_GET['fecha_final']  ?? ($_POST['fecha_final']  ?? '');
+    $rename = true;
+    // Normalizar fechas al formato de base de datos (YYYY-MM-DD)
+    if ($fecha_inicio) {
+        $fecha_inicio = date('Y-m-d', strtotime($fecha_inicio));
     }
+    if ($fecha_final) {
+        $fecha_final = date('Y-m-d', strtotime($fecha_final));
+    }
+
+    if ($fecha_inicio && $fecha_final) {
+        // Construir parámetros para el modelo
+        $params = [
+            'fecha_inicio' => $fecha_inicio,
+            'fecha_final'  => $fecha_final,
+            'pagina'       => $pagina,
+            'porPagina'    => $porPagina
+        ];
+
+        // Ejecutar modelo con filtros
+        $resultado = reportesModelo::fecha_filtro($params);
+
+        if ($resultado['exito']) {
+            $datos        = $resultado['datos'];
+            $total        = $resultado['total'];
+            $porPagina    = $resultado['porPagina'];
+            $paginaActual = $resultado['pagina'];
+            $totalPaginas = ceil($total / $porPagina);
+        } else {
+            $msj = "Error al filtrar solicitudes por fecha: " . $resultado['error'];
+        }
+    } else {
+        $msj = "No está llegando correctamente la fecha de inicio y/o final.";
+    }
+
+    require_once 'vistas/reportes.php';
+}
+
 
         public static function filtrar_acciones() {
             // Paginación
-            $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+            $pagina   = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
             $porPagina = 10;
 
             // Inicializar variables para la vista
@@ -158,12 +181,13 @@ class ReportesControl{
             $msj = '';
             $fecha = '';
             $oficina = '';
+            $rename = true;
+            // Tomar filtros desde GET (o POST si decides mantener ambos)
+            $fecha   = $_GET['fecha']   ?? ($_POST['fecha']   ?? '');
+            $oficina = $_GET['oficina'] ?? ($_POST['oficina'] ?? '');
 
-            // Validar POST
-            if (isset($_POST['fecha']) && isset($_POST['oficina'])) {
-                $fecha = $_POST['fecha'];
-                $oficina = $_POST['oficina'];
-
+            if ($fecha && $oficina) {
+                $fecha = date('Y-m-d', strtotime($fecha));
                 // Ejecutar modelo con filtros
                 $resultado = reportesModelo::filtro_acciones($fecha, $oficina, $pagina, $porPagina);
 
@@ -183,6 +207,7 @@ class ReportesControl{
             // Cargar vista
             require_once 'vistas/reportes_acciones.php';
         }
+
 
 
 
