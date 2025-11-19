@@ -189,7 +189,7 @@ public static function buscarCi($ci) {
         $stmt = $db->prepare("INSERT INTO solicitud_categoria (id_doc, tipo_ayuda, categoria) VALUES (:id_doc, :tipo_ayuda, :categoria)");
         $stmt->execute([
             ':id_doc' => $id_doc,
-            ':tipo_ayuda' => $data['tipo_ayuda'],
+            ':tipo_ayuda' => ucfirst($data['tipo_ayuda']),
             ':categoria' => $data['categoria']
         ]);
 
@@ -199,7 +199,7 @@ public static function buscarCi($ci) {
             ':id_doc' => $id_doc,
             ':descripcion' => $data['descripcion'],
             ':promotor' => $nombrePromotor,
-            ':observaciones' => $data['observaciones']
+            ':observaciones' => ucfirst($data['observaciones'])
         ]);
 
         // ❌ ERROR ORIGINAL: faltaba coma entre :fecha_renovacion y :visto
@@ -222,7 +222,7 @@ public static function buscarCi($ci) {
             self::actualizarSolicitante($db, $id_solicitante, $data);
         } else {
             $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo'], $data['fecha']]);
+            $stmt->execute([ucfirst($data['nombre']), ucfirst($data['apellido']), $data['ci'], $data['correo'], $data['fecha']]);
             $id_solicitante = $db->lastInsertId();
             self::insertarSolicitante($db, $id_solicitante, $data);
         }
@@ -274,21 +274,21 @@ public static function buscarCi($ci) {
         UPDATE solicitantes
         SET nombre = ?, apellido = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['nombre'], $data['apellido'], $id]);
+    ")->execute([ucfirst($data['nombre']), ucfirst($data['apellido']), $id]);
 
     // Actualizar comunidad
     $db->prepare("
         UPDATE solicitantes_comunidad 
         SET comunidad = ?, direc_habita = ?, estruc_base = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['comunidad'], $data['direc_habita'], $data['estruc_base'], $id]);
+    ")->execute([$data['comunidad'], ucfirst($data['direc_habita']), $data['estruc_base'], $id]);
 
     // Actualizar conocimiento
     $db->prepare("
         UPDATE solicitantes_conocimiento 
         SET profesion = ?, nivel_instruc = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['profesion'], $data['nivel_instruc'], $id]);
+    ")->execute([ucfirst($data['profesion']), $data['nivel_instruc'], $id]);
 
     // Actualizar patria
     $db->prepare("
@@ -304,7 +304,7 @@ public static function buscarCi($ci) {
         WHERE id_solicitante = ?
     ")->execute([
         $data['fecha_nacimiento'],
-        $data['lugar_nacimiento'],
+        ucfirst($data['lugar_nacimiento']),
         $data['estado_civil'],
         $data['telefono'],
         $id
@@ -316,9 +316,9 @@ public static function buscarCi($ci) {
         SET propiedad = ?, propiedad_est = ?, observaciones_propiedad = ?
         WHERE id_solicitante = ?
     ")->execute([
-        $data['propiedad'],
+        ucfirst($data['propiedad']),
         $data['propiedad_est'],
-        $data['observaciones_propiedad'],
+        ucfirst($data['observaciones_propiedad']),
         $id
     ]);
 
@@ -328,10 +328,10 @@ public static function buscarCi($ci) {
         SET trabajo = ?, direccion_trabajo = ?, trabaja_public = ?, nombre_insti = ?
         WHERE id_solicitante = ?
     ")->execute([
-        $data['trabajo'],
-        $data['direccion_trabajo'],
+        ucfirst($data['trabajo']),
+        ucfirst($data['direccion_trabajo']),
         $data['trabaja_public'],
-        $data['nombre_insti'],
+        ucfirst($data['nombre_insti']),
         $id
     ]);
 
@@ -380,13 +380,13 @@ private static function insertarSolicitante($db, $id, $data) {
     $db->prepare("
         INSERT INTO solicitantes_comunidad (id_solicitante, comunidad, direc_habita, estruc_base)
         VALUES (?, ?, ?, ?)
-    ")->execute([$id, $data['comunidad'], $data['direc_habita'], $data['estruc_base']]);
+    ")->execute([$id, $data['comunidad'], ucfirst($data['direc_habita']), ucfirst($data['estruc_base'])]);
 
     // Insertar conocimiento
     $db->prepare("
         INSERT INTO solicitantes_conocimiento (id_solicitante, profesion, nivel_instruc)
         VALUES (?, ?, ?)
-    ")->execute([$id, $data['profesion'], $data['nivel_instruc']]);
+    ")->execute([$id, ucfirst($data['profesion']), $data['nivel_instruc']]);
 
     // Insertar patria
     $db->prepare("
@@ -412,9 +412,9 @@ private static function insertarSolicitante($db, $id, $data) {
         VALUES (?, ?, ?, ?)
     ")->execute([
         $id,
-        $data['propiedad'],
-        $data['propiedad_est'],
-        $data['observaciones_propiedad']
+        ucfirst($data['propiedad']),
+        ucfirst($data['propiedad_est']),
+        ucfirst($data['observaciones_propiedad'])
     ]);
 
     // Insertar trabajo
@@ -423,10 +423,10 @@ private static function insertarSolicitante($db, $id, $data) {
         VALUES (?, ?, ?, ?, ?)
     ")->execute([
         $id,
-        $data['trabajo'],
-        $data['direccion_trabajo'],
+        ucfirst($data['trabajo']),
+        ucfirst($data['direccion_trabajo']),
         $data['trabaja_public'],
-        $data['nombre_insti']
+        ucfirst($data['nombre_insti'])
     ]);
 
     // Insertar ingresos
@@ -853,6 +853,8 @@ private static function insertarSolicitante($db, $id, $data) {
                         ";
 
             $stmt = $conexion->prepare($consulta);
+            $filtro = trim($filtro); // elimina espacios al inicio y final
+            $filtro = preg_replace('/\s+/', ' ', $filtro); // reemplaza múltiples espacios por uno
             $busqueda = '%' . $filtro . '%';
             $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
             $stmt->execute();

@@ -139,7 +139,7 @@ class Despacho{
         ");
         $stmt->execute([
             ':id_despacho' => $id_despacho,
-            ':descripcion' => $data['descripcion'],
+            ':descripcion' => ucfirst($data['descripcion']),
             ':creador' => $nombrePromotor
         ]);
 
@@ -170,7 +170,7 @@ class Despacho{
         $stmt->execute([
             ':id_despacho' => $id_despacho,
             ':categoria' => $data['categoria'],
-            ':tipo_ayuda' => $data['tipo_ayuda']
+            ':tipo_ayuda' => ucfirst($data['tipo_ayuda'])
         ]);
 
         // Estado de correo
@@ -202,7 +202,7 @@ class Despacho{
             } else {
                 // Insertar nuevo solicitante
                 $stmt = $db->prepare("INSERT INTO solicitantes (nombre, apellido, ci, correo) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$data['nombre'], $data['apellido'], $data['ci'], $data['correo']]);
+                $stmt->execute([ucfirst($data['nombre']), ucfirst($data['apellido']), $data['ci'], $data['correo']]);
                 $id_solicitante = $db->lastInsertId();
 
                 self::insertarSolicitante($db, $id_solicitante, $data);
@@ -225,13 +225,13 @@ private static function actualizarSolicitante($db, $id, $data) {
         UPDATE solicitantes
         SET nombre = ?, apellido = ?, correo = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['nombre'], $data['apellido'],$data['correo'], $id]);
+    ")->execute([ucfirst($data['nombre']), ucfirst($data['apellido']),$data['correo'], $id]);
 
     $db->prepare("
         UPDATE solicitantes_comunidad 
         SET direc_habita = ?, comunidad = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['direc_habita'], $data['comunidad'], $id]);
+    ")->execute([ucfirst($data['direc_habita']), $data['comunidad'], $id]);
 
     $db->prepare("
         UPDATE solicitantes_info 
@@ -245,7 +245,7 @@ private static function insertarSolicitante($db, $id, $data) {
         $db->prepare("
             INSERT INTO solicitantes_comunidad (id_solicitante, direc_habita, comunidad)
             VALUES (?, ?, ?)
-        ")->execute([$id, $data['direc_habita'], $data['comunidad']]);
+        ")->execute([$id, ucfirst($data['direc_habita']), $data['comunidad']]);
 
         // Insertar info personal
         $db->prepare("
@@ -458,6 +458,8 @@ private static function insertarSolicitante($db, $id, $data) {
             ";
 
             $stmt = $conexion->prepare($consulta);
+            $filtro = trim($filtro); // elimina espacios al inicio y final
+            $filtro = preg_replace('/\s+/', ' ', $filtro); // reemplaza múltiples espacios por uno
             $busqueda = '%' . $filtro . '%';
             $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);
             $stmt->execute();

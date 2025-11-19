@@ -178,7 +178,7 @@
                 </div>
 
                 <div class="col-md-6">
-                <label for="direc_habita" class="form-label">Dirección de Habitación</label>
+                <label for="direc_habita" class="form-label">Dirección</label>
                 <input type="text" id="direc_habita" name="direc_habita"
                     class="form-control form-control-sm bg-dark text-white"
                     value="<?= $datos_beneficiario['comunidad']['direc_habita'] ?? '' ?>" required>

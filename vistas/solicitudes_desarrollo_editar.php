@@ -71,7 +71,7 @@
           <label for="medicamento" class="form-label">Especifique el medicamento:</label>
           <input type="text" id="medicamento" class="form-control"
                 placeholder="Medicamento"
-                value="<?= htmlspecialchars($datos['examenes'] ?? ($_POST['examen'][0] ?? '')) ?>">
+                value="<?= htmlspecialchars($datos['examenes'] ?? ($_POST['examenes'][0] ?? '')) ?>">
         </div>
 
         <!-- Render dinámico de medicamentos -->

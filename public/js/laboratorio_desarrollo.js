@@ -29,9 +29,10 @@ const renderSubcategoria = (valor) => {
         <label class="form-label">Seleccione uno o más exámenes:</label>
     `;
     opciones.forEach(opcion => {
+      const checked = examenSeleccionado.includes(opcion) ? 'checked' : '';
       html += `
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" name="examen[]" value="${opcion}" id="examen_${opcion}">
+          <input class="form-check-input" type="checkbox" name="examen[]" value="${opcion}" id="examen_${opcion}" ${checked}>
           <label class="form-check-label" for="examen_${opcion}">${opcion}</label>
         </div>
       `;
@@ -41,6 +42,7 @@ const renderSubcategoria = (valor) => {
     campoExamen.style.display = 'block';
   }
 };
+
 
 // Render de medicamentos
 const renderMedicamento = (valor) => {

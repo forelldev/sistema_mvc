@@ -303,7 +303,7 @@ class Desarrollo {
                 self::actualizarSolicitante($db, $id_solicitante, $data);
             } else {
                 $stmt = $db->prepare("INSERT INTO solicitantes (ci, nombre, apellido, correo, fecha_creacion) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$data['ci'], $data['nombre'], $data['apellido'], $data['correo'], $data['fecha']]);
+                $stmt->execute([$data['ci'], ucfirst($data['nombre']), ucfirst($data['apellido']), $data['correo'], $data['fecha']]);
                 $id_solicitante = $db->lastInsertId();
 
                 self::insertarSolicitante($db, $id_solicitante, $data);
@@ -325,13 +325,13 @@ class Desarrollo {
         UPDATE solicitantes
         SET nombre = ?, apellido = ?, correo = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['nombre'], $data['apellido'],$data['correo'], $id]);
+    ")->execute([ucfirst($data['nombre']), ucfirst($data['apellido']),$data['correo'], $id]);
 
     $db->prepare("
         UPDATE solicitantes_comunidad 
         SET direc_habita = ?, comunidad = ?
         WHERE id_solicitante = ?
-    ")->execute([$data['direc_habita'], $data['comunidad'], $id]);
+    ")->execute([ucfirst($data['direc_habita']), $data['comunidad'], $id]);
 
     $db->prepare("
         UPDATE solicitantes_info 
@@ -345,7 +345,7 @@ private static function insertarSolicitante($db, $id, $data) {
         $db->prepare("
             INSERT INTO solicitantes_comunidad (id_solicitante, direc_habita, comunidad)
             VALUES (?, ?, ?)
-        ")->execute([$id, $data['direc_habita'], $data['comunidad']]);
+        ")->execute([$id, ucfirst($data['direc_habita']), $data['comunidad']]);
 
         // Insertar info personal
         $db->prepare("
@@ -497,14 +497,20 @@ private static function insertarSolicitante($db, $id, $data) {
 
         try {
             $stmt = $conexion->prepare("
-                SELECT 
-                    sd.*, 
-                    sdf.fecha, sdf.fecha_modificacion, sdf.visto,
-                    sdc.correo_enviado,
+               SELECT 
+                    sd.id_des,
+                    sd.id_manual,
+                    sd.ci,
+                    sd.estado,
+                    sdi.descripcion,
+                    sdi.creador,
                     sdt.categoria,
-                    sdi.descripcion, sdi.creador,
                     GROUP_CONCAT(sl.examen SEPARATOR ', ') AS examenes,
-                    sdinv.razon AS razon_invalidez
+                    MAX(sdf.fecha) AS fecha,
+                    MAX(sdf.fecha_modificacion) AS fecha_modificacion,
+                    MAX(sdf.visto) AS visto,
+                    MAX(sdc.correo_enviado) AS correo_enviado,
+                    MAX(sdinv.razon) AS razon_invalidez
                 FROM solicitud_desarrollo sd
                 LEFT JOIN solicitud_desarrollo_fecha sdf ON sd.id_des = sdf.id_des
                 LEFT JOIN solicitud_desarrollo_correo sdc ON sd.id_des = sdc.id_des
@@ -513,7 +519,7 @@ private static function insertarSolicitante($db, $id, $data) {
                 LEFT JOIN solicitud_desarrollo_laboratorio sl ON sd.id_des = sl.id_des
                 LEFT JOIN solicitud_desarrollo_invalido sdinv ON sd.id_des = sdinv.id_des
                 WHERE sd.id_des = ?
-                GROUP BY sd.id_des
+                GROUP BY sd.id_des;
             ");
             $stmt->execute([$id_des]);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -594,7 +600,7 @@ private static function insertarSolicitante($db, $id, $data) {
             WHERE id_des = ?
         ");
         $stmt2->execute([
-            $data['descripcion'],
+            ucfirst($data['descripcion']),
             $data['id_des']
         ]);
 
@@ -624,16 +630,26 @@ private static function insertarSolicitante($db, $id, $data) {
                         INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (?, ?)
                     ");
                     foreach ($data['examen'] as $examen) {
-                        $stmtIns->execute([$data['id_des'], $examen]);
+                        $stmtIns->execute([$data['id_des'], ucfirst($examen)]);
                     }
                 }
             } elseif ($subcategoria === 'Eco-Doppler' || $subcategoria === 'Ecosonograma') {
                 $stmtIns = $conexion->prepare("
                     INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (?, ?)
                 ");
-                $stmtIns->execute([$data['id_des'], $subcategoria]);
-            }
+                $stmtIns->execute([$data['id_des'], ucfirst($subcategoria)]);
+            } 
         }
+        else {
+                $subcategoria = $data['subcategoria'] ?? '';
+                $stmtIns = $conexion->prepare("
+                    INSERT INTO solicitud_desarrollo_laboratorio (id_des, examen) VALUES (?, ?)
+                ");
+                    foreach ($data['examen'] as $examen) {
+                        $stmtIns->execute([$data['id_des'], ucfirst($examen)]);
+                    }
+            }
+
 
         // Actualizar fecha_modificacion
         $stmt4 = $conexion->prepare("
@@ -663,12 +679,18 @@ private static function insertarSolicitante($db, $id, $data) {
 
             $baseQuery = "
                 SELECT 
-                    sd.*, 
-                    sdf.fecha, sdf.fecha_modificacion, sdf.visto,
-                    sdc.correo_enviado,
+                    sd.id_des,
+                    sd.id_manual,
+                    sd.ci,
+                    sd.estado,
+                    sdi.descripcion,
+                    sdi.creador,
                     sdt.categoria,
-                    sdi.descripcion, sdi.creador,
-                    sdl.examen,
+                    GROUP_CONCAT(sdl.examen SEPARATOR ', ') AS examenes,
+                    MAX(sdf.fecha) AS fecha,
+                    MAX(sdf.fecha_modificacion) AS fecha_modificacion,
+                    MAX(sdf.visto) AS visto,
+                    sdc.correo_enviado,
                     sol.nombre AS remitente_nombre,
                     sol.apellido AS remitente_apellido
                 FROM solicitud_desarrollo sd
@@ -719,7 +741,10 @@ private static function insertarSolicitante($db, $id, $data) {
                 $baseQuery .= " AND sdt.categoria = :categoria";
             }
 
-            $baseQuery .= " ORDER BY sdf.fecha $order";
+            $baseQuery .= "
+                GROUP BY sd.id_des
+                ORDER BY fecha $order
+            ";
 
             $stmt = $conexion->prepare($baseQuery);
 
@@ -734,9 +759,10 @@ private static function insertarSolicitante($db, $id, $data) {
 
         } catch (PDOException $e) {
             error_log("Error al filtrar solicitud_desarrollo: " . $e->getMessage());
-            return [];
+            return ['exito' => false, 'error' => $e->getMessage()];
         }
     }
+
 
     public static function fecha_filtro($datos) {
         $conexion = DB::conectar();
@@ -959,7 +985,8 @@ private static function insertarSolicitante($db, $id, $data) {
                     GROUP BY sd.id_des
                     ORDER BY sd.id_des DESC
             ";
-
+            $filtro = trim($filtro); // elimina espacios al inicio y final
+            $filtro = preg_replace('/\s+/', ' ', $filtro); // reemplaza múltiples espacios por uno
             $stmt = $conexion->prepare($consulta);
             $busqueda = '%' . $filtro . '%';
             $stmt->bindParam(':filtro', $busqueda, PDO::PARAM_STR);

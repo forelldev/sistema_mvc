@@ -440,8 +440,8 @@ public static function solicitud($id_doc, $estado) {
             WHERE id_doc = ?
         ");
         $stmt2->execute([
-            $data['descripcion'],
-            $data['observaciones'],
+            ucfirst($data['descripcion']),
+            ucfirst($data['observaciones']),
             $data['id_doc']
         ]);
 
@@ -452,7 +452,7 @@ public static function solicitud($id_doc, $estado) {
             WHERE id_doc = ?
         ");
         $stmt3->execute([
-            $data['tipo_ayuda'],
+            ucfirst($data['tipo_ayuda']),
             $data['categoria'],
             $data['id_doc']
         ]);
@@ -769,7 +769,7 @@ public static function solicitud($id_doc, $estado) {
             WHERE id_despacho = ?
         ");
         $stmt2->execute([
-            $data['descripcion'],
+            ucfirst($data['descripcion']),
             $data['id_despacho']
         ]);
 
@@ -782,7 +782,7 @@ public static function solicitud($id_doc, $estado) {
         $stmt3->execute([$data['id_despacho']]);
 
         $stmt4 = $conexion->prepare("UPDATE despacho_categoria SET categoria = ?, tipo_ayuda = ? WHERE id_despacho = ?");
-        $stmt4->execute([$data['categoria'],$data['tipo_ayuda'],$data['id_despacho']]);
+        $stmt4->execute([$data['categoria'],ucfirst($data['tipo_ayuda']),$data['id_despacho']]);
 
         $conexion->commit();
         return ['exito' => true];
