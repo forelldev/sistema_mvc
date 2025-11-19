@@ -117,7 +117,7 @@
               <option value="En espera del documento físico para ser procesado 0/3" <?= ($estado ?? '') == 'En espera del documento físico para ser procesado 0/3' ? 'selected' : '' ?>>En espera del documento físico para ser procesado 0/3</option>
               <option value="En Proceso 1/3" <?= ($estado ?? '') == 'En Proceso 1/3' ? 'selected' : '' ?>>En Proceso 1/3</option>
               <option value="En Proceso 2/3" <?= ($estado ?? '') == 'En Proceso 2/3' ? 'selected' : '' ?>>En Proceso 2/3</option>
-              <option value="En Proceso 3/3" <?= ($estado ?? '') == 'En Proceso 3/3' ? 'selected' : '' ?>>En Proceso 3/3</option>
+              <option value="En Proceso 3/3 (Sin entregar)" <?= ($estado ?? '') == 'En Proceso 3/3' ? 'selected' : '' ?>>En Proceso 3/3</option>
               <option value="Solicitud Finalizada (Ayuda Entregada)" <?= ($estado ?? '') == 'Solicitud Finalizada (Ayuda Entregada)' ? 'selected' : '' ?>>Solicitud Finalizada (Ayuda Entregada)</option>
             </select>
           </div>
