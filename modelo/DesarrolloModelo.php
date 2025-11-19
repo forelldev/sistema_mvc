@@ -746,12 +746,18 @@ private static function insertarSolicitante($db, $id, $data) {
         try {
             $stmt = $conexion->prepare("
                     SELECT 
-                        sd.*, 
-                        sdf.fecha, sdf.fecha_modificacion, sdf.visto,
-                        sdc.correo_enviado,
+                        sd.id_des,
+                        sd.id_manual,
+                        sd.ci,
+                        sd.estado,
+                        sdi.descripcion,
+                        sdi.creador,
                         sdt.categoria,
-                        sdi.descripcion, sdi.creador,
-                        sdl.examen,
+                        GROUP_CONCAT(sdl.examen SEPARATOR ', ') AS examenes,
+                        MAX(sdf.fecha) AS fecha,
+                        MAX(sdf.fecha_modificacion) AS fecha_modificacion,
+                        MAX(sdf.visto) AS visto,
+                        sdc.correo_enviado,
                         sol.nombre AS remitente_nombre,
                         sol.apellido AS remitente_apellido
                     FROM solicitud_desarrollo sd
@@ -765,7 +771,8 @@ private static function insertarSolicitante($db, $id, $data) {
                     AND DATE(sdf.fecha) <= :fecha_final 
                     AND sd.estado = :estado
                     AND sd.invalido = 0
-                    ORDER BY sdf.fecha DESC
+                    GROUP BY sd.id_des
+                    ORDER BY fecha DESC;
                 ");
 
             $stmt->bindParam(':fecha_inicio', $fecha_inicio);
@@ -935,7 +942,7 @@ private static function insertarSolicitante($db, $id, $data) {
                     FROM solicitud_desarrollo_laboratorio
                     GROUP BY id_des
                 ) AS lab ON lab.id_des = sd.id_des
-                WHERE 
+                WHERE (
                     sd.ci LIKE :filtro OR
                     sd.id_manual LIKE :filtro OR
                     sd.estado LIKE :filtro OR
@@ -947,7 +954,10 @@ private static function insertarSolicitante($db, $id, $data) {
                     CONCAT(sol.apellido, ' ', sol.nombre) LIKE :filtro OR
                     sol.nombre LIKE :filtro OR
                     sol.apellido LIKE :filtro
-                GROUP BY sd.id_des DESC
+                    )
+                    AND sd.invalido = 0
+                    GROUP BY sd.id_des
+                    ORDER BY sd.id_des DESC
             ";
 
             $stmt = $conexion->prepare($consulta);

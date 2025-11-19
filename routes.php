@@ -68,6 +68,7 @@ Router::get('/solicitudes_desarrollo','DesarrolloControl@lista');
 Router::get('/buscar_desarrollo','DesarrolloControl@buscar_desarrollo');
 Router::post('/formulario_desarrollo','DesarrolloControl@formulario_desarrollo');
 Router::post('/enviar_formulario_desarrollo','DesarrolloControl@enviar_formulario_desarrollo');
+Router::post('/filtrar_fecha_desarrollo','DesarrolloControl@filtrar_fecha_desarrollo');
 Router::get('/felicidades_desarrollo','DesarrolloControl@felicidades_desarrollo');
 Router::get('/procesarDesarrollo','DesarrolloControl@procesar');
 Router::post('/solicitudes_ciDesarrollo','DesarrolloControl@registrar');

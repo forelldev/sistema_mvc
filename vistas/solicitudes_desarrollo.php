@@ -77,7 +77,7 @@ $acciones = [
       <!-- 📅 Filtro por fecha y estado -->
       <div class="col-md-5">
         <div class="card filtro-fecha-card bg-dark text-white shadow-sm border-0 p-3 h-100">
-          <form class="row g-2 align-items-end" action="filtrar_fechaDesarrollo" method="POST">
+          <form class="row g-2 align-items-end" action="filtrar_fecha_desarrollo" method="POST">
             <div class="col-12">
               <label class="form-label fw-semibold">📅 Filtrar por fecha y estado</label>
               <p class="small text-white-50 mb-2">
