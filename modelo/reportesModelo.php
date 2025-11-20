@@ -292,26 +292,19 @@ class reportesModelo{
         }
 
 
- public static function filtro_acciones($fecha, $oficina, $pagina = 1, $porPagina = 10) {
+public static function filtro_acciones($fecha, $oficina, $pagina = 1, $porPagina = 10) {
     $conexion = DB::conectar();
     $fecha_inicio = $fecha . ' 00:00:00';
     $fecha_fin = $fecha . ' 23:59:59';
     $offset = ($pagina - 1) * $porPagina;
-
-    // Tipos de origen y sus tablas
-    $tipos = [
-        'General' => ['tipo' => 'general', 'tabla' => 'solicitud_ayuda', 'campo' => 'id_doc'],
-        'Desarrollo Social' => ['tipo' => 'desarrollo', 'tabla' => 'solicitud_desarrollo', 'campo' => 'id_des'],
-        'Despacho' => ['tipo' => 'despacho', 'tabla' => 'despacho', 'campo' => 'id_despacho']
-    ];
 
     // Condición SQL según oficina
     $condicionOficina = '';
     $parametrosOficina = [];
 
     if ($oficina === 'todas') {
-        $condicionOficina = "AND (" . implode(" OR ", array_map(fn($k) => "ra.accion LIKE '%($k)%'", array_keys($tipos))) . ")";
-    } elseif (!empty($oficina) && isset($tipos[$oficina])) {
+        $condicionOficina = "AND (ra.accion LIKE '%(General)%' OR ra.accion LIKE '%(Desarrollo Social)%' OR ra.accion LIKE '%(Despacho)%')";
+    } elseif (!empty($oficina)) {
         $condicionOficina = "AND ra.accion LIKE :oficina";
         $parametrosOficina[':oficina'] = "%(" . $oficina . ")%";
     }
@@ -357,34 +350,38 @@ class reportesModelo{
         $stmt->execute();
         $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Enriquecer cada fila con id_manual y origen
+        // Enriquecer cada fila con id_manual y origen (switch como en mostrarReportesAcciones)
         foreach ($resultados as &$fila) {
-            $fila['id_manual'] = 'N/A';
-            $fila['origen'] = 'general';
+            $id_doc = $fila['id_doc'];
+            $accion = strtolower($fila['accion']);
 
-            foreach ($tipos as $clave => $info) {
-                if (str_contains($fila['accion'], "($clave)")) {
-                    $fila['origen'] = $info['tipo'];
+            preg_match('/\((.*?)\)/', $accion, $match);
+            $tipo = strtolower(trim($match[1] ?? 'general'));
 
-                    // Acceder dinámicamente al campo correcto
-                    $campoID = $info['campo'];
-                    $id = $fila[$campoID] ?? null;
-
-                    if ($id) {
-                        $query = "SELECT id_manual FROM {$info['tabla']} WHERE {$info['campo']} = :id";
-                        $stmtManual = $conexion->prepare($query);
-                        $stmtManual->bindParam(':id', $id);
-                        $stmtManual->execute();
-                        $idManual = $stmtManual->fetchColumn();
-                        if ($idManual) {
-                            $fila['id_manual'] = $idManual;
-                        }
-                    }
-
+            switch ($tipo) {
+                case 'despacho':
+                    $query = "SELECT id_manual FROM despacho WHERE id_despacho = :id";
+                    $fila['origen'] = 'despacho';
+                    $fila['id_despacho'] = $id_doc;
                     break;
-                }
+                case 'desarrollo social':
+                    $query = "SELECT id_manual FROM solicitud_desarrollo WHERE id_des = :id";
+                    $fila['origen'] = 'desarrollo';
+                    $fila['id_des'] = $id_doc;
+                    break;
+                default:
+                    $query = "SELECT id_manual FROM solicitud_ayuda WHERE id_doc = :id";
+                    $fila['origen'] = 'general';
+                    $fila['id_doc'] = $id_doc;
+                    break;
             }
 
+            $stmtManual = $conexion->prepare($query);
+            $stmtManual->bindValue(':id', $id_doc, PDO::PARAM_INT);
+            $stmtManual->execute();
+            $id_manual = $stmtManual->fetchColumn();
+
+            $fila['id_manual'] = $id_manual ?: 'N/A';
         }
 
         return [
@@ -402,6 +399,8 @@ class reportesModelo{
         ];
     }
 }
+
+
 
 
 

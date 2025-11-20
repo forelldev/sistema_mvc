@@ -238,7 +238,7 @@
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
                 $id_doc = $_POST['id_despacho'];
-                $accion = 'Editó la solicitud de Despacho';
+                $accion = 'Editó la solicitud (Despacho)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 header('Location: '.BASE_URL.'/'.$direccion.'?msj=Solicitud actualizada con éxito');
 
