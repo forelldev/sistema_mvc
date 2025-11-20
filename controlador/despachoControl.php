@@ -171,7 +171,7 @@
                 header('Location: '.BASE_URL.'/inhabilitados_despacho?msj=Solicitud invalidada con éxito');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Despacho)';
+                $accion = 'Invalidó la solicitud, razón: '.$razon.' (Despacho)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }

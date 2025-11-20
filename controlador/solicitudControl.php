@@ -202,7 +202,7 @@ class SolicitudControl {
                 header('Location: '.BASE_URL.'/inhabilitados_lista?msj=Solicitud invalidada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (General)';
+                $accion = 'Invalidó la solicitud, razón: '.$razon.' (General)';
                 Procesar::registrarReporte($id_doc,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }

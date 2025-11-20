@@ -167,7 +167,7 @@ class DesarrolloControl {
                 header('Location: '.BASE_URL.'/desarrollo_invalidos?msj=Solicitud invalidada con éxito!');
                 date_default_timezone_set('America/Caracas');
                 $fecha = date('Y-m-d H:i:s');
-                $accion = 'Inhabilitó la solicitud razón: '.$razon.' (Desarrollo Social)';
+                $accion = 'Invalidó la solicitud, razón: '.$razon.' (Desarrollo Social)';
                 Procesar::registrarReporte($id_des,$fecha,$accion,$_SESSION['ci']);
                 exit;
             }
